@@ -34,5 +34,11 @@ if (process.env.NODE_ENV === 'dev') {
 nconf.defaults({
   server: {
     port: 9000
+  },
+  logs: {
+    console: {
+      active: true,
+      timestamp: true
+    }
   }
 });
