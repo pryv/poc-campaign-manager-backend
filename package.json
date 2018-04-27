@@ -13,12 +13,16 @@
     "flow:deps": "./node_modules/flow-typed/dist/cli.js install",
     "transpile": "flow-remove-types src/ -d lib/",
     "release": "node_modules/.bin/babel ./src --out-dir=lib --copy-files",
-    "test": "./node_modules/.bin/mocha test/**/*.test.js"
+    "watch": "node_modules/.bin/babel --watch=./src --out-dir=lib --copy-files",
+    "watch-test": "node_modules/.bin/babel --watch=./test --out-dir=lib-test --copy-files",
+    "test": "./node_modules/.bin/mocha lib-test/**/*.test.js",
+    "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'src/**/*.js' -t html"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-flow": "^6.23.0",
     "flow-bin": "^0.70.0",
+    "flow-coverage-report": "^0.5.0",
     "flow-remove-types": "^1.2.3",
     "flow-typed": "^2.4.0",
     "mocha": "^5.1.1",
