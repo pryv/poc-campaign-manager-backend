@@ -1,0 +1,29 @@
+{
+  "name": "app-node-campaign-management",
+  "version": "1.0.0",
+  "description": "Node-Express-SQLite app for campaign management",
+  "main": "index.js",
+  "author": "Ilia Kebets <ilia@pryv.com>",
+  "license": "none",
+  "private": true,
+  "scripts": {
+    "start": "node bin/server.js",
+    "flow": "./node_modules/.bin/flow",
+    "check": "flow check ./src/",
+    "flow:deps": "./node_modules/flow-typed/dist/cli.js install",
+    "transpile": "flow-remove-types src/ -d lib/"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-flow": "^6.23.0",
+    "flow-bin": "^0.70.0",
+    "flow-remove-types": "^1.2.3",
+    "flow-typed": "^2.4.0"
+  },
+  "dependencies": {
+    "express": "^4.16.3",
+    "lodash": "^4.17.10",
+    "nconf": "^0.10.0",
+    "winston": "^2.4.2"
+  }
+}
