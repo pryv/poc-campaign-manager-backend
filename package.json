@@ -7,16 +7,12 @@
   "license": "none",
   "private": true,
   "scripts": {
-    "start": "node bin/server.js",
-    "flow": "./node_modules/.bin/flow",
-    "check": "flow check ./src/",
+    "start": "node dist/src/server.js",
+    "flow": "./node_modules/.bin/flow --color=always",
     "flow:deps": "./node_modules/flow-typed/dist/cli.js install",
-    "transpile": "flow-remove-types src/ -d lib/",
-    "release": "node_modules/.bin/babel ./src --out-dir=lib --copy-files",
-    "watch": "node_modules/.bin/babel --watch=./src --out-dir=lib --copy-files",
-    "watch-test": "node_modules/.bin/babel --watch=./test --out-dir=lib-test --copy-files",
-    "test": "./node_modules/.bin/mocha lib-test/**/*.test.js",
-    "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'src/**/*.js' -t html"
+    "watch": "node_modules/.bin/babel --watch=./code --out-dir=dist --copy-files",
+    "test": "./node_modules/.bin/mocha dist/test/**/*.test.js",
+    "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'code/src/**/*.js' -t html"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

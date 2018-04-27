@@ -1,9 +1,11 @@
+// @flow
+
 const express = require('express');
-const app: any = express();
+const app: express$Application = express();
 
 module.exports = app;
 
-app.get('/campaigns', (req: any, res: any) => {
+app.get('/campaigns', (req: express$Request, res: express$Response) => {
 
   res.status(200)
     .json({

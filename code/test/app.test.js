@@ -1,7 +1,11 @@
+// @flow
+
+/* global describe, it*/
+
 const request = require('supertest');
 const should = require('should');
 
-const app = require('../lib/app');
+const app = require('../src/app');
 
 describe('app', () => {
 

@@ -1,3 +1,5 @@
+// @flow
+
 const nconf = require('nconf');
 const fs = require('fs');
 const path = require('path');
