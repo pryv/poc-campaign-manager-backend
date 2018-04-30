@@ -2,12 +2,25 @@
 
 const express = require('express');
 const app: express$Application = express();
+const logger: any = require('./logger');
 
 module.exports = app;
 
+// not sure if needed
+app.options('*', (req: express$Request, res: express$Response) => {
+
+  logger.info('OPTIONS call');
+
+  res.header('Access-Control-Allow-Origin', '*');
+  res.status(200).end();
+});
+
 app.get('/campaigns', (req: express$Request, res: express$Response) => {
 
+  logger.info('GET /campaign');
+
   res.status(200)
+    .header('Access-Control-Allow-Origin', '*')
     .json({
       campaigns: [
         {
