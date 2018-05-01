@@ -3,7 +3,7 @@
 
 ExpressJS app for campaign management.
 
-Prerequisites: Node v8+, Yarn v1+
+*Prerequisites*: Node v8+, Yarn v1+
 
 ## Usage
 
