@@ -7,15 +7,11 @@ import should from 'should';
 import {Database} from '../src/database';
 import {User} from '../src/business/User';
 
-const DB_PATH = 'test.db';
+const DB_PATH: string = 'test.db';
 
 describe('Database', () => {
 
-  const db = new Database({path: DB_PATH});
-
-  before(() => {
-    console.log('before', db.getUsers());
-  });
+  const db: Database = new Database({path: DB_PATH});
 
   after(() => {
     db.close();
@@ -29,7 +25,6 @@ describe('Database', () => {
         username: 'bob'
       }).save(db);
       let users = db.getUsers();
-      console.log('users', users);
       users.should.be.Array();
       users[0].username.should.be.eql('bob');
       users[0].should.have.property('id');

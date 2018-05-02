@@ -14,7 +14,7 @@
  */
 
 declare module 'cuid' {
-  declare module.exports: any;
+  declare module.exports: void => string;
 }
 
 /**

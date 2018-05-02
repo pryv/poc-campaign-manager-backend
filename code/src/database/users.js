@@ -25,7 +25,7 @@ export class Users {
     ).run();
   }
 
-  get() {
+  get(): Array<User> {
     return this.db.prepare(
       'SELECT * FROM users'
     ).all().map(convertFromDB);

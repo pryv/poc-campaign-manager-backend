@@ -10,7 +10,7 @@ import {Users} from './users';
 
 export class Database {
 
-  db: sqlite3;
+  db: typeof sqlite3;
   path: string;
   users: Users;
   campaigns: Campaigns;
@@ -55,15 +55,15 @@ export class Database {
     return this.db.close();
   }
 
-  saveCampaign(campaign: Campaign) {
+  saveCampaign(campaign: Campaign): void {
     return this.campaigns.save(campaign);
   }
 
-  getUsers() {
+  getUsers(): Array<User> {
     return this.users.get();
   }
 
-  saveUser(user: User) {
+  saveUser(user: User): void {
     return this.users.save(user);
   }
 
