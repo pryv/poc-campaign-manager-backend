@@ -24,27 +24,21 @@ export class Campaigns {
       'permissions,' +
       'created' +
       ')' +
-      'VALUES (' +
-      campaign.id + ', ' +
-      campaign.title + ', ' +
-      campaign.pryvAppId + ', ' +
-      campaign.description + ', ' +
-      campaign.permissionsSet + ', ' +
-      campaign.created +
+      'VALUES (\'' +
+      params.campaign.id + '\', \'' +
+      params.campaign.title + '\', \'' +
+      params.campaign.pryvAppId + ', ' +
+      params.campaign.description + '\', \'' +
+      JSON.stringify(params.campaign.permissions) + ', ' +
+      params.campaign.created +
         ');',
       'INSERT INTO users_campaigns (' +
       'user_id,' +
       'campaign_id,' +
       ')' +
       'VALUES (' +
-      user.id + ',' +
-      campaign.id + ');'
+      params.user.id + ',' +
+      params.campaign.id + ');'
     ]).run();
   }
 }
-
-/*
-* 'CREATE TABLE IF NOT EXISTS users_campaigns (' +
- 'user_id integer,' +
- 'campaign_id integer,' +
-* */

@@ -55,8 +55,14 @@ export class Database {
     return this.db.close();
   }
 
-  saveCampaign(campaign: Campaign): void {
-    return this.campaigns.save(campaign);
+  saveCampaign(params: {
+    campaign: Campaign,
+    user: User
+  }): void {
+    return this.campaigns.save({
+      campaign: params.campaign,
+      user: params.user
+    });
   }
 
   getUsers(): Array<User> {
