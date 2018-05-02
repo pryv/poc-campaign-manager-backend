@@ -2,10 +2,10 @@
 
 /* global describe, it*/
 
-const request = require('supertest');
-const should = require('should');
+const request: any = require('supertest');
+const should: any = require('should');
 
-const app = require('../src/app');
+const app: express$Application = require('../src/app');
 
 describe('app', () => {
 

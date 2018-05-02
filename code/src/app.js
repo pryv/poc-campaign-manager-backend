@@ -1,10 +1,17 @@
 // @flow
 
-const express = require('express');
+import express from 'express';
 const app: express$Application = express();
 const logger: any = require('./logger');
+import {Database} from './database';
+const config = require('./config');
 
 module.exports = app;
+
+const database: Database = new Database({
+  path: config.get('database:path')
+});
+
 
 // not sure if needed
 app.options('*', (req: express$Request, res: express$Response) => {

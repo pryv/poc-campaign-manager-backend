@@ -1,12 +1,12 @@
 // @flow
 
-const winston = require('winston');
+import winston from 'winston';
 
-const config = require('./config');
+import config from './config';
 
-const transports = [];
+const transports: Array<mixed> = [];
 
-function timestamp() {
+function timestamp(): string {
   return new Date().toISOString();
 }
 
@@ -43,20 +43,20 @@ if (config.get('logs:file:active')) {
   );
 }
 
-const winstonLogger = new (winston.Logger)({
+const winstonLogger: winston = new (winston.Logger)({
   transports: transports
 });
 
-const logger = {};
+const logger: mixed = {};
 
-logger.error = (message: string) => {
+logger.error = (message: string): void => {
   winstonLogger.log({
     level: 'error',
     message: message
   });
 };
 
-logger.warn = (message: string) => {
+logger.warn = (message: string): void => {
   winstonLogger.log({
     level: 'warn',
     message: message
@@ -65,7 +65,7 @@ logger.warn = (message: string) => {
 
 logger.info = winstonLogger.info;
 
-logger.debug = (message: string) => {
+logger.debug = (message: string): void => {
   winstonLogger.log({
     level: 'debug',
     message: message

@@ -42,5 +42,8 @@ nconf.defaults({
       active: true,
       timestamp: true
     }
+  },
+  database: {
+    path: './campaign-management.db'
   }
 });

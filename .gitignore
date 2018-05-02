@@ -4,3 +4,6 @@ node_modules/
 .idea/
 
 flow-coverage/
+
+# default db file
+campaign-management.db

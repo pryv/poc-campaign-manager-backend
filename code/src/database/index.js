@@ -1,0 +1,71 @@
+// @flow
+
+const sqlite3 = require('better-sqlite3');
+
+import typeof {Campaign} from '../business/Campaign';
+import typeof {User} from '../business/User';
+
+import {Campaigns} from './campaigns';
+import {Users} from './users';
+
+export class Database {
+
+  db: sqlite3;
+  path: string;
+  users: Users;
+  campaigns: Campaigns;
+
+  constructor(params: {path: string}) {
+    this.path = params.path;
+    this.db = new sqlite3(this.path);
+    console.log(this.initTables());
+
+    this.campaigns = new Campaigns({db: this.db});
+    this.users = new Users({db: this.db});
+  }
+
+  initTables(): void {
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS users (' +
+      'user_id string PRIMARY_KEY, ' +
+      'username text NOT NULL UNIQUE' +
+      ')').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS campaigns (' +
+      'campaign_id string PRIMARY_KEY,' +
+      'title text NOT NULL,' +
+      'pryv_app_id text,' +
+      'description text NOT NULL,' +
+      'permissions text NOT NULL,' +
+      'created integer' +
+      ')').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS users_campaigns (' +
+      'user_id integer,' +
+      'campaign_id integer,' +
+      'PRIMARY KEY (user_id, campaign_id),' +
+      'FOREIGN KEY (user_id) REFERENCES users (user_id)' +
+      'ON DELETE CASCADE ON UPDATE NO ACTION,' +
+      'FOREIGN KEY (campaign_id) REFERENCES campaigns (campaign_id)' +
+      'ON DELETE CASCADE ON UPDATE NO ACTION' +
+      ')').run();
+  }
+
+  close(): void {
+    return this.db.close();
+  }
+
+  saveCampaign(campaign: Campaign) {
+    return this.campaigns.save(campaign);
+  }
+
+  getUsers() {
+    return this.users.get();
+  }
+
+  saveUser(user: User) {
+    return this.users.save(user);
+  }
+
+}
+
