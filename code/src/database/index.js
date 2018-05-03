@@ -18,10 +18,11 @@ export class Database {
   constructor(params: {path: string}) {
     this.path = params.path;
     this.db = new sqlite3(this.path);
-    console.log(this.initTables());
 
-    this.campaigns = new Campaigns({db: this.db});
+    this.initTables();
+
     this.users = new Users({db: this.db});
+    this.campaigns = new Campaigns({db: this.db});
   }
 
   initTables(): void {
@@ -41,13 +42,13 @@ export class Database {
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users_campaigns (' +
-      'user_id integer,' +
-      'campaign_id integer,' +
-      'PRIMARY KEY (user_id, campaign_id),' +
-      'FOREIGN KEY (user_id) REFERENCES users (user_id)' +
-      'ON DELETE CASCADE ON UPDATE NO ACTION,' +
-      'FOREIGN KEY (campaign_id) REFERENCES campaigns (campaign_id)' +
-      'ON DELETE CASCADE ON UPDATE NO ACTION' +
+      'user_id_key string,' +
+      'campaign_id_key string,' +
+      'PRIMARY KEY (user_id_key, campaign_id_key)' + //,' +
+      //'FOREIGN KEY(user_id_key) REFERENCES users (user_id)' +
+      //'ON DELETE CASCADE ON UPDATE NO ACTION,' +
+      //'FOREIGN KEY(campaign_id_key) REFERENCES campaigns (campaign_id)' +
+      //'ON DELETE CASCADE ON UPDATE NO ACTION' +
       ')').run();
   }
 
