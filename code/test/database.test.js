@@ -59,12 +59,11 @@ describe('Database', () => {
       campaign.save({db: db, user: user});
       let campaigns = db.getCampaigns({user: user});
       campaigns.should.be.Array();
-      campaigns[0].username.should.be.eql(user);
       campaigns[0].title.should.be.eql(campaign.title);
       campaigns[0].pryvAppId.should.be.eql(campaign.pryvAppId);
       campaigns[0].created.should.be.eql(campaign.created);
       campaigns[0].description.should.be.eql(campaign.description);
-      campaigns[0].permissions.should.be.eql(campaign.permissions);
+      JSON.stringify(campaigns[0].permissions).should.be.eql(JSON.stringify(campaign.permissions));
       campaigns[0].should.have.property('id');
     })
   })

@@ -8,6 +8,8 @@ import typeof {User} from '../business/User';
 import {Campaigns} from './campaigns';
 import {Users} from './users';
 
+const logger = require('../logger');
+
 export class Database {
 
   db: typeof sqlite3;
@@ -54,6 +56,10 @@ export class Database {
 
   close(): void {
     return this.db.close();
+  }
+
+  getCampaigns(params: {user: User}): Array<Campaign> {
+    return this.campaigns.get({user: params.user});
   }
 
   saveCampaign(params: {
