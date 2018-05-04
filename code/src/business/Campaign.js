@@ -19,7 +19,6 @@ export class Campaign {
 
   id: string;
   title: string;
-  username: string;
   pryvAppId: string;
   description: string;
   permissions: Array<Permission>;
@@ -28,7 +27,6 @@ export class Campaign {
   constructor(params: {
     id?: string,
     title: string,
-    username: string,
     pryvAppId: string,
     description: string,
     permissions: Array<Permission>,
@@ -36,7 +34,6 @@ export class Campaign {
   }) {
     this.id = params.id || cuid();
     this.title = params.title;
-    this.username = params.username;
     this.pryvAppId = params.pryvAppId;
     this.description = params.description;
     this.permissions = params.permissions;
