@@ -3,60 +3,58 @@
 /* global describe, it, before, after*/
 
 import fs from 'fs';
-import should from 'should';
 import {Database} from '../src/database';
-import {User} from '../src/business/User';
-import {Campaign} from '../src/business/Campaign';
-import cuid from 'cuid';
+import {User, Campaign} from '../src/business';
+import {Fixtures} from './support/Fixtures';
 
-const DB_PATH: string = 'test.db';
+const config = require('../src/config');
 
 describe('Database', () => {
 
-  const db: Database = new Database({path: DB_PATH});
+  const fixtures: Fixtures = new Fixtures();
+  const db: Database = new Database({path: config.get('database:path')});
+
+  before(() => {
+    const user1 = fixtures.addUser();
+    const user2 = fixtures.addUser();
+    const user3 = fixtures.addUser();
+    fixtures.addCampaign({user: user1});
+    fixtures.addCampaign({user: user2});
+    fixtures.addCampaign({user: user3});
+  });
 
   after(() => {
-    db.close();
-    fs.unlinkSync(DB_PATH);
+    fixtures.close();
+    fs.unlinkSync(config.get('database:path'));
   });
 
   describe('Users', () => {
 
     it('should create a user', () => {
-      new User({
-        username: 'bob'
-      }).save(db);
+      const user: User = fixtures.addUser();
       let users = db.getUsers();
       users.should.be.Array();
-      users[0].username.should.be.eql('bob');
-      users[0].should.have.property('id');
+
+      let found = null;
+
+      users.forEach((u) => {
+        if (u.username === user.username) {
+          found = u;
+        }
+      });
+      found.should.not.be.null();
+      found.username.should.be.eql(user.username);
+      found.should.have.property('id');
     })
   });
 
   describe('Campaigns', () => {
 
     it('should create a campaign', () => {
-      const user: User = new User({
-        username: 'waleed',
-        id: cuid()
-      });
-      user.save(db);
+      const user: User = fixtures.addUser();
 
-      const campaign: Campaign = new Campaign({
-        title: 'allergy exposition',
-        username: user.username,
-        pryvAppId: 'testing',
-        created: Date.now() / 1000,
-        description: 'The goal of this campaign is to review the allergy exposition of patients aged 18-52 in western Switzerland.',
-        permissions: [
-          {
-            streamId: 'allergy',
-            defaultName: 'Allergy',
-            level: 'read'
-          }
-        ]
-      });
-      campaign.save({db: db, user: user});
+      const campaign: Campaign = fixtures.addCampaign({user: user});
+
       let campaigns = db.getCampaigns({user: user});
       campaigns.should.be.Array();
       campaigns[0].title.should.be.eql(campaign.title);

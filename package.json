@@ -11,7 +11,7 @@
     "flow": "./node_modules/.bin/flow --color=always",
     "flow:deps": "./node_modules/flow-typed/dist/cli.js install",
     "watch": "node_modules/.bin/babel --watch=./code --out-dir=dist --copy-files",
-    "test": "./node_modules/.bin/mocha dist/test/**/*.test.js",
+    "test": "NODE_ENV=dev ./node_modules/.bin/mocha dist/test/**/*.test.js",
     "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'code/src/**/*.js' -t html"
   },
   "devDependencies": {
@@ -29,6 +29,7 @@
   "dependencies": {
     "better-sqlite3": "^4.1.0",
     "bluebird": "^3.5.1",
+    "charlatan": "^1.1.0",
     "cuid": "^2.1.1",
     "express": "^4.16.3",
     "lodash": "^4.17.10",

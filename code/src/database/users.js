@@ -3,7 +3,7 @@
 const bluebird = require('bluebird');
 
 import typeof sqlite3 from 'better-sqlite3';
-import {User} from '../business/User';
+import {User} from '../business';
 import {Transaction} from 'better-sqlite3';
 
 export class Users {

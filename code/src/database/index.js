@@ -2,8 +2,7 @@
 
 const sqlite3 = require('better-sqlite3');
 
-import typeof {Campaign} from '../business/Campaign';
-import typeof {User} from '../business/User';
+import typeof {Campaign, User} from '../business';
 
 import {Campaigns} from './campaigns';
 import {Users} from './users';

@@ -4,8 +4,7 @@ const bluebird = require('bluebird');
 
 import typeof sqlite3 from 'better-sqlite3';
 import typeof {Transaction} from 'better-sqlite3';
-import {Campaign} from '../business/Campaign';
-import typeof {User} from '../business/User';
+import {Campaign, User} from '../business';
 
 const logger = require('../logger');
 
@@ -17,7 +16,7 @@ export class Campaigns {
     this.db = params.db;
   }
 
-  save(params: {campaign: Campaign, user: User}) {
+  save(params: {campaign: Campaign, user: User}): void {
     this.db.transaction([
       'INSERT INTO campaigns (' +
       'campaign_id,' +

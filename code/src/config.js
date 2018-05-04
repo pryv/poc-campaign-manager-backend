@@ -27,7 +27,15 @@ if (fs.existsSync(configFile)) {
 if (process.env.NODE_ENV === 'dev') {
   nconf.overrides({
     server: {
-      port: 7421
+      port: 9000
+    },
+    logs: {
+      console: {
+        active: false
+      }
+    },
+    database: {
+      path: './test.db'
     }
   });
 }
