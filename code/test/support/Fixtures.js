@@ -21,7 +21,7 @@ export class Fixtures {
     return user;
   }
 
-  addCampaign(params: {user: User}): Campaign {
+  getCampaign(params: {user: User}): Campaign {
     const streamId = charlatan.Lorem.word();
 
     const campaign = new Campaign({
@@ -38,6 +38,13 @@ export class Fixtures {
       ],
       created: Date.now() / 1000
     });
+
+    return campaign;
+  }
+
+  addCampaign(params: {user: User}): Campaign {
+
+    const campaign = this.getCampaign({user: params.user});
 
     this.db.saveCampaign({
       campaign: campaign,
