@@ -11,10 +11,13 @@ const config = require('../src/config');
 
 describe('Database', () => {
 
-  const fixtures: Fixtures = new Fixtures();
-  const db: Database = new Database({path: config.get('database:path')});
+  let fixtures: Fixtures;
+  let db: Database;
 
   before(() => {
+    fixtures = new Fixtures();
+    db = new Database({path: config.get('database:path')});
+
     const user1 = fixtures.addUser();
     const user2 = fixtures.addUser();
     const user3 = fixtures.addUser();
