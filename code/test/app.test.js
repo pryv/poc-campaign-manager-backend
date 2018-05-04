@@ -39,6 +39,38 @@ describe('app', () => {
 
   describe('campaigns', () => {
 
+    describe('when creating a campaign', () => {
+
+      before(() => {
+        user = fixtures.addUser();
+      });
+
+      it('should create the campaign, return 201 with the created campaign when the user exists and all required fields are met', () => {
+
+        const campaign = fixtures.getCampaign({user: user});
+
+        return request(app)
+          .post('/' + user.username + '/campaigns')
+          .send(campaign)
+          .expect(201)
+          .then(res => {
+            res.body.should.have.property('campaign').which.is.an.Object();
+            new Campaign(res.body.campaign).should.be.eql(campaign);
+
+            const userCampaigns = db.getCampaigns({user: user});
+            let found = null;
+            userCampaigns.forEach((c) => {
+              if (c.id === campaign.id) {
+                found = c;
+              }
+            });
+            found.should.not.be.null();
+            campaign.should.be.eql(found);
+          });
+      });
+
+    });
+
     describe('when querying campaigns', () => {
 
       before(() => {
