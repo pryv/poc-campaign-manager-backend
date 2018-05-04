@@ -69,6 +69,33 @@ describe('app', () => {
           });
       });
 
+      it('should return a 404 response with an error message when the user does not exist', () => {
+
+        return request(app)
+          .post('/unexistant-user/campaigns')
+          .send({})
+          .expect(404)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+
+      it('should return a 400 response with an error message when the campaign schema is wrong', () => {
+
+        const incompleteCampaign = {
+          id: 'blop',
+          title: 'blip'
+        };
+
+        return request(app)
+          .post('/' + user.username + '/campaigns')
+          .send(incompleteCampaign)
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+
     });
 
     describe('when querying campaigns', () => {
@@ -100,7 +127,7 @@ describe('app', () => {
           .then(res => {
             res.body.should.have.property('error');
           })
-      })
+      });
 
     });
 
