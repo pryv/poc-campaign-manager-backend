@@ -22,27 +22,38 @@ app.options('*', (req: express$Request, res: express$Response) => {
   res.status(200).end();
 });
 
-app.get('/campaigns', (req: express$Request, res: express$Response) => {
+app.get('/:user/campaigns', (req: express$Request, res: express$Response) => {
 
   logger.info('GET /campaign');
 
+  const username = req.params.user;
+  const user = getUser(username);
+
+  if (! user) {
+    return res.status(404)
+      .json({
+        error: 'User does not exist.'
+      });
+  }
+
+  const campaigns = database.getCampaigns(({user: user}));
+
   res.status(200)
     .header('Access-Control-Allow-Origin', '*')
-    .json({
-      campaigns: [
-        {
-          title: 'allergy exposition',
-          createdBy: 'waleed',
-          created: Date.now() / 1000,
-          description: 'The goal of this campaign is to review the allergy exposition of patients aged 18-52 in western Switzerland.',
-          permissions: [
-            {
-              streamId: 'allergy',
-              defaultName: 'Allergy',
-              level: 'read'
-            }
-          ]
-        }
-      ]
-    });
+    .json({campaigns: campaigns});
 });
+
+function getUser(username: string): boolean {
+  const users = database.getUsers();
+  let found = null;
+  users.forEach((u) => {
+    if (u.username === username) {
+      found = u;
+    }
+  });
+  return found;
+}
+
+function print(o) {
+  return console.log(require('util').inspect(o, {showHidden: false, depth: null}));
+}
