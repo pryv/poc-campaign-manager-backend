@@ -66,6 +66,6 @@ describe('Database', () => {
       campaigns[0].description.should.be.eql(campaign.description);
       JSON.stringify(campaigns[0].permissions).should.be.eql(JSON.stringify(campaign.permissions));
       campaigns[0].should.have.property('id');
-    })
+    });
   })
 });
