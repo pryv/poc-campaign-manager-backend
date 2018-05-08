@@ -56,7 +56,8 @@ app.post('/:username/campaigns', (req: express$Request, res: express$Response) =
   }
 
   const campaignObject = req.body;
-  const checkResult = _.cloneDeep(campaignSchema(campaignObject));
+  campaignSchema(campaignObject);
+  const checkResult = _.cloneDeep(campaignSchema);
   console.log('received object', campaignObject);
   if (checkResult.errors) {
     return res.status(400)
