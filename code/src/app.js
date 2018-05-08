@@ -24,6 +24,14 @@ const database: Database = new Database({
 const ajv = new Ajv();
 const campaignSchema = ajv.compile(schema.Campaign);
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT");
+  res.header("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+  next();
+});
+
 // not sure if needed
 app.options('*', (req: express$Request, res: express$Response) => {
 
