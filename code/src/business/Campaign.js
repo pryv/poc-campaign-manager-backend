@@ -22,7 +22,7 @@ export class Campaign {
   pryvAppId: string;
   description: string;
   permissions: Array<Permission>;
-  created: ?number;
+  created: number;
 
   constructor(params: {
     id?: string,
@@ -37,7 +37,7 @@ export class Campaign {
     this.pryvAppId = params.pryvAppId;
     this.description = params.description;
     this.permissions = params.permissions;
-    this.created = params.created;
+    this.created = params.created || Date.now() / 1000;
   }
 
   save(params: {
