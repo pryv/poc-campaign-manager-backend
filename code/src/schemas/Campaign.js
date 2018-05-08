@@ -7,13 +7,19 @@ export default {
       type: 'string'
     },
     title: {
-      type: 'string'
+      type: 'string',
+      minLength: 3,
+      maxLength: 64
     },
     pryvAppId: {
-      type: 'string'
+      type: 'string',
+      minlength: 5,
+      maxLength: 20
     },
     description: {
-      type: 'string'
+      type: 'string',
+      minlength: 3,
+      maxLength: 3000
     },
     permissions: {
       type: 'array',
@@ -21,13 +27,18 @@ export default {
         type: 'object',
         properties: {
           streamId: {
-            type: 'string'
+            type: 'string',
+            minlength: 1,
+            maxLengh: 64
           },
           level: {
-            type: 'string'
+            type: 'string',
+            enum: ['read', 'contribute', 'manage']
           },
           defaultName: {
-            type: 'string'
+            type: 'string',
+            minlength: 1,
+            maxlength: 64
           }
         }
       }
