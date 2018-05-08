@@ -3,6 +3,8 @@
 import express from 'express';
 const app: express$Application = express();
 const bodyParser = require('body-parser');
+import Ajv from 'ajv';
+import _ from 'lodash';
 
 const logger: any = require('./logger');
 import {Database} from './database';
@@ -10,7 +12,6 @@ import {Campaign} from './business';
 const config = require('./config');
 
 import schema from './schemas';
-import Ajv from 'ajv';
 
 module.exports = app;
 
@@ -47,13 +48,13 @@ app.post('/:username/campaigns', (req: express$Request, res: express$Response) =
   }
 
   const campaignObject = req.body;
-  const checkSchema = campaignSchema(campaignObject);
-
-  if (! checkSchema) {
+  const checkResult = _.cloneDeep(campaignSchema(campaignObject));
+  console.log('received object', campaignObject);
+  if (checkResult.errors) {
     return res.status(400)
       .json({
         error: 'wrong schema',
-        details: checkSchema.errors
+        details: checkResult.errors
       });
   }
 
