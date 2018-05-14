@@ -12,7 +12,7 @@ const config = require('../src/config');
 
 import {Fixtures} from './support/Fixtures';
 import {Database} from '../src/database';
-import {Campaign} from '../src/business';
+import {Campaign, User, Invitation} from '../src/business';
 
 const DB_PATH = config.get('database:path');
 
@@ -21,15 +21,15 @@ describe('app', () => {
   let fixtures: Fixtures;
   let db: Database;
 
-  let user;
+  let user1;
   let campaign;
 
   before(() => {
     fixtures = new Fixtures();
     db = new Database({path: DB_PATH});
 
-    user = fixtures.addUser();
-    campaign = fixtures.addCampaign({user: user});
+    user1 = fixtures.addUser();
+    campaign = fixtures.addCampaign({user: user1});
   });
 
   after(() => {
@@ -37,27 +37,142 @@ describe('app', () => {
     fs.unlinkSync(DB_PATH);
   });
 
+  describe('invitations', () => {
+
+    let user1: User, user2: User;
+    let campaign1: Campaign;
+
+    before(() => {
+      user1 = fixtures.addUser();
+      user2 = fixtures.addUser();
+      campaign1 = fixtures.addCampaign({user: user1})
+    });
+
+    function makeUrl(params: {
+      username: string
+    }): string {
+        return '/' + params.username + '/invitations';
+    }
+
+    describe('when creating an invitation', () => {
+
+      it('should create the invitation, return a 201', () => {
+
+        const invitation = fixtures.getInvitation({
+          campaign: campaign1,
+          requester: user1,
+          requestee: user2
+        });
+
+        return request(app)
+          .post(makeUrl({username: user1.username}))
+          .send(invitation)
+          .expect(201)
+          .then(res => {
+            res.body.should.have.property('invitation').which.is.an.Object();
+            new Invitation(res.body.invitation).should.be.eql(invitation);
+
+            const invitations = db.getInvitations({requester: user1});
+            let found = null;
+            invitations.forEach((i) => {
+              if (i.id === invitation.id) {
+                found = i;
+              }
+            });
+            should.exist(found);
+            found.should.eql(invitation);
+          });
+      });
+
+      it('should return a 400 when the requester does not exist', () => {
+        const unexistantUser = {
+          id: 'idontexist',
+          username: 'idontexist'
+        };
+        const campaign = fixtures.getCampaign({user: unexistantUser});
+
+        const invitation = fixtures.getInvitation({
+          campaign: campaign,
+          requester: unexistantUser
+        });
+
+        return request(app)
+          .post(makeUrl({username: unexistantUser.username}))
+          .send(invitation)
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+
+      it('should return a 400 when the campaign does not exist', () => {
+        const unexistantCampaign = fixtures.getCampaign({user: user1});
+
+        const invitation = fixtures.getInvitation({
+          requester: user1,
+          campaign: unexistantCampaign
+        });
+
+        return request(app)
+          .post(makeUrl({username: user1.username}))
+          .send(invitation)
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+
+      it('should return a 400 when the invitation schema is not respected', () => {
+        const invitation = fixtures.getInvitation({
+          requester: user1,
+          requestee: user2,
+          campaign: campaign1
+        });
+
+        delete invitation.campaignId;
+
+        return request(app)
+          .post(makeUrl({username: user1.username}))
+          .send(invitation)
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+
+    });
+
+  });
+
   describe('campaigns', () => {
+
+    function makeUrl(params: {
+      username: string
+    }): string {
+      return '/' + params.username + '/campaigns';
+    }
 
     describe('when creating a campaign', () => {
 
+      let user1;
+
       before(() => {
-        user = fixtures.addUser();
+        user1 = fixtures.addUser();
       });
 
       it('should create the campaign, return 201 with the created campaign when the user exists and all required fields are met', () => {
 
-        const campaign = fixtures.getCampaign({user: user});
+        const campaign = fixtures.getCampaign({user: user1});
 
         return request(app)
-          .post('/' + user.username + '/campaigns')
+          .post(makeUrl({username: user1.username}))
           .send(campaign)
           .expect(201)
           .then(res => {
             res.body.should.have.property('campaign').which.is.an.Object();
             new Campaign(res.body.campaign).should.be.eql(campaign);
 
-            const userCampaigns = db.getCampaigns({user: user});
+            const userCampaigns = db.getCampaigns({user: user1});
             let found = null;
             userCampaigns.forEach((c) => {
               if (c.id === campaign.id) {
@@ -72,7 +187,7 @@ describe('app', () => {
       it('should return a 404 response with an error message when the user does not exist', () => {
 
         return request(app)
-          .post('/unexistant-user/campaigns')
+          .post(makeUrl({username: 'unexistant-user'}))
           .send({})
           .expect(404)
           .then(res => {
@@ -88,7 +203,7 @@ describe('app', () => {
         };
 
         return request(app)
-          .post('/' + user.username + '/campaigns')
+          .post(makeUrl({username: user1.username}))
           .send(incompleteCampaign)
           .expect(400)
           .then(res => {
@@ -101,14 +216,14 @@ describe('app', () => {
     describe('when querying campaigns', () => {
 
       before(() => {
-        user = fixtures.addUser();
-        campaign = fixtures.addCampaign({user: user});
+        user1 = fixtures.addUser();
+        campaign = fixtures.addCampaign({user: user1});
       });
 
       it('should return the user\'s list of campaigns when the user exists', () => {
 
         return request(app)
-          .get('/' + user.username + '/campaigns')
+          .get(makeUrl({username: user1.username}))
           .expect(200)
           .then(res => {
             res.body.should.have.property('campaigns').which.is.a.Array();
@@ -122,7 +237,7 @@ describe('app', () => {
       it('should return a 404 response with an error message when the user does not exist', () => {
 
         return request(app)
-          .get('/unexistant-user/campaigns')
+          .get(makeUrl({username: 'unexistant-user'}))
           .expect(404)
           .then(res => {
             res.body.should.have.property('error');
