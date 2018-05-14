@@ -22,15 +22,15 @@ export class Fixtures {
     return user;
   }
 
-  addInvitation(params: {
+  getInvitation(params: {
     campaign: Campaign,
     requester: User,
     requestee?: User,
   }): Invitation {
-      let requesteeId = null;
-      if (params.requestee) {
-        requesteeId = params.requestee.id;
-      }
+    let requesteeId = null;
+    if (params.requestee) {
+      requesteeId = params.requestee.id;
+    }
 
     const invitation = new Invitation({
       campaignId: params.campaign.id,
@@ -38,6 +38,17 @@ export class Fixtures {
       requesteeId: requesteeId,
       accessToken: cuid()
     });
+
+    return invitation;
+  }
+
+  addInvitation(params: {
+    campaign: Campaign,
+    requester: User,
+    requestee?: User,
+  }): Invitation {
+
+    const invitation = this.getInvitation(params)
 
     this.db.saveInvitation({
       invitation: invitation
