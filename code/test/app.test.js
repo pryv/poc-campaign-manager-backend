@@ -45,7 +45,7 @@ describe('app', () => {
     before(() => {
       user1 = fixtures.addUser();
       user2 = fixtures.addUser();
-      campaign1 = fixtures.addCampaign({user: user1})
+      campaign1 = fixtures.addCampaign({user: user1});
     });
 
     function makeUrl(params: {

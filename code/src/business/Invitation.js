@@ -38,7 +38,10 @@ export class Invitation {
     this.modified = params.modified || this.created;
   }
 
-  save(db: Database): void {
-    db.saveInvitation(this);
+  save(params: {
+    db: Database,
+    user: User
+  }): void {
+    params.db.saveInvitation({invitation: this});
   }
 }

@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 const logger: any = require('./logger');
 import {Database} from './database';
-import {Campaign} from './business';
+import {Campaign, Invitation, User} from './business';
 const config = require('./config');
 
 import schema from './schemas';
@@ -23,6 +23,7 @@ const database: Database = new Database({
 
 const ajv = new Ajv();
 const campaignSchema = ajv.compile(schema.Campaign);
+const invitationSchema = ajv.compile(schema.Invitation);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
@@ -35,10 +36,64 @@ app.use((req, res, next) => {
 // not sure if needed
 app.options('*', (req: express$Request, res: express$Response) => {
 
-  logger.info('OPTIONS call');
+  logger.info('OPTIONS call on', req.path);
 
   res.header('Access-Control-Allow-Origin', '*');
+
   res.status(200).end();
+});
+
+app.post('/:username/invitations', (req: express$Request, res: express$Response) => {
+
+  logger.info('POST /invitations');
+
+  const username = req.params.username;
+  const user = getUser(username);
+  console.log('received for username', username);
+  if (! user) {
+    return res.status(400)
+      .json({
+        error: 'User does not exist.'
+      });
+  }
+
+  const invitationObject = req.body;
+  invitationSchema(invitationObject);
+  const checkResult = _.cloneDeep(invitationSchema);
+  console.log('received object', invitationObject);
+
+  if (checkResult.errors) {
+    return res.status(400)
+      .json({
+        error: 'wrong schema',
+        details: checkResult.errors
+      });
+  }
+
+  const campaign = getCampaign({
+    campaignId: invitationObject.campaignId,
+    user: user
+  });
+  if (! campaign) {
+    return res.status(400)
+      .json({
+        error: 'Campaign does not exist'
+      });
+  }
+
+  const invitation = new Invitation(_.merge(invitationObject, {
+    requesterId: user.id
+  }));
+  invitation.save({
+    db: database,
+    user: user
+  });
+
+  return res.status(201)
+    .json({
+      invitation: invitation
+    });
+
 });
 
 app.post('/:username/campaigns', (req: express$Request, res: express$Response) => {
@@ -47,7 +102,7 @@ app.post('/:username/campaigns', (req: express$Request, res: express$Response) =
 
   const username = req.params.username;
   const user = getUser(username);
-
+  console.log('received for username', username)
   if (! user) {
     return res.status(404)
       .json({
@@ -58,7 +113,8 @@ app.post('/:username/campaigns', (req: express$Request, res: express$Response) =
   const campaignObject = req.body;
   campaignSchema(campaignObject);
   const checkResult = _.cloneDeep(campaignSchema);
-  console.log('received object', campaignObject);
+  //console.log('received object', campaignObject);
+
   if (checkResult.errors) {
     return res.status(400)
       .json({
@@ -100,7 +156,21 @@ app.get('/:username/campaigns', (req: express$Request, res: express$Response) =>
     .json({campaigns: campaigns});
 });
 
-function getUser(username: string): boolean {
+function getCampaign(params: {
+  user: User,
+  campaignId: string
+}): Campaign {
+  const campaigns = database.getCampaigns({user: params.user});
+  let found = null;
+  campaigns.forEach((c) => {
+    if (c.id === params.campaignId) {
+      found = c;
+    }
+  });
+  return found;
+}
+
+function getUser(username: string): User {
   const users = database.getUsers();
   let found = null;
   users.forEach((u) => {
