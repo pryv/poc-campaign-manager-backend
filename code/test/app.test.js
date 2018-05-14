@@ -304,6 +304,61 @@ describe('app', () => {
 
     });
 
+    describe('wen querying a campaign', () => {
+
+      function makeUrl(params: {
+        username: string,
+        campaignId: string
+      }): string {
+          return '/' + params.username + '/campaigns/' + params.campaignId;
+      }
+
+      let user: User;
+      let campaign: Campaign;
+      let invitation: Invitation;
+
+      before(() => {
+        user = fixtures.addUser();
+        campaign = fixtures.addCampaign({user: user});
+        invitation = fixtures.addInvitation({
+          campaign: campaign,
+          requester: user
+        });
+      });
+
+      it('should return the campaign', () => {
+
+        return request(app)
+          .get(makeUrl({username: user.username, campaignId: campaign.id}))
+          .expect(200)
+          .then(res => {
+            res.body.should.have.property('campaign');
+            const retrievedCampaign = res.body.campaign;
+            new Campaign(retrievedCampaign).should.be.eql(campaign);
+          });
+      });
+
+      it('should return an error if the user does not exsit', () => {
+
+        return request(app)
+          .get(makeUrl({username: 'nonexistantUser'}))
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+
+      it('should return an error if the campaign does not exist', () => {
+
+        return request(app)
+          .get(makeUrl({username: user.username, campaignId: 'nonexistantId'}))
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+    });
+
   });
 
 });

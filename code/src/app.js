@@ -180,6 +180,43 @@ app.get('/:username/campaigns', (req: express$Request, res: express$Response) =>
     .json({campaigns: campaigns});
 });
 
+app.get('/:username/campaigns/:campaignId', (req: express$Request, res: express$Response) => {
+
+  logger.info('GET /campaign/id');
+
+  const username = req.params.username;
+  const user = getUser(username);
+
+  if (! user) {
+    return res.status(400)
+      .json({
+        error: 'User does not exist.'
+      });
+  }
+
+  const campaignId = req.params.campaignId;
+
+  const campaigns = database.getCampaigns(({user: user}));
+  let campaign = null;
+  campaigns.forEach((c) => {
+    if (c.id === campaignId) {
+      campaign = c;
+    }
+  })
+
+  if (! campaign) {
+    return res.status(400)
+      .json({
+        error: 'campaign does not exist'
+      });
+  }
+
+  res.status(200)
+    .header('Access-Control-Allow-Origin', '*')
+    .json({campaign: campaign});
+
+});
+
 function getCampaign(params: {
   user: User,
   campaignId: string
