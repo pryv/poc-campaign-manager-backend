@@ -1,7 +1,8 @@
 
 import {Database} from '../../src/database';
-import {User, Campaign} from '../../src/business';
+import {User, Campaign, Invitation, InvitationStatus} from '../../src/business';
 import charlatan from 'charlatan';
+import cuid from 'cuid';
 
 const config = require('../../src/config');
 
@@ -19,6 +20,29 @@ export class Fixtures {
     });
     this.db.saveUser(user);
     return user;
+  }
+
+  addInvitation(params: {
+    campaign: Campaign,
+    requester: User,
+    requestee?: User,
+  }): Invitation {
+      let requesteeId = null;
+      if (params.requestee) {
+        requesteeId = params.requestee.id;
+      }
+
+    const invitation = new Invitation({
+      campaignId: params.campaign.id,
+      requesterId: params.requester.id,
+      requesteeId: requesteeId,
+      accessToken: cuid()
+    });
+
+    this.db.saveInvitation({
+      invitation: invitation
+    });
+    return invitation;
   }
 
   getCampaign(params: {user: User}): Campaign {

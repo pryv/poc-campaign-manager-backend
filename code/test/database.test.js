@@ -2,9 +2,10 @@
 
 /* global describe, it, before, after*/
 
+import should from 'should';
 import fs from 'fs';
 import {Database} from '../src/database';
-import {User, Campaign} from '../src/business';
+import {User, Campaign, Invitation} from '../src/business';
 import {Fixtures} from './support/Fixtures';
 
 const config = require('../src/config');
@@ -14,21 +15,59 @@ describe('Database', () => {
   let fixtures: Fixtures;
   let db: Database;
 
+  let user1, user2, user3;
+  let campaign1, campaign2, campaign3;
+
   before(() => {
     fixtures = new Fixtures();
     db = new Database({path: config.get('database:path')});
 
-    const user1 = fixtures.addUser();
-    const user2 = fixtures.addUser();
-    const user3 = fixtures.addUser();
-    fixtures.addCampaign({user: user1});
-    fixtures.addCampaign({user: user2});
-    fixtures.addCampaign({user: user3});
+    user1 = fixtures.addUser();
+    user2 = fixtures.addUser();
+    user3 = fixtures.addUser();
+    campaign1 = fixtures.addCampaign({user: user1});
+    campaign2 = fixtures.addCampaign({user: user2});
+    campaign3 = fixtures.addCampaign({user: user3});
   });
 
   after(() => {
     fixtures.close();
     fs.unlinkSync(config.get('database:path'));
+  });
+
+  describe('Invitations', () => {
+
+    it('should create an invitation', () => {
+
+      const invitation: Invitation = fixtures.addInvitation({
+        campaign: campaign1,
+        requester: user1,
+        requestee: user2
+      });
+
+      const invitations = db.getInvitations({
+        requester: user1
+      });
+
+
+      let createdInvitation = null;
+      invitations.forEach((i) => {
+        if (i.id === invitation.id) {
+          createdInvitation = i;
+        }
+      });
+      should.exist(createdInvitation);
+
+      invitation.id.should.eql(createdInvitation.id);
+      invitation.campaignId.should.eql(createdInvitation.campaignId);
+      invitation.requesterId.should.eql(createdInvitation.requesterId);
+      invitation.requesteeId.should.eql(createdInvitation.requesteeId);
+      invitation.created.should.eql(createdInvitation.created);
+      invitation.modified.should.eql(createdInvitation.modified);
+      invitation.status.should.eql(createdInvitation.status);
+      invitation.accessToken.should.eql(createdInvitation.accessToken);
+    });
+
   });
 
   describe('Users', () => {

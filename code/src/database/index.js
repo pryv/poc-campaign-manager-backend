@@ -2,10 +2,11 @@
 
 const sqlite3 = require('better-sqlite3');
 
-import typeof {Campaign, User} from '../business';
+import typeof {Campaign, User, Invitation} from '../business';
 
 import {Campaigns} from './campaigns';
 import {Users} from './users';
+import {Invitations} from './invitations';
 
 const logger = require('../logger');
 
@@ -15,6 +16,7 @@ export class Database {
   path: string;
   users: Users;
   campaigns: Campaigns;
+  invitations: Invitations;
 
   constructor(params: {path: string}) {
     this.path = params.path;
@@ -24,6 +26,7 @@ export class Database {
 
     this.users = new Users({db: this.db});
     this.campaigns = new Campaigns({db: this.db});
+    this.invitations = new Invitations({db: this.db});
   }
 
   initTables(): void {
@@ -39,7 +42,7 @@ export class Database {
       'pryv_app_id text,' +
       'description text NOT NULL,' +
       'permissions text NOT NULL,' +
-      'created integer' +
+      'created integer NOT NULL' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users_campaigns (' +
@@ -51,6 +54,20 @@ export class Database {
       //'FOREIGN KEY(campaign_id_key) REFERENCES campaigns (campaign_id)' +
       //'ON DELETE CASCADE ON UPDATE NO ACTION' +
       ')').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS invitations (' +
+      'invitation_id string PRIMARY_KEY,' +
+      'access_token string NOT NULL,' +
+      'status string NOT NULL,' +
+      'created integer NOT NULL,' +
+      'modified integer NOT NULL)').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS users_users_campaigns_invitations (' +
+      'requester_id string,' +
+      'requestee_id string,' +
+      'campaign_id string,' +
+      'invitation_id string,' +
+      'PRIMARY KEY (requester_id, campaign_id, invitation_id))').run();
   }
 
   close(): void {
@@ -77,6 +94,20 @@ export class Database {
 
   saveUser(user: User): void {
     return this.users.save(user);
+  }
+
+  getInvitations(params: {
+    requester: User
+  }): Invitation {
+    return this.invitations.get({requester: params.requester});
+  }
+
+  saveInvitation(params: {
+    invitation: Invitation
+  }): Invitation {
+    return this.invitations.save({
+      invitation: params.invitation
+    });
   }
 
 }
