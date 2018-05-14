@@ -49,7 +49,7 @@ app.post('/:username/invitations', (req: express$Request, res: express$Response)
 
   const username = req.params.username;
   const user = getUser(username);
-  console.log('received for username', username);
+  //console.log('received for username', username);
   if (! user) {
     return res.status(400)
       .json({
@@ -60,7 +60,7 @@ app.post('/:username/invitations', (req: express$Request, res: express$Response)
   const invitationObject = req.body;
   invitationSchema(invitationObject);
   const checkResult = _.cloneDeep(invitationSchema);
-  console.log('received object', invitationObject);
+  //console.log('received object', invitationObject);
 
   if (checkResult.errors) {
     return res.status(400)
@@ -96,13 +96,37 @@ app.post('/:username/invitations', (req: express$Request, res: express$Response)
 
 });
 
+app.get('/:username/invitations', (req: express$Request, res: express$Response) => {
+
+  logger.info('GET /invitations');
+
+  const username = req.params.username;
+  const user = getUser(username);
+  //console.log('received for username', username)
+  if (! user) {
+    return res.status(400)
+      .json({
+        error: 'User does not exist.'
+      });
+  }
+
+  const invitations = database.getInvitations({
+    requester: user
+  });
+  return res.status(200)
+    .json({
+      invitations: invitations
+    });
+
+});
+
 app.post('/:username/campaigns', (req: express$Request, res: express$Response) => {
 
   logger.info('POST / campaign');
 
   const username = req.params.username;
   const user = getUser(username);
-  console.log('received for username', username)
+  //console.log('received for username', username)
   if (! user) {
     return res.status(404)
       .json({

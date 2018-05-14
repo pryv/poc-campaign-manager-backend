@@ -56,7 +56,7 @@ describe('app', () => {
 
     describe('when creating an invitation', () => {
 
-      it('should create the invitation, return a 201', () => {
+      it('should create the invitation in the database, return a 201 with the created invitation', () => {
 
         const invitation = fixtures.getInvitation({
           campaign: campaign1,
@@ -141,6 +141,64 @@ describe('app', () => {
       });
 
     });
+
+      describe('when fetching invitations', () => {
+
+        let user1: User;
+        let campaign1: Campaign;
+        let invitation1, invitation2: Invitation;
+
+        before(() => {
+          user1 = fixtures.addUser();
+          user2 = fixtures.addUser();
+          campaign1 = fixtures.addCampaign({user: user1});
+          invitation1 = fixtures.addInvitation({
+            requester: user1,
+            requestee: user2,
+            campaign: campaign1
+          });
+          invitation2 = fixtures.addInvitation({
+            campaign: campaign1,
+            requester: user1,
+            requestee: user2
+          });
+        });
+
+        it('should return the user\'s invitations', () => {
+
+          return request(app)
+            .get(makeUrl({username: user1.username}))
+            .expect(200)
+            .then(res => {
+              res.body.should.have.property('invitations');
+              let found1, found2;
+              let invitations = res.body.invitations;
+              invitations.forEach((i) => {
+                if (i.id === invitation1.id) {
+                  found1 = i;
+                }
+                if (i.id === invitation2.id) {
+                  found2 = i;
+                }
+              });
+              should.exist(found1);
+              should.exist(found2);
+              new Invitation(found1).should.be.eql(invitation1);
+              new Invitation(found2).should.be.eql(invitation2);
+            });
+        });
+
+        it('should return an error if the user does not exist', () => {
+
+          return request(app)
+            .get(makeUrl({username: 'unexistantUser'}))
+            .expect(400)
+            .then(res => {
+              res.body.should.have.property('error');
+            });
+        });
+
+      });
 
   });
 
