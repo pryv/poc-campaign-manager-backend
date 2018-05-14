@@ -128,7 +128,7 @@ app.post('/:username/campaigns', (req: express$Request, res: express$Response) =
   const user = getUser(username);
   //console.log('received for username', username)
   if (! user) {
-    return res.status(404)
+    return res.status(400)
       .json({
         error: 'User does not exist.'
       });
@@ -167,7 +167,7 @@ app.get('/:username/campaigns', (req: express$Request, res: express$Response) =>
   const user = getUser(username);
 
   if (! user) {
-    return res.status(404)
+    return res.status(400)
       .json({
         error: 'User does not exist.'
       });

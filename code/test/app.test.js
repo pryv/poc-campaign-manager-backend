@@ -242,12 +242,12 @@ describe('app', () => {
           });
       });
 
-      it('should return a 404 response with an error message when the user does not exist', () => {
+      it('should return a 400 response with an error message when the user does not exist', () => {
 
         return request(app)
           .post(makeUrl({username: 'unexistant-user'}))
           .send({})
-          .expect(404)
+          .expect(400)
           .then(res => {
             res.body.should.have.property('error');
           });
@@ -292,11 +292,11 @@ describe('app', () => {
 
       });
 
-      it('should return a 404 response with an error message when the user does not exist', () => {
+      it('should return a 400 response with an error message when the user does not exist', () => {
 
         return request(app)
           .get(makeUrl({username: 'unexistant-user'}))
-          .expect(404)
+          .expect(400)
           .then(res => {
             res.body.should.have.property('error');
           })
