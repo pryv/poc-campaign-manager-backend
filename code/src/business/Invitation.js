@@ -11,7 +11,7 @@ export class Invitation {
   campaignId: string;
   requesterId: string;
   requesteeId:? string;
-  accessToken: string;
+  accessToken:? string;
   status: InvitationStatus;
   created: number;
   modified: number;

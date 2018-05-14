@@ -42,7 +42,8 @@ export class Database {
       'pryv_app_id text,' +
       'description text NOT NULL,' +
       'permissions text NOT NULL,' +
-      'created integer NOT NULL' +
+      'created integer NOT NULL,' +
+      'invitation_id string' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users_campaigns (' +
@@ -57,7 +58,7 @@ export class Database {
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS invitations (' +
       'invitation_id string PRIMARY_KEY,' +
-      'access_token string NOT NULL,' +
+      'access_token string,' +
       'status string NOT NULL,' +
       'created integer NOT NULL,' +
       'modified integer NOT NULL)').run();
@@ -80,11 +81,13 @@ export class Database {
 
   saveCampaign(params: {
     campaign: Campaign,
-    user: User
-  }): void {
+    user: User,
+    invitation: Invitation
+  }): Campaign {
     return this.campaigns.save({
       campaign: params.campaign,
-      user: params.user
+      user: params.user,
+      invitation: params.invitation
     });
   }
 

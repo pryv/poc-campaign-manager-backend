@@ -79,14 +79,12 @@ export class Fixtures {
 
   addCampaign(params: {user: User}): Campaign {
 
-    const campaign = this.getCampaign({user: params.user});
+    const campaign: Campaign = this.getCampaign({user: params.user});
 
-    this.db.saveCampaign({
-      campaign: campaign,
+    return campaign.save({
+      db: this.db,
       user: params.user
     });
-
-    return campaign;
   }
 
   close(): void {

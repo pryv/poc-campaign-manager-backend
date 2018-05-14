@@ -147,8 +147,8 @@ app.post('/:username/campaigns', (req: express$Request, res: express$Response) =
       });
   }
 
-  const campaign = new Campaign(campaignObject);
-  campaign.save({
+  let campaign = new Campaign(campaignObject);
+  campaign = campaign.save({
     db: database,
     user: user
   });

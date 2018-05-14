@@ -17,24 +17,6 @@ export class Invitations {
     this.initBindings();
   }
 
-  /*
-   'CREATE TABLE IF NOT EXISTS invitations (' +
-   'invitation_id string PRIMARY_KEY,' +
-   'access_token string,' +
-   'status string,' +
-   'created integer,' +
-   'modified integer)'
-  */
-
-  /*
-   'CREATE TABLE IF NOT EXISTS users_users_campaigns_invitations (' +
-   'requester_id string,' +
-   'requestee_id string,' +
-   'campaign_id string,' +
-   'invitation_id string,' +
-   'PRIMARY KEY (requester_id, requestee_id, campaign_id, invitation_id))'
-  */
-
   initBindings(): void {
     this.saveTransaction = this.db.transaction([
         'INSERT INTO invitations (' +

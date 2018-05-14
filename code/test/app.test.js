@@ -6,6 +6,7 @@ const request: any = require('supertest');
 const should: any = require('should');
 
 import fs from 'fs';
+import _ from 'lodash';
 
 const app: express$Application = require('../src/app');
 const config = require('../src/config');
@@ -218,7 +219,7 @@ describe('app', () => {
         user1 = fixtures.addUser();
       });
 
-      it('should create the campaign, return 201 with the created campaign when the user exists and all required fields are met', () => {
+      it('should create the campaign with an anonymous invitation', () => {
 
         const campaign = fixtures.getCampaign({user: user1});
 
@@ -228,7 +229,10 @@ describe('app', () => {
           .expect(201)
           .then(res => {
             res.body.should.have.property('campaign').which.is.an.Object();
-            new Campaign(res.body.campaign).should.be.eql(campaign);
+            const createdCampaign = res.body.campaign;
+            campaign.invitationId = createdCampaign.invitationId;
+
+            new Campaign(createdCampaign).should.be.eql(campaign);
 
             const userCampaigns = db.getCampaigns({user: user1});
             let found = null;
@@ -239,6 +243,16 @@ describe('app', () => {
             });
             found.should.not.be.null();
             campaign.should.be.eql(found);
+
+            const invitations:Array<Invitation> = db.getInvitations({requester: user1});
+            let anonymousInvitation: Invitation = null;
+
+            invitations.forEach((i) => {
+              if (i.id === campaign.invitationId) {
+                anonymousInvitation = i;
+              }
+            });
+            should.exist(anonymousInvitation);
           });
       });
 
@@ -274,8 +288,8 @@ describe('app', () => {
     describe('when querying campaigns', () => {
 
       before(() => {
-        user1 = fixtures.addUser();
-        campaign = fixtures.addCampaign({user: user1});
+        let user = fixtures.addUser();
+        let campaign = fixtures.addCampaign({user: user1});
       });
 
       it('should return the user\'s list of campaigns when the user exists', () => {

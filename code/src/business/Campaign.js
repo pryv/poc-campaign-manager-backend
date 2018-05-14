@@ -1,7 +1,9 @@
 // @flow
 
-import typeof {Database} from '../database';
 import cuid from 'cuid';
+
+import typeof {Database} from '../database';
+import {Invitation, User} from '../business';
 
 type Permission = {
   streamId: string,
@@ -23,6 +25,7 @@ export class Campaign {
   description: string;
   permissions: Array<Permission>;
   created: number;
+  invitationId:? string;
 
   constructor(params: {
     id?: string,
@@ -30,23 +33,37 @@ export class Campaign {
     pryvAppId: string,
     description: string,
     permissions: Array<Permission>,
-    created?: number
+    created?: number,
+    invitationId?: string
   }) {
     this.id = params.id || cuid();
     this.title = params.title;
-    this.pryvAppId = params.pryvAppId;
+    this.pryvAppId = params.pryvAppId || this.title;
     this.description = params.description;
     this.permissions = params.permissions;
     this.created = params.created || Date.now() / 1000;
+    this.invitationId = params.invitationId;
   }
 
   save(params: {
     db: Database,
     user: User
-  }): void {
-    params.db.saveCampaign({
+  }): Campaign {
+
+    const anonymousInvitation = new Invitation({
+      campaignId: this.id,
+      requesterId: params.user.id,
+      requesteeId: null,
+      accessToken: null,
+      status: 'created'
+    });
+
+    this.invitationId = anonymousInvitation.id;
+
+    return params.db.saveCampaign({
       campaign: this,
-      user: params.user
+      user: params.user,
+      invitation: anonymousInvitation
     });
   }
 }
