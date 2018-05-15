@@ -1,6 +1,7 @@
 // @flow
 
 import typeof {Database} from '../database';
+import typeof {User} from '../business';
 import cuid from 'cuid';
 import slugify from 'slugify';
 

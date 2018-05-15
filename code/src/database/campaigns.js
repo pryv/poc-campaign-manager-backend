@@ -3,7 +3,7 @@
 const bluebird = require('bluebird');
 
 import typeof sqlite3 from 'better-sqlite3';
-import typeof {Transaction} from 'better-sqlite3';
+import typeof {Statement} from 'better-sqlite3';
 import {Campaign, User} from '../business';
 
 const logger = require('../logger');
@@ -11,49 +11,59 @@ const logger = require('../logger');
 export class Campaigns {
 
   db: sqlite3;
+  saveStatement: Statement;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
+
+    this.initBindings();
   }
 
-  save(params: {campaign: Campaign, user: User}): void {
-    this.db.transaction([
+  initBindings(): void {
+    this.saveStatement = this.db.prepare(
       'INSERT INTO campaigns (' +
       'campaign_id,' +
       'title,' +
       'pryv_app_id,' +
       'description,' +
       'permissions,' +
-      'created' +
+      'created,' +
+      'user_id' +
       ') ' +
-      'VALUES (\'' +
-      params.campaign.id + '\', \'' +
-      params.campaign.title + '\', \'' +
-      params.campaign.pryvAppId + '\', \'' +
-      params.campaign.description + '\', \'' +
-      JSON.stringify(params.campaign.permissions) + '\', ' +
-      params.campaign.created +
-      ')',
+      'VALUES (' +
+      '@campaign_id,' +
+      '@title,' +
+      '@pryv_app_id,' +
+      '@description,' +
+      '@permissions,' +
+      '@created,' +
+      '@user_id' +
+      ')'
+    );
 
-      'INSERT INTO users_campaigns (' +
-      'user_id_key,' +
-      'campaign_id_key' +
-      ') ' +
-      'VALUES (\'' +
-      params.user.id + '\', \'' +
-      params.campaign.id +
-      '\');'
-    ]).run();
+    this.getStatement = this.db.prepare(
+      'SELECT * ' +
+      'FROM campaigns ' +
+      'WHERE user_id = @user_id'
+    );
+  }
+
+  save(params: {campaign: Campaign, user: User}): void {
+    this.saveStatement.run({
+      campaign_id: params.campaign.id,
+      title: params.campaign.title,
+      pryv_app_id: params.campaign.pryvAppId,
+      description: params.campaign.description,
+      permissions: JSON.stringify(params.campaign.permissions),
+      created: params.campaign.created,
+      user_id: params.user.id
+    });
   }
 
   get(params: {user: User}): Array<Campaign> {
-    return this.db.prepare(
-      'SELECT c.campaign_id, c.title, c.pryv_app_id, c.description, c.permissions, c.created ' +
-      'FROM campaigns c ' +
-      'INNER JOIN users_campaigns uc ON uc.campaign_id_key = c.campaign_id ' +
-      'INNER JOIN users u ON u.user_id = uc.user_id_key ' +
-      'WHERE user_id = \'' + params.user.id + '\''
-    ).all().map(convertFromDB);
+    return this.getStatement.all({
+      user_id: params.user.id
+    }).map(convertFromDB);
   }
 
 }
@@ -66,6 +76,7 @@ function convertFromDB(campaign: mixed): User {
     pryvAppId: campaign.pryv_app_id,
     description: campaign.description,
     permissions: JSON.parse(campaign.permissions),
-    created: campaign.created
+    created: campaign.created,
+
   });
 }

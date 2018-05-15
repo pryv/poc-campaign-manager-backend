@@ -10,6 +10,7 @@ export class Invitation {
   id: string;
   campaignId: string;
   requesterId: string;
+  requesteePryvUsername:? string;
   requesteeId:? string;
   accessToken: string;
   status: InvitationStatus;
@@ -20,18 +21,20 @@ export class Invitation {
     id?: string,
     campaignId: string,
     requesterId: string,
+    requesteePryvUsername?: string,
     requesteeId?: string,
     accessToken?: string,
     status?: InvitationStatus,
     created?: number,
-    modified?: number
+    modified?: number,
   }) {
     const defaultTime = Date.now() / 1000;
 
     this.id = params.id || cuid();
     this.campaignId = params.campaignId;
     this.requesterId = params.requesterId;
-    this.requesteeId = params.requesteeId;
+    this.requesteePryvUsername = params.requesteePryvUsername || null;
+    this.requesteeId = params.requesteeId || null;
     this.accessToken = params.accessToken;
     this.status = params.status || 'created';
     this.created = params.created || defaultTime;

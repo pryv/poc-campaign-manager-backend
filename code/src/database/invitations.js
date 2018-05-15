@@ -3,13 +3,14 @@
 const bluebird = require('bluebird');
 
 import typeof sqlite3 from 'better-sqlite3';
-import {Invitation, User, Campaign} from '../business';
-import {Transaction} from 'better-sqlite3';
+import {Invitation, User} from '../business';
+import {Statement} from 'better-sqlite3';
 
 export class Invitations {
 
   db: sqlite3;
-  saveTransaction: Transaction;
+  saveStatement: Statement;
+  getStatement: Statement;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
@@ -17,96 +18,75 @@ export class Invitations {
     this.initBindings();
   }
 
-  /*
-   'CREATE TABLE IF NOT EXISTS invitations (' +
-   'invitation_id string PRIMARY_KEY,' +
-   'access_token string,' +
-   'status string,' +
-   'created integer,' +
-   'modified integer)'
-  */
-
-  /*
-   'CREATE TABLE IF NOT EXISTS users_users_campaigns_invitations (' +
-   'requester_id string,' +
-   'requestee_id string,' +
-   'campaign_id string,' +
-   'invitation_id string,' +
-   'PRIMARY KEY (requester_id, requestee_id, campaign_id, invitation_id))'
-  */
-
   initBindings(): void {
-    this.saveTransaction = this.db.transaction([
+    this.saveStatement = this.db.prepare(
         'INSERT INTO invitations (' +
         'invitation_id, ' +
         'access_token,' +
         'status,' +
         'created,' +
-        'modified' +
+        'modified,' +
+        'campaign_id,' +
+        'requester_id,' +
+        'requestee_id,' +
+        'requestee_pryv_username' +
         ') VALUES (' +
         '@invitation_id, ' +
         '@access_token,' +
         '@status,' +
         '@created,' +
-        '@modified' +
-        ');',
-        'INSERT INTO users_users_campaigns_invitations (' +
-        'requester_id,' +
-        'requestee_id,' +
-        'campaign_id,' +
-        'invitation_id' +
-        ') VALUES (' +
+        '@modified,' +
+        '@campaign_id,' +
         '@requester_id,' +
         '@requestee_id,' +
-        '@campaign_id,' +
-        '@invitation_id' +
+        '@requestee_pryv_username' +
         ');'
-    ]);
+    );
 
-    /*this.getStatement = this.db.prepare({
-
-    });*/
+    this.getStatement = this.db.prepare(
+      'SELECT * ' +
+      'FROM invitations ' +
+      'WHERE requester_id = @requester_id'
+    );
   }
 
   save(params: {
-    invitation: Invitation
+    invitation: Invitation,
   }): Invitation {
-    this.saveTransaction.run(
+    this.saveStatement.run(
       {
         invitation_id: params.invitation.id,
         access_token: params.invitation.accessToken,
         status: params.invitation.status,
         created: params.invitation.created,
         modified: params.invitation.modified,
+        campaign_id: params.invitation.campaignId,
         requester_id: params.invitation.requesterId,
         requestee_id: params.invitation.requesteeId,
-        campaign_id: params.invitation.campaignId,
+        requestee_pryv_username: params.invitation.requesteePryvUsername,
       }
     );
     return params.invitation;
   }
 
   get(params: {requester: User}): Array<Invitation> {
-    return this.db.prepare(
-      'SELECT i.invitation_id, i.access_token, i.status, i.modified, i.created, uuci.requestee_id, uuci.campaign_id ' +
-      'FROM invitations i ' +
-      'INNER JOIN users_users_campaigns_invitations uuci ON uuci.invitation_id = i.invitation_id ' +
-      'INNER JOIN users u ON u.user_id = uuci.requester_id ' +
-      'WHERE user_id = \'' + params.requester.id + '\''
-    ).all().map(convertFromDB.bind(null, params.requester.id));
+    return this.getStatement.all({
+      requester_id: params.requester.id
+    }).map(convertFromDB);
   }
 
 }
 
-function convertFromDB(userId: string, dbResult: mixed): Invitation {
+function convertFromDB(dbResult: mixed): Invitation {
   return new Invitation({
     id: dbResult.invitation_id,
     accessToken: dbResult.access_token,
     status: dbResult.status,
     created: dbResult.created,
     modified: dbResult.modified,
-    requesterId: userId,
+    requesterId: dbResult.requester_id,
     requesteeId: dbResult.requestee_id,
-    campaignId: dbResult.campaign_id
+    campaignId: dbResult.campaign_id,
+    requesteePryvUsername: dbResult.requestee_pryv_username,
   });
 }

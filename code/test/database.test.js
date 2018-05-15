@@ -49,7 +49,6 @@ describe('Database', () => {
         requester: user1
       });
 
-
       let createdInvitation = null;
       invitations.forEach((i) => {
         if (i.id === invitation.id) {
@@ -76,7 +75,6 @@ describe('Database', () => {
       const user: User = fixtures.addUser();
       let users = db.getUsers();
       users.should.be.Array();
-
       let found = null;
 
       users.forEach((u) => {
@@ -86,6 +84,7 @@ describe('Database', () => {
       });
       found.should.not.be.null();
       found.username.should.be.eql(user.username);
+      found.pryvUsername.should.be.eql(user.pryvUsername);
       found.should.have.property('id');
     })
   });

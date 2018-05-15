@@ -33,7 +33,8 @@ export class Database {
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users (' +
       'user_id string PRIMARY_KEY, ' +
-      'username text NOT NULL UNIQUE' +
+      'username text NOT NULL UNIQUE, ' +
+      'pryv_username text' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS campaigns (' +
@@ -42,32 +43,21 @@ export class Database {
       'pryv_app_id text,' +
       'description text NOT NULL,' +
       'permissions text NOT NULL,' +
-      'created integer NOT NULL' +
-      ')').run();
-    this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS users_campaigns (' +
-      'user_id_key string,' +
-      'campaign_id_key string,' +
-      'PRIMARY KEY (user_id_key, campaign_id_key)' + //,' +
-      //'FOREIGN KEY(user_id_key) REFERENCES users (user_id)' +
-      //'ON DELETE CASCADE ON UPDATE NO ACTION,' +
-      //'FOREIGN KEY(campaign_id_key) REFERENCES campaigns (campaign_id)' +
-      //'ON DELETE CASCADE ON UPDATE NO ACTION' +
+      'created integer NOT NULL,' +
+      'user_id string NOT NULL' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS invitations (' +
       'invitation_id string PRIMARY_KEY,' +
-      'access_token string NOT NULL,' +
+      'access_token string,' +
       'status string NOT NULL,' +
       'created integer NOT NULL,' +
-      'modified integer NOT NULL)').run();
-    this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS users_users_campaigns_invitations (' +
-      'requester_id string,' +
-      'requestee_id string,' +
-      'campaign_id string,' +
-      'invitation_id string,' +
-      'PRIMARY KEY (requester_id, campaign_id, invitation_id))').run();
+      'modified integer NOT NULL,' +
+      'campaign_id string NOT NULL,' +
+      'requester_id string NOT NULL,' +
+      'requestee_pryv_username string,' +
+      'requestee_id string' +
+      ')').run();
   }
 
   close(): void {
@@ -97,16 +87,16 @@ export class Database {
   }
 
   getInvitations(params: {
-    requester: User
+    requester: User,
   }): Invitation {
     return this.invitations.get({requester: params.requester});
   }
 
   saveInvitation(params: {
-    invitation: Invitation
+    invitation: Invitation,
   }): Invitation {
     return this.invitations.save({
-      invitation: params.invitation
+      invitation: params.invitation,
     });
   }
 

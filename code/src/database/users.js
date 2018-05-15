@@ -21,10 +21,12 @@ export class Users {
     this.saveStatement = this.db.prepare(
       'INSERT INTO users (' +
       'user_id, ' +
-      'username' +
+      'username, ' +
+      'pryv_username' +
       ') VALUES (' +
       '@user_id, ' +
-      '@username' +
+      '@username, ' +
+      '@pryv_username' +
       ');'
     );
   }
@@ -32,7 +34,8 @@ export class Users {
   save(user: User): void {
     this.saveStatement.run({
         user_id: user.id,
-        username: user.username
+        username: user.username,
+        pryv_username: user.pryvUsername,
       }
     );
   }
@@ -48,6 +51,7 @@ export class Users {
 function convertFromDB(user: mixed): User {
   return new User({
     id: user.user_id,
-    username: user.username
+    username: user.username,
+    pryvUsername: user.pryv_username,
   });
 }

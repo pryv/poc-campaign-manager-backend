@@ -16,7 +16,8 @@ export class Fixtures {
 
   addUser(): User {
     const user = new User({
-      username: charlatan.Name.firstName().toLowerCase()
+      username: charlatan.Name.firstName().toLowerCase(),
+      pryvUsername: charlatan.Name.firstName().toLowerCase(),
     });
     this.db.saveUser(user);
     return user;
@@ -25,9 +26,10 @@ export class Fixtures {
   getInvitation(params: {
     campaign: Campaign,
     requester: User,
+    requesteePryvUsername?: User,
     requestee?: User,
   }): Invitation {
-    let requesteeId = null;
+    let requesteeId;
     if (params.requestee) {
       requesteeId = params.requestee.id;
     }
@@ -35,7 +37,8 @@ export class Fixtures {
     const invitation = new Invitation({
       campaignId: params.campaign.id,
       requesterId: params.requester.id,
-      requesteeId: requesteeId,
+      requesteePryvUsername: params.requesteePryvUsername || null,
+      requesteeId: requesteeId || null,
       accessToken: cuid()
     });
 
@@ -45,13 +48,14 @@ export class Fixtures {
   addInvitation(params: {
     campaign: Campaign,
     requester: User,
+    requesteePryvUsername?: User,
     requestee?: User,
   }): Invitation {
 
-    const invitation = this.getInvitation(params)
+    const invitation = this.getInvitation(params);
 
     this.db.saveInvitation({
-      invitation: invitation
+      invitation: invitation,
     });
     return invitation;
   }
@@ -61,7 +65,6 @@ export class Fixtures {
 
     const campaign = new Campaign({
       title: charlatan.Company.bs(),
-      username: charlatan.Name.firstName().toLowerCase(),
       pryvAppId: charlatan.Internet.domainName(),
       description: charlatan.Lorem.text(),
       permissions: [
