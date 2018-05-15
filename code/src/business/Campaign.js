@@ -2,6 +2,7 @@
 
 import typeof {Database} from '../database';
 import cuid from 'cuid';
+import slugify from 'slugify';
 
 type Permission = {
   streamId: string,
@@ -27,14 +28,14 @@ export class Campaign {
   constructor(params: {
     id?: string,
     title: string,
-    pryvAppId: string,
+    pryvAppId?: string,
     description: string,
     permissions: Array<Permission>,
     created?: number
   }) {
     this.id = params.id || cuid();
     this.title = params.title;
-    this.pryvAppId = params.pryvAppId;
+    this.pryvAppId = params.pryvAppId || slugify(params.title);
     this.description = params.description;
     this.permissions = params.permissions;
     this.created = params.created || Date.now() / 1000;
