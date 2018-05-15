@@ -1,7 +1,9 @@
 // @flow
 
-import typeof {Database} from '../database';
 import cuid from 'cuid';
+
+import typeof {Database} from '../database';
+import typeof {User} from '../business';
 
 export type InvitationStatus = 'created' | 'seen' | 'accepted' | 'cancelled' | 'refused';
 
@@ -35,7 +37,7 @@ export class Invitation {
     this.requesterId = params.requesterId;
     this.requesteePryvUsername = params.requesteePryvUsername || null;
     this.requesteeId = params.requesteeId || null;
-    this.accessToken = params.accessToken;
+    this.accessToken = params.accessToken || null;
     this.status = params.status || 'created';
     this.created = params.created || defaultTime;
     this.modified = params.modified || this.created;

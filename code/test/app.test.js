@@ -6,6 +6,7 @@ const request: any = require('supertest');
 const should: any = require('should');
 
 import fs from 'fs';
+import _ from 'lodash';
 
 const app: express$Application = require('../src/app');
 const config = require('../src/config');
@@ -58,11 +59,10 @@ describe('app', () => {
 
       it('should create the invitation in the database, return a 201 with the created invitation', () => {
 
-        const invitation = fixtures.getInvitation({
-          campaign: campaign1,
-          requester: user1,
-          requestee: user2
-        });
+        const invitation = {
+          campaignId: campaign1.id,
+          requesteePryvUsername: 'bob',
+        };
 
         return request(app)
           .post(makeUrl({username: user1.username}))
@@ -70,17 +70,20 @@ describe('app', () => {
           .expect(201)
           .then(res => {
             res.body.should.have.property('invitation').which.is.an.Object();
-            new Invitation(res.body.invitation).should.be.eql(invitation);
+            const createdInvitation = res.body.invitation;
+
+            createdInvitation.campaignId.should.be.eql(invitation.campaignId);
+            createdInvitation.requesteePryvUsername.should.be.eql(invitation.requesteePryvUsername);
+            createdInvitation.requesterId.should.be.eql(user1.id);
 
             const invitations = db.getInvitations({requester: user1});
             let found = null;
             invitations.forEach((i) => {
-              if (i.id === invitation.id) {
+              if (i.id === createdInvitation.id) {
                 found = i;
               }
             });
             should.exist(found);
-            found.should.eql(invitation);
           });
       });
 
