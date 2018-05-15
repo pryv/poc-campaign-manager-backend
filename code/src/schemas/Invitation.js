@@ -6,6 +6,11 @@ export default {
     id: {
       type: 'string'
     },
+    requesteePryvUsername: {
+      type: 'string',
+      minLength: 5,
+      maxLength: 24
+    },
     requestee: {
       type: 'string',
       minLength: 3,
@@ -32,5 +37,10 @@ export default {
       minLength: 3,
       maxLength: 64
     }
-  }
+  },
+  required: [
+    'campaignId',
+    'status'
+  ],
+  additionalProperties: false
 };

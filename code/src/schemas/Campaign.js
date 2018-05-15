@@ -52,5 +52,6 @@ export default {
     'pryvAppId',
     'description',
     'permissions'
-  ]
+  ],
+  additionalProperties: false
 };
