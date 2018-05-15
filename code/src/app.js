@@ -3,7 +3,6 @@
 import express from 'express';
 const bodyParser = require('body-parser');
 import Ajv from 'ajv';
-import _ from 'lodash';
 
 const logger: any = require('./logger');
 import {Database} from './database';
@@ -28,7 +27,7 @@ app.all('/:username/invitations', getUser({db: database}));
 app.all('/:username/campaigns', getUser({db: database}));
 app.all('/:username/campaigns/:campaignId', getUser({db: database}));
 
-app.use((req, res, next) => {
+app.use((req: express$Request, res: express$Response, next: express$NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT");
@@ -38,7 +37,6 @@ app.use((req, res, next) => {
 
 // not sure if needed
 app.options('*', (req: express$Request, res: express$Response) => {
-  logger.info('OPTIONS call on', req.path);
   res.header('Access-Control-Allow-Origin', '*');
   res.status(200).end();
 });

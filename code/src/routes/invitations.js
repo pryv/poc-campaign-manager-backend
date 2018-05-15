@@ -1,6 +1,5 @@
 // @flow
 
-import express from 'express';
 import Ajv from 'ajv';
 import _ from 'lodash';
 
@@ -22,7 +21,7 @@ const router = require('express').Router();
 
 router.post('/', (req: express$Request, res: express$Response) => {
 
-  const user = res.locals.user
+  const user = res.locals.user;
 
   const invitationObject = req.body;
   invitationSchema(invitationObject);
