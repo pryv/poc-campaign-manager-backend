@@ -61,7 +61,7 @@ describe('app', () => {
 
         const invitation = {
           campaignId: campaign1.id,
-          requesteePryvUsername: 'bob',
+          requesteePryvUsername: 'testuser',
         };
 
         return request(app)

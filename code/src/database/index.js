@@ -82,6 +82,13 @@ export class Database {
     return this.users.get();
   }
 
+  getUser(params: {
+      username?: string,
+      pryvUsername?: string,
+  }): User {
+    return this.users.getUser(params);
+  }
+
   saveUser(user: User): void {
     return this.users.save(user);
   }

@@ -16,9 +16,8 @@ module.exports = (params: {
   db: Database,
   }) => {
     return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
-      const user = retrieveUserFromDb({
-        username: req.params.username,
-        db: params.db,
+      const user = params.db.getUser({
+        username: req.params.username
       });
       if (! user) {
         return userNotExists(res);
@@ -33,18 +32,4 @@ function userNotExists(res: express$Response): express$Response {
     .json({
       error: 'User does not exist.'
     });
-}
-
-function retrieveUserFromDb(params: {
-  username: string,
-  db: Database,
-}): User {
-  const users = params.db.getUsers();
-  let found = null;
-  users.forEach((u) => {
-    if (u.username === params.username) {
-      found = u;
-    }
-  });
-  return found;
 }

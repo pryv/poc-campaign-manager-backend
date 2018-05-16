@@ -47,6 +47,18 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
+  const requesteeUsername = invitationObject.requestee;
+  if (requesteeUsername) {
+    console.log('ca devrait pas')
+    const requestee = database.getUser({username: requesteeUsername});
+    if (! requestee) {
+      return res.status(400)
+        .json({
+          error: 'Requestee does not exist in Campaign management app.'
+        });
+    }
+  }
+
   const invitation = new Invitation(_.merge(invitationObject, {
     requesterId: user.id,
   }));
