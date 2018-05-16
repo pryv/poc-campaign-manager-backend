@@ -94,9 +94,9 @@ export class Database {
   }
 
   getInvitations(params: {
-    requester: User,
+    user: User,
   }): Invitation {
-    return this.invitations.get({requester: params.requester});
+    return this.invitations.get({user: params.user});
   }
 
   saveInvitation(params: {

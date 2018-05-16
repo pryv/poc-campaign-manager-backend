@@ -78,7 +78,7 @@ router.get('/', (req: express$Request, res: express$Response) => {
   const user = res.locals.user;
 
   const invitations = database.getInvitations({
-    requester: user
+    user: user
   });
   return res.status(200)
     .json({

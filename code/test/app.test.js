@@ -76,7 +76,7 @@ describe('app', () => {
             createdInvitation.requesteePryvUsername.should.be.eql(invitation.requesteePryvUsername);
             createdInvitation.requesterId.should.be.eql(user1.id);
 
-            const invitations = db.getInvitations({requester: user1});
+            const invitations = db.getInvitations({user: user1});
             let found = null;
             invitations.forEach((i) => {
               if (i.id === createdInvitation.id) {
@@ -148,8 +148,8 @@ describe('app', () => {
       describe('when fetching invitations', () => {
 
         let user1: User;
-        let campaign1: Campaign;
-        let invitation1, invitation2: Invitation;
+        let campaign1, campaign2: Campaign;
+        let invitation1, invitation2, invitation3: Invitation;
 
         before(() => {
           user1 = fixtures.addUser();
@@ -165,6 +165,12 @@ describe('app', () => {
             requester: user1,
             requestee: user2
           });
+          campaign2 = fixtures.addCampaign({user: user2});
+          invitation3 = fixtures.addInvitation({
+            requester: user2,
+            requestee: user1,
+            campaign: campaign2
+          });
         });
 
         it('should return the user\'s invitations', () => {
@@ -174,7 +180,7 @@ describe('app', () => {
             .expect(200)
             .then(res => {
               res.body.should.have.property('invitations');
-              let found1, found2;
+              let found1, found2, found3;
               let invitations = res.body.invitations;
               invitations.forEach((i) => {
                 if (i.id === invitation1.id) {
@@ -183,11 +189,16 @@ describe('app', () => {
                 if (i.id === invitation2.id) {
                   found2 = i;
                 }
+                if (i.id === invitation3.id) {
+                  found3 = i;
+                }
               });
               should.exist(found1);
               should.exist(found2);
+              should.exist(found3);
               new Invitation(found1).should.be.eql(invitation1);
               new Invitation(found2).should.be.eql(invitation2);
+              new Invitation(found3).should.be.eql(invitation3);
             });
         });
 

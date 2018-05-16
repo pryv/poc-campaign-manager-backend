@@ -46,7 +46,11 @@ export class Invitations {
     this.getStatement = this.db.prepare(
       'SELECT * ' +
       'FROM invitations ' +
-      'WHERE requester_id = @requester_id'
+      'WHERE requester_id = @user_id ' +
+      'UNION ' +
+      'SELECT * ' +
+      'FROM invitations ' +
+      'WHERE requestee_id = @user_id;'
     );
   }
 
@@ -71,7 +75,7 @@ export class Invitations {
 
   get(params: {requester: User}): Array<Invitation> {
     return this.getStatement.all({
-      requester_id: params.requester.id
+      user_id: params.user.id
     }).map(convertFromDB);
   }
 

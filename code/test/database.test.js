@@ -46,7 +46,7 @@ describe('Database', () => {
       });
 
       const invitations = db.getInvitations({
-        requester: user1
+        user: user1
       });
 
       let createdInvitation = null;
