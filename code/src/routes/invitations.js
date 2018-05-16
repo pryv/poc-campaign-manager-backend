@@ -48,8 +48,10 @@ router.post('/', (req: express$Request, res: express$Response) => {
   }
 
   const requesteeUsername = invitationObject.requestee;
+  let requesteeId = null;
   if (requesteeUsername) {
     const requestee = database.getUser({username: requesteeUsername});
+    requesteeId = requestee.id;
     if (! requestee) {
       return res.status(400)
         .json({
@@ -60,6 +62,7 @@ router.post('/', (req: express$Request, res: express$Response) => {
 
   const invitation = new Invitation(_.merge(invitationObject, {
     requesterId: user.id,
+    requesteeId: requesteeId,
   }));
   invitation.save({
     db: database,

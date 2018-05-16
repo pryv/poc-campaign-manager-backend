@@ -87,6 +87,37 @@ describe('app', () => {
           });
       });
 
+      it('should create the invitation in the database, return a 201 with the created invitation, when the requestee account is linked with a Pryv account', () => {
+
+        const invitation = {
+          campaignId: campaign1.id,
+          requesteePryvUsername: user2.pryvUsername,
+          requestee: user2.username,
+        };
+
+        return request(app)
+          .post(makeUrl({username: user1.username}))
+          .send(invitation)
+          .expect(201)
+          .then(res => {
+            res.body.should.have.property('invitation').which.is.an.Object();
+            const createdInvitation = res.body.invitation;
+            createdInvitation.campaignId.should.be.eql(invitation.campaignId);
+            createdInvitation.requesteePryvUsername.should.be.eql(invitation.requesteePryvUsername);
+            createdInvitation.requesteeId.should.be.eql(user2.id);
+            createdInvitation.requesterId.should.be.eql(user1.id);
+
+            const invitations = db.getInvitations({user: user1});
+            let found = null;
+            invitations.forEach((i) => {
+              if (i.id === createdInvitation.id) {
+                found = i;
+              }
+            });
+            should.exist(found);
+          });
+      });
+
       it('should return a 400 when the requester does not exist', () => {
         const unexistantUser = {
           id: 'idontexist',
