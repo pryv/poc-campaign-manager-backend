@@ -14,7 +14,8 @@ export default {
     requestee: {
       type: 'string',
       minLength: 3,
-      maxLength: 64
+      maxLength: 64,
+      nullable: true,
     },
     campaignId: {
       type: 'string',
@@ -35,12 +36,12 @@ export default {
     status: {
       type: 'string',
       minLength: 3,
-      maxLength: 64
+      maxLength: 64,
+      nullable: true,
     }
   },
   required: [
     'campaignId',
-    'status'
   ],
   additionalProperties: false
 };
