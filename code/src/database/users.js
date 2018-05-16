@@ -64,7 +64,6 @@ export class Users {
     username?: string,
     pryvUsername?: string,
   }): User {
-      console.log('fetching users with', params)
     if (params.username) {
       return convertFromDB(this.getUserByUsernameStatement
         .get({username: params.username}));
