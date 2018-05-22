@@ -69,7 +69,6 @@ export default {
   },
   required: [
     'campaign',
-    'requester',
     'requestee'
   ],
   additionalProperties: false
