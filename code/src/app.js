@@ -9,7 +9,7 @@ import {Database} from './database';
 const config = require('./config');
 import {callLoger, getUser} from './middleware';
 import schema from './schemas';
-import {campaigns, invitations} from './routes';
+import {campaigns, invitations, users} from './routes';
 
 const app: express$Application = express();
 module.exports = app;
@@ -41,6 +41,7 @@ app.options('*', (req: express$Request, res: express$Response) => {
   res.status(200).end();
 });
 
+app.use('/users', users);
 app.use('/:username/invitations', invitations);
 app.use('/:username/campaigns', campaigns);
 

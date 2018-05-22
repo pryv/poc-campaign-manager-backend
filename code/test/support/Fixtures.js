@@ -14,11 +14,40 @@ export class Fixtures {
     this.db = new Database({path: config.get('database:path')});
   }
 
-  addUser(): User {
-    const user = new User({
-      username: charlatan.Name.firstName().toLowerCase(),
-      pryvUsername: charlatan.Name.firstName().toLowerCase(),
-    });
+  getUser(params: {
+    full: boolean,
+    appOnly: boolean,
+    pryvOnly: boolean,
+  }): User {
+    if (params == null) {
+      params = { full: true };
+    }
+    let user = null;
+
+    if (params.full) {
+      user = new User({
+        username: charlatan.Name.firstName().toLowerCase(),
+        pryvUsername: charlatan.Name.firstName().toLowerCase(),
+      });
+    } else if (params.pryvOnly) {
+      user = new User({
+        pryvUsername: charlatan.Name.firstName().toLowerCase()
+      });
+    } else if (params.appOnly) {
+      user = new User({
+        username: charlatan.Name.firstName().toLowerCase()
+      });
+    }
+    return user;
+  }
+
+  addUser(params: {
+    full: boolean,
+    appOnly: boolean,
+    pryvOnly: boolean,
+  }): User {
+    const user: User = this.getUser(params);
+
     this.db.saveUser(user);
     return user;
   }
@@ -26,19 +55,13 @@ export class Fixtures {
   getInvitation(params: {
     campaign: Campaign,
     requester: User,
-    requesteePryvUsername?: User,
-    requestee?: User,
+    requestee: User,
   }): Invitation {
-    let requesteeId;
-    if (params.requestee) {
-      requesteeId = params.requestee.id;
-    }
 
     const invitation = new Invitation({
-      campaignId: params.campaign.id,
-      requesterId: params.requester.id,
-      requesteePryvUsername: params.requesteePryvUsername || null,
-      requesteeId: requesteeId || null,
+      campaign: params.campaign,
+      requester: params.requester,
+      requestee: params.requestee,
       accessToken: cuid()
     });
 
@@ -48,12 +71,10 @@ export class Fixtures {
   addInvitation(params: {
     campaign: Campaign,
     requester: User,
-    requesteePryvUsername?: User,
-    requestee?: User,
+    requestee: User,
   }): Invitation {
 
     const invitation = this.getInvitation(params);
-
     this.db.saveInvitation({
       invitation: invitation,
     });
@@ -64,9 +85,8 @@ export class Fixtures {
     const streamId = charlatan.Lorem.word();
 
     const campaign = new Campaign({
-      title: charlatan.Company.bs(),
-      pryvAppId: charlatan.Internet.domainName(),
-      description: charlatan.Lorem.text(),
+      title: charlatan.Company.bs().substring(0,10),
+      description: charlatan.Lorem.text().substring(0, 20),
       permissions: [
         {
           streamId: streamId,

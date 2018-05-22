@@ -1,3 +1,4 @@
+// @flow
 
 export default {
   title: 'campaign',
@@ -9,7 +10,7 @@ export default {
     title: {
       type: 'string',
       minLength: 3,
-      maxLength: 64
+      maxLength: 20
     },
     pryvAppId: {
       type: 'string',

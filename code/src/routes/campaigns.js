@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 const logger: any = require('../logger');
 import {Database} from '../database';
-import {Campaign, Invitation, User} from '../business';
+import {Campaign, User} from '../business';
 const config = require('../config');
 
 import schema from '../schemas';

@@ -12,6 +12,7 @@
     "flow:deps": "./node_modules/flow-typed/dist/cli.js install",
     "watch": "node_modules/.bin/babel --watch=./code --out-dir=dist --copy-files",
     "test": "NODE_ENV=dev ./node_modules/.bin/mocha dist/test/**/*.test.js",
+    "testOne": "NODE_ENV=dev ./node_modules/.bin/mocha",
     "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'code/src/**/*.js' -t html"
   },
   "devDependencies": {

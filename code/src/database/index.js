@@ -33,8 +33,13 @@ export class Database {
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users (' +
       'user_id string PRIMARY_KEY, ' +
-      'username text NOT NULL UNIQUE, ' +
-      'pryv_username text' +
+      'username string UNIQUE ' +
+      ')').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS pryv_users (' +
+      'pryv_user_id string PRIMARY_KEY, ' +
+      'pryv_username string UNIQUE, ' +
+      'user_id string UNIQUE' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS campaigns (' +
@@ -55,7 +60,6 @@ export class Database {
       'modified integer NOT NULL,' +
       'campaign_id string NOT NULL,' +
       'requester_id string NOT NULL,' +
-      'requestee_pryv_username string,' +
       'requestee_id string' +
       ')').run();
   }
@@ -102,9 +106,7 @@ export class Database {
   saveInvitation(params: {
     invitation: Invitation,
   }): Invitation {
-    return this.invitations.save({
-      invitation: params.invitation,
-    });
+    return this.invitations.save(params);
   }
 
 }
