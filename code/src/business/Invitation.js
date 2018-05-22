@@ -3,17 +3,24 @@
 import cuid from 'cuid';
 
 import typeof {Database} from '../database';
-import typeof {User} from '../business';
+import {User, Campaign} from '../business';
 
-export type InvitationStatus = 'created' | 'seen' | 'accepted' | 'cancelled' | 'refused';
+/**
+ * created: when the invitation has been created - only for targeted
+ * seen: when the invitation has been opened - only for targeted
+ * accepted: when the invitation has been accepted by the requestee
+ * refused: when the invitation has been refused by the requestee
+ * cancelled: when the invitation has been stopped by the requester -> can not be accepted anymore
+ * hold: when the invitation has been accepter, then revoked -> can be accepted again
+ */
+export type InvitationStatus = 'created' | 'seen' | 'accepted' | 'cancelled' | 'refused' | 'hold';
 
 export class Invitation {
 
   id: string;
-  campaignId: string;
-  requesterId: string;
-  requesteePryvUsername:? string;
-  requesteeId:? string;
+  campaign: Campaign;
+  requester: User;
+  requestee: User;
   accessToken: string;
   status: InvitationStatus;
   created: number;
@@ -21,10 +28,9 @@ export class Invitation {
 
   constructor(params: {
     id?: string,
-    campaignId: string,
-    requesterId: string,
-    requesteePryvUsername?: string,
-    requesteeId?: string,
+    campaign: Campaign,
+    requester: User,
+    requestee: User,
     accessToken?: string,
     status?: InvitationStatus,
     created?: number,
@@ -33,10 +39,9 @@ export class Invitation {
     const defaultTime = Date.now() / 1000;
 
     this.id = params.id || cuid();
-    this.campaignId = params.campaignId;
-    this.requesterId = params.requesterId;
-    this.requesteePryvUsername = params.requesteePryvUsername || null;
-    this.requesteeId = params.requesteeId || null;
+    this.campaign = new Campaign(params.campaign);
+    this.requester = new User(params.requester);
+    this.requestee = new User(params.requestee);
     this.accessToken = params.accessToken || null;
     this.status = params.status || 'created';
     this.created = params.created || defaultTime;
@@ -45,7 +50,6 @@ export class Invitation {
 
   save(params: {
     db: Database,
-    user: User
   }): void {
     params.db.saveInvitation({invitation: this});
   }

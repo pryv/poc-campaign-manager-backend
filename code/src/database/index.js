@@ -61,7 +61,7 @@ export class Database {
       'modified integer NOT NULL,' +
       'campaign_id string NOT NULL,' +
       'requester_id string NOT NULL,' +
-      'requestee_id string' +
+      'requestee_id string NOT NULL' +
       ')').run();
   }
 

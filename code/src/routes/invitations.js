@@ -21,7 +21,7 @@ const router = require('express').Router();
 
 router.post('/', (req: express$Request, res: express$Response) => {
 
-  const user = res.locals.user;
+  const requester: User = res.locals.user;
 
   const invitationObject = req.body;
   invitationSchema(invitationObject);
@@ -36,37 +36,51 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  const campaign = getCampaign({
-    campaignId: invitationObject.campaignId,
-    user: user
+  const campaign: Campaign = getCampaign({
+    campaignId: invitationObject.campaign.id,
+    user: requester
   });
   if (!campaign) {
     return res.status(400)
       .json({
-        error: 'Campaign does not exist'
+        error: 'Campaign does not exist.'
       });
   }
 
-  const requesteeUsername = invitationObject.requestee;
-  let requesteeId = null;
-  if (requesteeUsername) {
-    const requestee = database.getUser({username: requesteeUsername});
-    requesteeId = requestee.id;
-    if (! requestee) {
-      return res.status(400)
-        .json({
-          error: 'Requestee does not exist in Campaign management app.'
-        });
+  let requestee: User = database.getUser(invitationObject.requestee);
+
+  if (requestee == null) {
+    return res.status(400)
+      .json({
+        error: 'Requestee does not exist in app.'
+      });
+  }
+
+  if (invitationExists({
+    requester: requester,
+    requestee: requestee,
+    campaign: campaign
+  })) {
+    let target: string = null;
+    if (requestee.pryvUsername != null) {
+      target = requestee.pryvUsername;
+    } else {
+      target = requestee.username;
     }
+    return res.status(400)
+      .json({
+        error: 'Invitation from ' + requester.username + ' to ' + target
+        + ' for campaign ' + campaign.title + ' already exists'
+      });
   }
 
   const invitation = new Invitation(_.merge(invitationObject, {
-    requesterId: user.id,
-    requesteeId: requesteeId,
+    requester: requester,
+    requestee: requestee,
+    campaign: campaign
   }));
   invitation.save({
     db: database,
-    user: user
   });
 
   return res.status(201)
@@ -96,7 +110,7 @@ function getCampaign(params: {
   user: User,
   campaignId: string
 }): Campaign {
-  const campaigns = database.getCampaigns({user: params.user});
+  const campaigns: Array<Campaign> = database.getCampaigns({user: params.user});
   let found = null;
   campaigns.forEach((c) => {
     if (c.id === params.campaignId) {
@@ -104,4 +118,19 @@ function getCampaign(params: {
     }
   });
   return found;
+}
+
+function invitationExists(params: {
+    requester: User,
+    requestee: User,
+    campaign: Campaign
+}): boolean {
+      const invitations: Array<Invitation> = database.getInvitations({user: params.requester});
+      let exists: boolean = false;
+      invitations.forEach((i) => {
+        if (i.campaign.id === params.campaign.id && i.requestee.id === params.requestee.id) {
+          exists = true;
+        }
+      });
+      return exists;
 }

@@ -1,3 +1,4 @@
+// @flow
 
 export default {
   title: 'invitation',
@@ -6,21 +7,47 @@ export default {
     id: {
       type: 'string'
     },
-    requesteePryvUsername: {
-      type: 'string',
-      minLength: 5,
-      maxLength: 24
-    },
     requestee: {
-      type: 'string',
-      minLength: 3,
-      maxLength: 64,
-      nullable: true,
+      type: 'object',
+      propserties: {
+        id: {
+          type: 'string'
+        },
+        username: {
+          type: 'string'
+        },
+        pryvUsername: {
+          type: 'string'
+        }
+      }
     },
-    campaignId: {
-      type: 'string',
-      minLength: 3,
-      maxLength: 64
+    requester: {
+      type: 'object',
+      propserties: {
+        id: {
+          type: 'string'
+        },
+        username: {
+          type: 'string'
+        },
+        pryvUsername: {
+          type: 'string'
+        }
+      }
+    },
+    campaign: {
+      type: 'object',
+      propserties: {
+        id: {
+          type: 'string'
+        },
+        title: {
+          type: 'string'
+        },
+        pryvUsername: {
+          type: 'string'
+        }
+      }
     },
     accessToken: {
       type: 'string',
@@ -41,7 +68,9 @@ export default {
     }
   },
   required: [
-    'campaignId',
+    'campaign',
+    'requester',
+    'requestee'
   ],
   additionalProperties: false
 };

@@ -17,7 +17,15 @@ import {Campaign, User, Invitation} from '../../src/business';
 
 const DB_PATH = config.get('database:path');
 
-describe.skip('invitations', () => {
+describe('invitations', () => {
+
+  let fixtures: Fixtures;
+  let db: Database;
+
+  before(() => {
+    fixtures = new Fixtures();
+    db = new Database({path: DB_PATH});
+  });
 
   after(() => {
     fixtures.close();
@@ -110,14 +118,14 @@ describe.skip('invitations', () => {
   describe('for a registered user', () => {
 
     it('should create the invitation in the database, return the created invitation with status 201', () => {
-      const requester = fixtures.addUser();
-      const requestee = fixtures.addUser();
+      const requester = fixtures.addUser({appOnly: true});
+      const requestee = fixtures.addUser({appOnly: true});
       const campaign = fixtures.addCampaign({user: requester});
 
       const invitation = {
         campaign: _.pick(campaign, ['id']),
         requester: _.pick(requester, ['username']),
-        requestee: _.pick(requestee, ['pryvUsername']),
+        requestee: _.pick(requestee, ['username']),
       };
 
       return request(app)
@@ -131,9 +139,18 @@ describe.skip('invitations', () => {
           requester.should.be.eql(new User(createdInvitation.requester));
           requestee.should.be.eql(new User(createdInvitation.requestee));
 
-          const invitations = db.getInvitations({user: requester});
+          const requesterInvitations = db.getInvitations({user: requester});
           let found = null;
-          invitations.forEach((i) => {
+          requesterInvitations.forEach((i) => {
+            if (i.id === createdInvitation.id) {
+              found = i;
+            }
+          });
+          should.exist(found);
+
+          const requesteeInvitations = db.getInvitations({user: requestee});
+          found = null;
+          requesteeInvitations.forEach((i) => {
             if (i.id === createdInvitation.id) {
               found = i;
             }
@@ -175,7 +192,7 @@ describe.skip('invitations', () => {
         requestee: requestee
       });
 
-      return requeste(app)
+      return request(app)
         .post(makeUrl({username: requester.username}))
         .send(invitation)
         .expect(400)
@@ -190,7 +207,7 @@ describe.skip('invitations', () => {
 
     it('should create create the invitation in the database, return the created invitation with status 201', async () => {
       const requester = fixtures.addUser();
-      const requestee = fixtures.addUser({withUsername: false});
+      const requestee = fixtures.addUser({pryvOnly: true});
       const campaign = fixtures.addCampaign({user: requester});
 
       const invitation = {
@@ -220,7 +237,7 @@ describe.skip('invitations', () => {
       createdInvitation.campaign.id.should.be.eql(invitation.campaign.id);
       createdInvitation.requestee.pryvUsername.should.be.eql(invitation.requestee.pryvUsername);
       createdInvitation.requester.id.should.be.eql(requester.id);
-      createdInvitation.status.should.be.eql(invitation.status)
+      createdInvitation.status.should.be.eql(invitation.status);
 
       const invitations = db.getInvitations({user: requester});
       let found = null;
