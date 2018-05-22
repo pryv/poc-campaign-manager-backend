@@ -29,7 +29,7 @@ describe('users', () => {
 
   after(() => {
     fixtures.close();
-    fs.unlinkSync(DB_PATH);
+    //fs.unlinkSync(DB_PATH);
   });
 
   function makeUrl(option:? string): string {

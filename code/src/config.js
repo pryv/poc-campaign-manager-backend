@@ -35,7 +35,10 @@ if (process.env.NODE_ENV === 'dev') {
       }
     },
     database: {
-      path: './test.db'
+      path: './test.db',
+      options: {
+        memory: true
+      }
     }
   });
 }
@@ -52,6 +55,7 @@ nconf.defaults({
     }
   },
   database: {
-    path: './campaign-management.db'
+    path: './campaign-management.db',
+    options: {},
   }
 });

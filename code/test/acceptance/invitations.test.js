@@ -21,7 +21,7 @@ describe.skip('invitations', () => {
 
   after(() => {
     fixtures.close();
-    fs.unlinkSync(DB_PATH);
+    //fs.unlinkSync(DB_PATH);
   });
 
   let user1: User;

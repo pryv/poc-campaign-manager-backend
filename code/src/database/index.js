@@ -9,6 +9,7 @@ import {Users} from './users';
 import {Invitations} from './invitations';
 
 const logger = require('../logger');
+const config = require('../config');
 
 export class Database {
 
@@ -20,7 +21,7 @@ export class Database {
 
   constructor(params: {path: string}) {
     this.path = params.path;
-    this.db = new sqlite3(this.path);
+    this.db = new sqlite3(this.path, config.get('database:options'));
 
     this.initTables();
 

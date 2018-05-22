@@ -28,7 +28,7 @@ describe('campaigns', () => {
 
   after(() => {
     fixtures.close();
-    fs.unlinkSync(DB_PATH);
+    //fs.unlinkSync(DB_PATH);
   });
 
   function makeUrl(params: {

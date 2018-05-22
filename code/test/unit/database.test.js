@@ -32,7 +32,7 @@ describe('Database', () => {
 
   after(() => {
     fixtures.close();
-    fs.unlinkSync(config.get('database:path'));
+    //fs.unlinkSync(config.get('database:path'));
   });
 
   describe('Invitations', () => {
