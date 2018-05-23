@@ -39,18 +39,10 @@ describe('Database', () => {
 
     it('should create an invitation', () => {
 
-      const requester = fixtures.addUser({appOnly: true});
-      const requestee = fixtures.addUser({pryvOnly: true});
-      const campaign = fixtures.addCampaign({user: requester});
-
-      const invitation: Invitation = fixtures.addInvitation({
-        campaign: campaign,
-        requester: requester,
-        requestee: requestee
-      });
+      const invitation: Invitation = fixtures.addInvitation();
 
       const invitations = db.getInvitations({
-        user: requester
+        user: invitation.requester
       });
 
       let createdInvitation = null;
@@ -69,6 +61,35 @@ describe('Database', () => {
       invitation.modified.should.eql(createdInvitation.modified);
       invitation.status.should.eql(createdInvitation.status);
       invitation.accessToken.should.eql(createdInvitation.accessToken);
+    });
+
+    it('should retrieve an invitation', () => {
+
+      const invitation: Invitation = fixtures.addInvitation();
+      const createdInvitation = db.getInvitation({id: invitation.id});
+      should.exist(createdInvitation);
+      createdInvitation.should.eql(invitation);
+    });
+
+    it('should update an invitation', () => {
+
+      const invitation: Invitation = fixtures.addInvitation();
+      invitation.status = 'accepted';
+      invitation.modified = Date.now() / 1000;
+      db.updateInvitation({
+        invitation: invitation
+      });
+      const updatedInvitation = db.getInvitation({id: invitation.id});
+
+      updatedInvitation.status.should.eql(invitation.status);
+      updatedInvitation.modified.should.eql(invitation.modified);
+
+      updatedInvitation.id.should.eql(invitation.id);
+      updatedInvitation.campaign.should.eql(invitation.campaign);
+      updatedInvitation.requester.should.eql(invitation.requester);
+      updatedInvitation.requestee.should.eql(invitation.requestee);
+      updatedInvitation.created.should.eql(invitation.created);
+      updatedInvitation.accessToken.should.eql(invitation.accessToken);
     });
 
   });

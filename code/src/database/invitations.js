@@ -11,6 +11,8 @@ export class Invitations {
   db: sqlite3;
   saveStatement: Statement;
   getStatement: Statement;
+  getOneStatement: Statement;
+  updateOneStatement: Statement;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
@@ -83,6 +85,54 @@ export class Invitations {
       '' +
       'LIMIT 1000'
     );
+
+    this.getOneStatement = this.db.prepare(
+      'SELECT ' +
+      '' +
+      'i.*, ' +
+      '' +
+      'rer.user_id as requester_id, ' +
+      'rer.username as requester_username, ' +
+      'rerp.pryv_username as requester_pryv_username, ' +
+      'rerp.pryv_user_id as requester_pryv_id, ' +
+      '' +
+      'ree.user_id as requestee_id, ' +
+      'ree.username as requestee_username, ' +
+      'reep.pryv_username as requestee_pryv_username, ' +
+      'reep.pryv_user_id as requestee_pryv_id, ' +
+      '' +
+      'c.campaign_id as campaign_id, ' +
+      'c.title as campaign_title, ' +
+      'c.pryv_app_id as campaign_pryv_app_id, ' +
+      'c.description as campaign_description, ' +
+      'c.created as campaign_created,' +
+      'c.permissions as campaign_permissions ' +
+      '' +
+      ' FROM invitations i ' +
+      '' +
+      ' INNER JOIN users rer ON rer.user_id=i.requester_id ' +
+      ' INNER JOIN users ree ON ree.user_id=i.requestee_id ' +
+      '' +
+      ' LEFT OUTER JOIN pryv_users rerp ON rerp.user_id=rer.user_id ' +
+      ' LEFT OUTER JOIN pryv_users reep ON reep.user_id=ree.user_id ' +
+      '' +
+      ' INNER JOIN campaigns c ON c.campaign_id=i.campaign_id ' +
+      '' +
+      'WHERE ' +
+      ' i.invitation_id=@invitation_id'
+    );
+
+    this.updateOneStatement = this.db.prepare(
+      'UPDATE invitations ' +
+      '' +
+      'SET ' +
+      ' access_token = @access_token, ' +
+      ' status = @status, ' +
+      ' modified = @modified ' +
+      '' +
+      'WHERE' +
+      ' invitation_id = @invitation_id'
+    );
   }
 
   save(params: {
@@ -108,6 +158,23 @@ export class Invitations {
     return this.getStatement.all({
       user_id: params.user.id
     }).map(convertFromDB);
+  }
+
+  getOne(params: {id: string}): Invitation {
+    return convertFromDB(this.getOneStatement.get({
+      invitation_id: params.id
+    }));
+  }
+
+  updateOne(params: {
+    invitation: Invitation
+  }): Invitation {
+    return this.updateOneStatement.run({
+      access_token: params.invitation.accessToken,
+      status: params.invitation.status,
+      modified: params.invitation.modified,
+      invitation_id: params.invitation.id,
+    });
   }
 
 }
