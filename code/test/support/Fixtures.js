@@ -58,6 +58,20 @@ export class Fixtures {
     requestee: User,
   }): Invitation {
 
+    if (params == null) {
+      params = {};
+    }
+
+    if (params.requester == null) {
+      params.requester = this.addUser({full: true});
+    }
+    if (params.campaign == null) {
+      params.campaign = this.addCampaign({user: params.requester});
+    }
+    if (params.requestee == null) {
+      params.requestee = this.addUser({full: true});
+    }
+
     const invitation = new Invitation({
       campaign: params.campaign,
       requester: params.requester,
