@@ -1,6 +1,7 @@
 // @flow
 
 import cuid from 'cuid';
+import _ from 'lodash';
 
 import typeof {Database} from '../database';
 import {User, Campaign} from '../business';
@@ -47,6 +48,23 @@ export class Invitation {
     this.created = params.created || defaultTime;
     this.modified = params.modified || this.created;
   }
+
+  update(params: {
+    db: Database,
+    invitation: Invitation
+  }): Invitation {
+    const update: mixed = _.pick(params.invitation,
+      [
+        'accessToken',
+        'status',
+      ]);
+    this.accessToken = update.accessToken;
+    this.status = update.status;
+    this.modified = Date.now() / 1000;
+
+    return params.db.updateInvitation({ invitation: this });
+  }
+
 
   save(params: {
     db: Database,

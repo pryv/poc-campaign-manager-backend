@@ -113,141 +113,169 @@ describe('invitations', () => {
         });
     });
 
-  });
+    describe('for a registered user', () => {
 
-  describe('for a registered user', () => {
+      it('should create the invitation in the database, return the created invitation with status 201', () => {
+        const requester = fixtures.addUser({appOnly: true});
+        const requestee = fixtures.addUser({appOnly: true});
+        const campaign = fixtures.addCampaign({user: requester});
 
-    it('should create the invitation in the database, return the created invitation with status 201', () => {
-      const requester = fixtures.addUser({appOnly: true});
-      const requestee = fixtures.addUser({appOnly: true});
-      const campaign = fixtures.addCampaign({user: requester});
+        const invitation = {
+          campaign: _.pick(campaign, ['id']),
+          requester: _.pick(requester, ['username']),
+          requestee: _.pick(requestee, ['username']),
+        };
 
-      const invitation = {
-        campaign: _.pick(campaign, ['id']),
-        requester: _.pick(requester, ['username']),
-        requestee: _.pick(requestee, ['username']),
-      };
+        return request(app)
+          .post(makeUrl({username: requester.username}))
+          .send(invitation)
+          .expect(201)
+          .then(res => {
+            res.body.should.have.property('invitation').which.is.an.Object();
+            const createdInvitation = res.body.invitation;
+            campaign.should.be.eql(new Campaign(createdInvitation.campaign));
+            requester.should.be.eql(new User(createdInvitation.requester));
+            requestee.should.be.eql(new User(createdInvitation.requestee));
 
-      return request(app)
-        .post(makeUrl({username: requester.username}))
-        .send(invitation)
-        .expect(201)
-        .then(res => {
-          res.body.should.have.property('invitation').which.is.an.Object();
-          const createdInvitation = res.body.invitation;
-          campaign.should.be.eql(new Campaign(createdInvitation.campaign));
-          requester.should.be.eql(new User(createdInvitation.requester));
-          requestee.should.be.eql(new User(createdInvitation.requestee));
+            const requesterInvitations = db.getInvitations({user: requester});
+            let found = null;
+            requesterInvitations.forEach((i) => {
+              if (i.id === createdInvitation.id) {
+                found = i;
+              }
+            });
+            should.exist(found);
 
-          const requesterInvitations = db.getInvitations({user: requester});
-          let found = null;
-          requesterInvitations.forEach((i) => {
-            if (i.id === createdInvitation.id) {
-              found = i;
-            }
+            const requesteeInvitations = db.getInvitations({user: requestee});
+            found = null;
+            requesteeInvitations.forEach((i) => {
+              if (i.id === createdInvitation.id) {
+                found = i;
+              }
+            });
+            should.exist(found);
           });
-          should.exist(found);
-
-          const requesteeInvitations = db.getInvitations({user: requestee});
-          found = null;
-          requesteeInvitations.forEach((i) => {
-            if (i.id === createdInvitation.id) {
-              found = i;
-            }
-          });
-          should.exist(found);
-        });
-    });
-
-    it('should return an error with status 400 if the requestee does not exist', () => {
-      const requester = fixtures.addUser();
-      const requestee = {
-        username: 'idontexist'
-      };
-
-      const campaign = fixtures.addCampaign({user: requester});
-
-      const invitation = fixtures.getInvitation({
-        campaign: campaign,
-        requester: requester,
-        requestee: requestee
       });
 
-      return request(app)
-        .post(makeUrl({username: requester.username}))
-        .send(invitation)
-        .expect(400)
-        .then(res => {
-          res.body.should.have.property('error');
-        });
-    });
+      it('should return an error with status 400 if the requestee does not exist', () => {
+        const requester = fixtures.addUser();
+        const requestee = {
+          username: 'idontexist'
+        };
 
-    it('should return an error with status 400 if the invitation already exists', () => {
-      const requester = fixtures.addUser();
-      const requestee = fixtures.addUser();
-      const campaign = fixtures.addCampaign({user: requester});
-      const invitation = fixtures.addInvitation({
-        campaign: campaign,
-        requester: requester,
-        requestee: requestee
+        const campaign = fixtures.addCampaign({user: requester});
+
+        const invitation = fixtures.getInvitation({
+          campaign: campaign,
+          requester: requester,
+          requestee: requestee
+        });
+
+        return request(app)
+          .post(makeUrl({username: requester.username}))
+          .send(invitation)
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
       });
 
-      return request(app)
-        .post(makeUrl({username: requester.username}))
-        .send(invitation)
-        .expect(400)
-        .then(res => {
-          res.body.should.have.property('error');
+      it('should return an error with status 400 if the invitation already exists', () => {
+        const requester = fixtures.addUser();
+        const requestee = fixtures.addUser();
+        const campaign = fixtures.addCampaign({user: requester});
+        const invitation = fixtures.addInvitation({
+          campaign: campaign,
+          requester: requester,
+          requestee: requestee
         });
+
+        return request(app)
+          .post(makeUrl({username: requester.username}))
+          .send(invitation)
+          .expect(400)
+          .then(res => {
+            res.body.should.have.property('error');
+          });
+      });
+
     });
 
-  });
+    describe('for an unregistered user', () => {
 
-  describe('that is accepted or refused', () => {
+      it('should create create the invitation in the database, return the created invitation with status 201', async () => {
+        const requester = fixtures.addUser();
+        const requestee = fixtures.addUser({pryvOnly: true});
+        const campaign = fixtures.addCampaign({user: requester});
 
-    it('should create create the invitation in the database, return the created invitation with status 201', async () => {
-      const requester = fixtures.addUser();
-      const requestee = fixtures.addUser({pryvOnly: true});
-      const campaign = fixtures.addCampaign({user: requester});
+        const invitation = {
+          status: 'accepted',
+          campaign: _.pick(campaign, ['id']),
+          requester: _.pick(requester, ['username']),
+          requestee: _.pick(requestee, ['pryvUsername']),
+        };
 
-      const invitation = {
-        status: 'accepted',
-        campaign: _.pick(campaign, ['id']),
-        requester: _.pick(requester, ['username']),
-        requestee: _.pick(requestee, ['pryvUsername']),
-      };
+        const response = await request(app)
+          .post(makeUrl({username: requester.username}))
+          .send(invitation);
 
-      const response = await request(app)
-        .post(makeUrl({username: requester.username}))
-        .send(invitation);
-
-      const body = response.body;
-      const status = response.status;
-      if (body.err) {
-        console.log('err', body);
-        console.log('err', body.details[0].params);
-      }
-      should.not.exist(body.error);
-
-      status.should.eql(201);
-
-      body.should.have.property('invitation').which.is.an.Object();
-      const createdInvitation = body.invitation;
-
-      createdInvitation.campaign.id.should.be.eql(invitation.campaign.id);
-      createdInvitation.requestee.pryvUsername.should.be.eql(invitation.requestee.pryvUsername);
-      createdInvitation.requester.id.should.be.eql(requester.id);
-      createdInvitation.status.should.be.eql(invitation.status);
-
-      const invitations = db.getInvitations({user: requester});
-      let found = null;
-      invitations.forEach((i) => {
-        if (i.id === createdInvitation.id) {
-          found = i;
+        const body = response.body;
+        const status = response.status;
+        if (body.err) {
+          console.log('err', body);
+          console.log('err', body.details[0].params);
         }
+        should.not.exist(body.error);
+
+        status.should.eql(201);
+
+        body.should.have.property('invitation').which.is.an.Object();
+        const createdInvitation = body.invitation;
+
+        createdInvitation.campaign.id.should.be.eql(invitation.campaign.id);
+        createdInvitation.requestee.pryvUsername.should.be.eql(invitation.requestee.pryvUsername);
+        createdInvitation.requester.id.should.be.eql(requester.id);
+        createdInvitation.status.should.be.eql(invitation.status);
+
+        const invitations = db.getInvitations({user: requester});
+        let found = null;
+        invitations.forEach((i) => {
+          if (i.id === createdInvitation.id) {
+            found = i;
+          }
+        });
+        should.exist(found);
       });
-      should.exist(found);
-    })
+
+      it('should return an error with status 400 if the invitation already exists', () => {
+        const requester = fixtures.addUser();
+        const requestee = fixtures.addUser({pryvOnly: true});
+        const campaign = fixtures.addCampaign({user: requester});
+
+        let invitation = fixtures.addInvitation({
+          campaign: campaign,
+          requester: requester,
+          requestee: requestee,
+          status: 'accepted',
+        });
+
+        invitation = {
+          status: 'accepted',
+          campaign: _.pick(campaign, ['id']),
+          requester: _.pick(requester, ['username']),
+          requestee: _.pick(requestee, ['pryvUsername']),
+        };
+
+        return request(app)
+          .post(makeUrl({username: requester.username}))
+          .send(invitation)
+          .then(res => {
+            res.status.should.eql(400);
+            should.exist(res.error);
+          });
+      })
+
+    });
 
   });
 
@@ -314,6 +342,55 @@ describe('invitations', () => {
         .get(makeUrl({username: 'unexistantUser'}))
         .expect(400)
         .then(res => {
+          res.body.should.have.property('error');
+        });
+    });
+
+  });
+
+  describe('when updating invitations',  () => {
+
+    it ('should return a 200 when the invitation is updated from created to accepted', () => {
+      const invitation = fixtures.addInvitation({ status: 'created'});
+
+      return request(app)
+        .put('/' + invitation.requester.username + '/invitations/' + invitation.id)
+        .send({
+          status: 'accepted'
+        })
+        .then(res => {
+          res.body.should.have.property('invitation');
+          const updatedInvitation = res.body.invitation;
+          updatedInvitation.status.should.eql('accepted');
+          res.status.should.eql(200);
+        })
+    });
+
+    it('should return a 200 when the invitation is updated from created to refused', () => {
+      const invitation = fixtures.addInvitation({ status: 'created'});
+
+      return request(app)
+        .put('/' + invitation.requester.username + '/invitations/' + invitation.id)
+        .send({
+          status: 'refused'
+        })
+        .then(res => {
+          res.body.should.have.property('invitation');
+          const updatedInvitation = res.body.invitation;
+          updatedInvitation.status.should.eql('refused');
+          res.status.should.eql(200);
+        });
+    });
+
+    it('should return a 404 if the invitation does not exist', () => {
+
+      const user = fixtures.addUser();
+
+      return request(app)
+        .put('/' + user.username + '/invitations/unexistant-id')
+        .send({})
+        .then(res => {
+          res.status.should.eql(404);
           res.body.should.have.property('error');
         });
     });

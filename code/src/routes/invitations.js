@@ -26,7 +26,6 @@ router.post('/', (req: express$Request, res: express$Response) => {
   const invitationObject = req.body;
   invitationSchema(invitationObject);
   const checkResult = _.cloneDeep(invitationSchema);
-  //console.log('received object', invitationObject);
 
   if (checkResult.errors) {
     return res.status(400)
@@ -101,6 +100,29 @@ router.get('/', (req: express$Request, res: express$Response) => {
     .json({
       invitations: invitations
     });
+
+});
+
+router.put('/:invitationId', (req: express$Request, res: express$Response) => {
+
+  const user: User = res.locals.user;
+  const invitationId: string = req.params.invitationId;
+  const invitationUpdate = req.body;
+
+  const invitation: Invitation = database.getInvitation({id: invitationId});
+  if (invitation == null) {
+    return res.status(404)
+      .json({
+        error: 'Invitation does not exist.',
+        details: 'invitationId: ' + invitationId
+      });
+  }
+
+  const updatedInvitation = invitation.update({
+    db: database,
+    invitation: invitationUpdate });
+  return res.status(200)
+    .json({invitation: updatedInvitation});
 
 });
 

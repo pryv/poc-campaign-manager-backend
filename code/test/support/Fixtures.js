@@ -76,7 +76,10 @@ export class Fixtures {
       campaign: params.campaign,
       requester: params.requester,
       requestee: params.requestee,
-      accessToken: cuid()
+      accessToken: params.accesToken || cuid(),
+      status: params.status,
+      modified: params.modified,
+      created: params.created,
     });
 
     return invitation;

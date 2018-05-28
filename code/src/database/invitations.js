@@ -169,17 +169,22 @@ export class Invitations {
   updateOne(params: {
     invitation: Invitation
   }): Invitation {
-    return this.updateOneStatement.run({
+    this.updateOneStatement.run({
       access_token: params.invitation.accessToken,
       status: params.invitation.status,
       modified: params.invitation.modified,
       invitation_id: params.invitation.id,
     });
+    return params.invitation;
   }
 
 }
 
 function convertFromDB(dbResult: mixed): Invitation {
+  if (dbResult == null) {
+    return null;
+  }
+
   return new Invitation({
     id: dbResult.invitation_id,
     accessToken: dbResult.access_token,
