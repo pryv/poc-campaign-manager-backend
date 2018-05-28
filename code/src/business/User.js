@@ -2,6 +2,7 @@
 
 import typeof {Database} from '../database';
 import cuid from 'cuid';
+import _ from 'lodash';
 
 /**
  * Represents a user in the app, can be linked with a Pryv user
@@ -37,7 +38,7 @@ export class User {
   }
 
   exists(db: Database): boolean {
-    return db.getUser(this) != null;
+    return db.getUser(_.pick(this, ['username', 'pryvUsername'])) != null;
   }
 
   isLinkedWithPryv(): boolean {

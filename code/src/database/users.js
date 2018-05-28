@@ -13,8 +13,10 @@ export class Users {
   saveStatement: Statement;
   saveWithPryvTransaction: Transaction;
 
+  getUserByIdStatement: Statement;
   getUserByUsernameStatement: Statement;
   getUserByPryvUsernameStatement: Statement;
+  getUserByPryvIdStatement: Statement;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
@@ -52,6 +54,18 @@ export class Users {
         ');'
     ]);
 
+    this.getUserByIdStatement = this.db.prepare(
+      'SELECT ' +
+      ' ' +
+      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      ' ' +
+      'FROM users u ' +
+      ' ' +
+      'LEFT OUTER JOIN pryv_users pu ON u.user_id = pu.user_id ' +
+      ' ' +
+      'WHERE u.user_id = @user_id;'
+    );
+
     this.getUserByUsernameStatement = this.db.prepare(
       'SELECT' +
       ' ' +
@@ -74,6 +88,18 @@ export class Users {
       'INNER JOIN users u ON pu.user_id = u.user_id' +
       ' ' +
       'WHERE pu.pryv_username = @pryv_username;'
+    );
+
+    this.getUserByPryvIdStatement = this.db.prepare(
+      'SELECT' +
+      ' ' +
+      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      ' ' +
+      'FROM pryv_users pu' +
+      ' ' +
+      'INNER JOIN users u ON pu.user_id = u.user_id' +
+      ' ' +
+      'WHERE pu.pryv_user_id = @pryv_id;'
     );
   }
 
@@ -101,11 +127,17 @@ export class Users {
   }
 
   getUser(params: {
+    id?: string,
     username?: string,
     pryvUsername?: string,
+    pryv_id?: string,
   }): User {
 
-    if (params.username) {
+    if (params.id) {
+      return convertFromDB(this.getUserByIdStatement
+        .get({user_id: params.id}));
+
+    } else if (params.username) {
       return convertFromDB(this.getUserByUsernameStatement
         .get({username: params.username}));
 
@@ -113,8 +145,12 @@ export class Users {
       return convertFromDB(this.getUserByPryvUsernameStatement
         .get({pryv_username: params.pryvUsername}));
 
+    } else if (params.pryv_id) {
+      return convertFromDB(this.getUserByPryvIdStatement
+        .get({pryv_id: params.pryv_id}));
+
     } else {
-      throw new Error('please provide a username or pryvUsername');
+      throw new Error('please provide an id,username, pryvUsername or pryv_id');
     }
   }
 

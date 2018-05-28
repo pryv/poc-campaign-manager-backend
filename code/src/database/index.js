@@ -88,8 +88,10 @@ export class Database {
   }
 
   getUser(params: {
+      id?: string,
       username?: string,
       pryvUsername?: string,
+      pryv_id?: string,
   }): User {
     return this.users.getUser(params);
   }
