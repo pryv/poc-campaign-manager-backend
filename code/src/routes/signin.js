@@ -15,7 +15,7 @@ const database: Database = new Database({
 });
 
 const ajv = new Ajv();
-const signInSchema = ajv.compile(schema.User);
+const signInSchema = ajv.compile(schema.SignIn);
 
 const router = require('express').Router();
 

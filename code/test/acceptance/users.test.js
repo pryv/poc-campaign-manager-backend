@@ -225,7 +225,7 @@ describe('users', () => {
           res.body.should.have.property('error');
         });
     });
-  })
+  });
 
   describe('when merging accounts', () => {
 
