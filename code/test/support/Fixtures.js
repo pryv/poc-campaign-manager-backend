@@ -1,3 +1,4 @@
+// @flow
 
 import {Database} from '../../src/database';
 import {User, Campaign, Invitation, InvitationStatus} from '../../src/business';
