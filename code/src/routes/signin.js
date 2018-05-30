@@ -39,7 +39,6 @@ router.post('/', (req: express$Request, res: express$Response) => {
     return res.status(400)
       .json({
         error: 'wrong username or password',
-        details: signInObject
       });
   }
 
@@ -59,7 +58,6 @@ router.post('/', (req: express$Request, res: express$Response) => {
     return res.status(400)
       .json({
         error: 'wrong username or password',
-        details: signInObject
       });
   }
 });
