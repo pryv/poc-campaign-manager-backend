@@ -18,6 +18,8 @@ export class Users {
   getUserByPryvUsernameStatement: Statement;
   getUserByPryvIdStatement: Statement;
 
+  linkPryvUserToUserStatement: Statement;
+
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
 
@@ -101,9 +103,19 @@ export class Users {
       ' ' +
       'WHERE pu.pryv_user_id = @pryv_id;'
     );
+
+    this.linkPryvUserToUserStatement = this.db.prepare(
+      'UPDATE pryv_users ' +
+      '' +
+      'SET ' +
+      ' user_id = @user_id ' +
+      '' +
+      'WHERE' +
+      ' pryv_username = @pryv_username'
+    );
   }
 
-  save(user: User): void {
+  save(user: User): User {
     if (user.pryvUsername) {
       this.saveWithPryvTransaction.run({
         user_id: user.id,
@@ -118,6 +130,7 @@ export class Users {
         }
       );
     }
+    return user;
   }
 
   get(): Array<User> {
@@ -152,6 +165,18 @@ export class Users {
     } else {
       throw new Error('please provide an id,username, pryvUsername or pryv_id');
     }
+  }
+
+  update(params: {
+    user: User,
+    update: mixed
+  }): User {
+    this.linkPryvUserToUserStatement.run({
+      pryv_username: params.update.pryvUsername,
+      user_id: params.user.id,
+    });
+    params.user.pryvUsername = params.update.pryvUsername;
+    return params.user;
   }
 
 }

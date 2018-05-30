@@ -107,6 +107,56 @@ describe('users', () => {
 
   });
 
+  describe('when updating a user account with a Pryv account', () => {
+
+    it('should add a pryv_user pointing to the user account', () => {
+
+      const user: User = fixtures.addUser({appOnly: true});
+      const pryvUsername: string = 'bloppp';
+
+      return request(app)
+        .put(makeUrl(user.username))
+        .send({
+          username: user.username,
+          pryvUsername: pryvUsername,
+        })
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('user');
+          const updatedUser = res.body.user;
+          updatedUser.username.should.eql(user.username);
+          updatedUser.pryvUsername.should.eql(pryvUsername);
+          updatedUser.id.should.eql(user.id);
+        });
+    });
+
+    it('should return a 400 with an error if the schema is not respected', () => {
+
+      const user: User = fixtures.addUser();
+
+      return request(app)
+        .put(makeUrl(user.username))
+        .send({badField: 'yolo'})
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        })
+    });
+
+    it('should return a 400 with an error if the user does not exist', () => {
+
+      return request(app)
+        .put(makeUrl('unexistantUsername'))
+        .send({})
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+
+    });
+
+  });
+
   describe('when merging accounts', () => {
 
     it('should delete a user and link its pryv_user to the user\'s account, return a 200');

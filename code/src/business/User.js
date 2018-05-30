@@ -33,8 +33,18 @@ export class User {
     }
   }
 
-  save(db: Database): void {
-    db.saveUser(this);
+  save(db: Database): User {
+    return db.saveUser(this);
+  }
+
+  update(params: {
+    db: Database,
+    update: mixed
+  }): User {
+    return params.db.updateUser({
+      user: this,
+      update: _.pick(params.update, ['pryvUsername'])
+    });
   }
 
   exists(db: Database): boolean {

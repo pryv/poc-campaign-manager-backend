@@ -26,6 +26,7 @@ app.use(bodyParser.json());
 app.all('/:username/invitations', getUser({db: database}));
 app.all('/:username/campaigns', getUser({db: database}));
 app.all('/:username/campaigns/:campaignId', getUser({db: database}));
+app.all('/users/:username', getUser({db: database}));
 
 app.use((req: express$Request, res: express$Response, next: express$NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');

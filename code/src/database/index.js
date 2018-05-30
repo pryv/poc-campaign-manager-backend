@@ -96,8 +96,15 @@ export class Database {
     return this.users.getUser(params);
   }
 
-  saveUser(user: User): void {
+  saveUser(user: User): User {
     return this.users.save(user);
+  }
+
+  updateUser(params: {
+    user: User,
+    update: mixed
+  }): User {
+    return this.users.update(params);
   }
 
   getInvitations(params: {
