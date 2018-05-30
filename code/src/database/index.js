@@ -34,7 +34,8 @@ export class Database {
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users (' +
       'user_id string PRIMARY_KEY, ' +
-      'username string UNIQUE ' +
+      'username string UNIQUE,' +
+      'password string ' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS pryv_users (' +
@@ -81,6 +82,12 @@ export class Database {
       campaign: params.campaign,
       user: params.user
     });
+  }
+
+  getPassword(params: {
+    user: User
+  }): string {
+    return this.users.getPassword(params);
   }
 
   getUsers(): Array<User> {

@@ -19,26 +19,35 @@ export class Fixtures {
     full: boolean,
     appOnly: boolean,
     pryvOnly: boolean,
+    noPassword: boolean,
   }): User {
     if (params == null) {
-      params = { full: true };
+      params = { full: true }
     }
+
     let user = null;
 
-    if (params.full) {
+    if (params.pryvOnly) {
       user = new User({
-        username: charlatan.Name.firstName().toLowerCase(),
         pryvUsername: charlatan.Name.firstName().toLowerCase(),
-      });
-    } else if (params.pryvOnly) {
-      user = new User({
-        pryvUsername: charlatan.Name.firstName().toLowerCase()
       });
     } else if (params.appOnly) {
       user = new User({
-        username: charlatan.Name.firstName().toLowerCase()
+        username: charlatan.Name.firstName().toLowerCase(),
+        password: charlatan.Internet.password(),
+      });
+    } else {
+      user = new User({
+        username: charlatan.Name.firstName().toLowerCase(),
+        pryvUsername: charlatan.Name.firstName().toLowerCase(),
+        password: charlatan.Internet.password(),
       });
     }
+
+    if (params.noPassword && user.password) {
+      delete user.password;
+    }
+
     return user;
   }
 
@@ -46,6 +55,7 @@ export class Fixtures {
     full: boolean,
     appOnly: boolean,
     pryvOnly: boolean,
+    noPassword: boolean,
   }): User {
     const user: User = this.getUser(params);
 
@@ -64,13 +74,13 @@ export class Fixtures {
     }
 
     if (params.requester == null) {
-      params.requester = this.addUser({full: true});
+      params.requester = this.addUser({full: true, noPassword: true});
     }
     if (params.campaign == null) {
       params.campaign = this.addCampaign({user: params.requester});
     }
     if (params.requestee == null) {
-      params.requestee = this.addUser({full: true});
+      params.requestee = this.addUser({full: true, noPassword: true});
     }
 
     const invitation = new Invitation({

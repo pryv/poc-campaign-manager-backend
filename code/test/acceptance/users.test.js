@@ -140,7 +140,7 @@ describe('users', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
-        })
+        });
     });
 
     it('should return a 400 with an error if the user does not exist', () => {
@@ -156,6 +156,76 @@ describe('users', () => {
     });
 
   });
+
+  describe('when signing in', () => {
+
+    function makeUrl(): string {
+      return '/signin';
+    }
+
+    it('should return a 200 with the username and token if the credentials are valid', () => {
+
+      const user: User = fixtures.addUser();
+
+      return request(app)
+        .post(makeUrl())
+        .send({
+          username: user.username,
+          password: user.password,
+        })
+        .then(res => {
+
+          res.status.should.eql(200);
+          res.body.should.have.property('user');
+          const loggedUser: mixed = res.body.user;
+          loggedUser.username.should.eql(user.username);
+          loggedUser.should.have.property('token');
+        });
+    });
+
+    it('should return a 400 with an error if the username is unknown', () => {
+
+      return request(app)
+        .post(makeUrl())
+        .send({
+          username: 'unexistantUser',
+          password: 'does not matter',
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 400 with an error if the password is incorrect', () => {
+
+      const user: User = fixtures.addUser();
+
+      return request(app)
+        .post(makeUrl())
+        .send({
+          username: user.username,
+          password: 'wrongPassword',
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 400 with an error if the schema is wrong', () => {
+
+      return request(app)
+        .post(makeUrl())
+        .send({
+          yolo: 'hi'
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+  })
 
   describe('when merging accounts', () => {
 

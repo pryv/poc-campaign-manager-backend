@@ -91,7 +91,7 @@ describe('Database', () => {
       createdUser.exists(db).should.eql(true);
       const notCreatedUser: User = fixtures.getUser();
       notCreatedUser.exists(db).should.eql(false);
-    })
+    });
 
     it('should create an app user only if no pryv username is provided', () => {
       const user: User = fixtures.addUser({appOnly: true});

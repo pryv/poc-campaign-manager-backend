@@ -11,6 +11,8 @@ export class User {
 
   id: string;
   username:? string;
+  password:? string;
+
   pryvId:? string;
   pryvUsername:? string;
 
@@ -25,6 +27,7 @@ export class User {
     }
     this.id = params.id || cuid();
     this.username = params.username || null;
+    this.password = params.password || null;
     this.pryvId = params.pryvId || null;
     this.pryvUsername = params.pryvUsername || null;
 
@@ -47,6 +50,15 @@ export class User {
     });
   }
 
+  isValidPassword(params: {
+    db: Database,
+    password: string,
+  }): boolean {
+    return params.db.getPassword({
+      user: this
+    }) === params.password;
+  }
+
   exists(db: Database): boolean {
     return db.getUser(_.pick(this, ['username', 'pryvUsername'])) != null;
   }
@@ -65,5 +77,12 @@ export class User {
     } else {
       return false;
     }
+  }
+
+  forApi(params: {
+      token: string
+  }): mixed {
+    const responseFields = _.pick(this, ['id', 'username', 'pryvUsername']);
+    return _.defaults(responseFields, { token: params.token});
   }
 }

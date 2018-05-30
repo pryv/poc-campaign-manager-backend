@@ -20,6 +20,8 @@ export class Users {
 
   linkPryvUserToUserStatement: Statement;
 
+  getPasswordStatement: Statement;
+
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
 
@@ -30,20 +32,24 @@ export class Users {
     this.saveStatement = this.db.prepare(
       'INSERT INTO users (' +
       'user_id, ' +
-      'username ' +
+      'username,' +
+      'password ' +
       ') VALUES (' +
       '@user_id, ' +
-      '@username ' +
+      '@username,' +
+      '@password ' +
       ');'
     );
 
     this.saveWithPryvTransaction = this.db.transaction([
         'INSERT INTO users (' +
         'user_id, ' +
-        'username' +
+        'username, ' +
+        'password ' +
         ') VALUES (' +
         '@user_id, ' +
-        '@username' +
+        '@username, ' +
+        '@password ' +
         ');',
         'INSERT INTO pryv_users (' +
         'pryv_user_id, ' +
@@ -59,7 +65,7 @@ export class Users {
     this.getUserByIdStatement = this.db.prepare(
       'SELECT ' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM users u ' +
       ' ' +
@@ -71,7 +77,7 @@ export class Users {
     this.getUserByUsernameStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM users u' +
       ' ' +
@@ -83,7 +89,7 @@ export class Users {
     this.getUserByPryvUsernameStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM pryv_users pu' +
       ' ' +
@@ -95,7 +101,7 @@ export class Users {
     this.getUserByPryvIdStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM pryv_users pu' +
       ' ' +
@@ -113,6 +119,15 @@ export class Users {
       'WHERE' +
       ' pryv_username = @pryv_username'
     );
+
+    this.getPasswordStatement = this.db.prepare(
+      'SELECT ' +
+      ' u.password ' +
+      'FROM ' +
+      ' users u ' +
+      'WHERE ' +
+      ' u.username = @username'
+    );
   }
 
   save(user: User): User {
@@ -120,6 +135,7 @@ export class Users {
       this.saveWithPryvTransaction.run({
         user_id: user.id,
         username: user.username,
+        password: user.password,
         pryv_user_id: user.pryvId,
         pryv_username: user.pryvUsername,
       });
@@ -127,10 +143,25 @@ export class Users {
       this.saveStatement.run({
           user_id: user.id,
           username: user.username,
+          password: user.password,
         }
       );
     }
     return user;
+  }
+
+  getPassword(params: {
+    user: User
+  }): string {
+    const result = this.getPasswordStatement
+      .get({
+        username: params.user.username,
+      });
+    if (result != null) {
+      return result.password;
+    } else {
+      return null;
+    }
   }
 
   get(): Array<User> {
@@ -183,12 +214,12 @@ export class Users {
 
 function convertFromDB(user: mixed): User {
   if (user) {
-
     return new User({
       id: user.user_id,
       username: user.username,
       pryvUsername: user.pryv_username,
       pryvId: user.pryv_user_id,
+      password: user.password,
     });
   }
 }

@@ -59,7 +59,6 @@ router.put('/:username', (req: express$Request, res: express$Response) => {
   userSchema(updateObject);
   const checkResult = _.cloneDeep(userSchema);
   if (checkResult.errors) {
-    console.log('error schema', checkResult.errors)
     return res.status(400)
       .json({
         error: 'wrong schema',

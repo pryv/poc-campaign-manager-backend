@@ -16,7 +16,12 @@ export default {
       type: 'string',
       minlength: 5,
       maxLength: 24
-    }
+    },
+    password: {
+      type: 'string',
+      minLength: 5,
+      maxLength: 24,
+    },
   },
   additionalProperties: false
 };

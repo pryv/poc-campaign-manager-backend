@@ -31,17 +31,6 @@ describe('invitations', () => {
     cleaner.close();
   });
 
-  let user1: User;
-  let user2: User;
-  let campaign1: Campaign;
-  let campaign2: Campaign;
-
-  before(() => {
-    user1 = fixtures.addUser();
-    user2 = fixtures.addUser();
-    campaign1 = fixtures.addCampaign({user: user1});
-    campaign2 = fixtures.addCampaign({user: user2});
-  });
 
   function makeUrl(params: {
     username: string
@@ -96,8 +85,6 @@ describe('invitations', () => {
     it('should return a 400 when the invitation schema is not respected', () => {
 
       const requester: User = fixtures.addUser();
-      const requestee: User = fixtures.addUser();
-      const campaign = fixtures.getCampaign({user: requester});
 
       const invalidInvitation = {
         invalidKey: 'blopblopblop'
@@ -280,13 +267,14 @@ describe('invitations', () => {
 
   describe('when fetching invitations', () => {
 
-    let user1: User;
-    let campaign1, campaign2: Campaign;
-    let invitation1, invitation2, invitation3: Invitation;
+    it('should return the user\'s invitations', () => {
 
-    before(() => {
-      user1 = fixtures.addUser();
-      user2 = fixtures.addUser();
+      let user1, user2: User;
+      let campaign1, campaign2: Campaign;
+      let invitation1, invitation2, invitation3: Invitation;
+
+      user1 = fixtures.addUser({noPassword: true});
+      user2 = fixtures.addUser({noPassword: true});
       campaign1 = fixtures.addCampaign({user: user1});
       invitation1 = fixtures.addInvitation({
         requester: user1,
@@ -304,9 +292,6 @@ describe('invitations', () => {
         requestee: user1,
         campaign: campaign2
       });
-    });
-
-    it('should return the user\'s invitations', () => {
 
       return request(app)
         .get(makeUrl({username: user1.username}))
