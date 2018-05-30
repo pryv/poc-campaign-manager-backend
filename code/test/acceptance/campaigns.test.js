@@ -5,12 +5,11 @@
 const request: any = require('supertest');
 const should: any = require('should');
 
-import fs from 'fs';
-
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
 
 import {Fixtures} from '../support/Fixtures';
+import {DbCleaner} from '../support/DbCleaner';
 import {Database} from '../../src/database';
 import {Campaign, User} from '../../src/business';
 
@@ -18,17 +17,17 @@ const DB_PATH = config.get('database:path');
 
 describe('campaigns', () => {
 
-  let fixtures: Fixtures;
-  let db: Database;
+  let fixtures: Fixtures = new Fixtures();
+  let db: Database = new Database({path: DB_PATH});
+  let cleaner: DbCleaner = new DbCleaner();
 
-  before(() => {
-    fixtures = new Fixtures();
-    db = new Database({path: DB_PATH});
+  beforeEach(() => {
+    return cleaner.clean();
   });
 
   after(() => {
     fixtures.close();
-    //fs.unlinkSync(DB_PATH);
+    cleaner.close();
   });
 
   function makeUrl(params: {

@@ -3,36 +3,26 @@
 /* global describe, it, before, after*/
 
 import should from 'should';
-import fs from 'fs';
 import {Database} from '../../src/database';
 import {User, Campaign, Invitation} from '../../src/business';
 import {Fixtures} from '../support/Fixtures';
+import {DbCleaner} from '../support/DbCleaner';
 
 const config = require('../../src/config');
 
 describe('Database', () => {
 
-  let fixtures: Fixtures;
-  let db: Database;
+  let fixtures: Fixtures = new Fixtures();
+  let db: Database = new Database({path: config.get('database:path')});
+  let cleaner: DbCleaner = new DbCleaner();
 
-  let user1, user2, user3;
-  let campaign1, campaign2, campaign3;
-
-  before(() => {
-    fixtures = new Fixtures();
-    db = new Database({path: config.get('database:path')});
-
-    user1 = fixtures.addUser();
-    user2 = fixtures.addUser();
-    user3 = fixtures.addUser();
-    campaign1 = fixtures.addCampaign({user: user1});
-    campaign2 = fixtures.addCampaign({user: user2});
-    campaign3 = fixtures.addCampaign({user: user3});
+  beforeEach(() => {
+    return cleaner.clean();
   });
 
   after(() => {
     fixtures.close();
-    //fs.unlinkSync(config.get('database:path'));
+    cleaner.close();
   });
 
   describe('Invitations', () => {
