@@ -65,7 +65,7 @@ export class Users {
     this.getUserByIdStatement = this.db.prepare(
       'SELECT ' +
       ' ' +
-      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM users u ' +
       ' ' +
@@ -77,7 +77,7 @@ export class Users {
     this.getUserByUsernameStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM users u' +
       ' ' +
@@ -89,7 +89,7 @@ export class Users {
     this.getUserByPryvUsernameStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM pryv_users pu' +
       ' ' +
@@ -101,7 +101,7 @@ export class Users {
     this.getUserByPryvIdStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, u.password, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM pryv_users pu' +
       ' ' +
@@ -212,14 +212,17 @@ export class Users {
 
 }
 
-function convertFromDB(user: mixed): User {
-  if (user) {
-    return new User({
-      id: user.user_id,
-      username: user.username,
-      pryvUsername: user.pryv_username,
-      pryvId: user.pryv_user_id,
-      password: user.password,
+function convertFromDB(result: mixed): User {
+  if (result) {
+    const createdUser = new User({
+      id: result.user_id,
+      username: result.username,
+      pryvUsername: result.pryv_username,
+      pryvId: result.pryv_user_id,
     });
+    if (result.password) {
+      createdUser.password = result.password;
+    }
+    return createdUser;
   }
 }
