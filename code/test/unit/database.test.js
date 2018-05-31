@@ -22,7 +22,6 @@ describe('Database', () => {
 
   after(() => {
     fixtures.close();
-    cleaner.close();
   });
 
   describe('Invitations', () => {

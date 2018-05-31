@@ -27,7 +27,6 @@ describe('campaigns', () => {
 
   after(() => {
     fixtures.close();
-    cleaner.close();
   });
 
   function makeUrl(params: {

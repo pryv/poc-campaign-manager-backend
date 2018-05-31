@@ -30,7 +30,6 @@ describe('invitations', () => {
 
   after(() => {
     fixtures.close();
-    cleaner.close();
   });
 
 

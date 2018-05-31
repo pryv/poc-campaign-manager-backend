@@ -29,7 +29,6 @@ describe('users', () => {
 
   after(() => {
     fixtures.close();
-    cleaner.close();
   });
 
   function makeUrl(option:? string): string {
