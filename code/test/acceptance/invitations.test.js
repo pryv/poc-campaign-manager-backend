@@ -14,6 +14,8 @@ import {DbCleaner} from '../support/DbCleaner';
 import {Database} from '../../src/database';
 import {Campaign, User, Invitation} from '../../src/business';
 
+import {checkInvitations, checkCampaigns, checkUsers} from '../support/validation';
+
 const DB_PATH = config.get('database:path');
 
 describe('invitations', () => {
@@ -57,6 +59,25 @@ describe('invitations', () => {
         .send(invitation)
         .expect(400)
         .then(res => {
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 400 with an error message when the requestee is the requester', () => {
+      const requester: User = fixtures.addUser();
+      const campaign: Campaign = fixtures.addCampaign({user: requester});
+
+      const invitation = fixtures.getInvitation({
+        campaign: campaign,
+        requester: requester,
+        requestee: requester,
+      });
+
+      return request(app)
+        .post(makeUrl({username: requester.username}))
+        .send(invitation)
+        .then(res => {
+          res.status.should.eql(400);
           res.body.should.have.property('error');
         });
     });
@@ -119,9 +140,11 @@ describe('invitations', () => {
           .then(res => {
             res.body.should.have.property('invitation').which.is.an.Object();
             const createdInvitation = res.body.invitation;
-            campaign.id.should.be.eql(createdInvitation.campaign.id);
-            requester.username.should.be.eql(createdInvitation.requester.username);
-            requestee.username.should.be.eql(createdInvitation.requestee.username);
+            checkUsers(requester, createdInvitation.requester);
+            checkUsers(requestee, createdInvitation.requestee);
+            checkCampaigns(campaign, createdInvitation.campaign);
+            createdInvitation.should.have.property('id').which.is.String();
+            createdInvitation.status.should.eql('created');
 
             const requesterInvitations = db.getInvitations({user: requester});
             let found = null;
@@ -191,7 +214,7 @@ describe('invitations', () => {
 
       it('should create create the invitation in the database, return the created invitation with status 201', async () => {
         const requester = fixtures.addUser();
-        const requestee = fixtures.addUser({pryvOnly: true);
+        const requestee = fixtures.addUser({pryvOnly: true});
         const campaign = fixtures.addCampaign({user: requester});
 
         const invitation = {
@@ -211,9 +234,9 @@ describe('invitations', () => {
 
             body.should.have.property('invitation').which.is.an.Object();
             const createdInvitation = body.invitation;
-            createdInvitation.campaign.id.should.be.eql(invitation.campaign.id);
-            createdInvitation.requestee.pryvUsername.should.be.eql(invitation.requestee.pryvUsername);
-            createdInvitation.requester.id.should.be.eql(requester.id);
+            checkCampaigns(campaign, createdInvitation.campaign);
+            checkUsers(requester, createdInvitation.requester);
+            checkUsers(requestee, createdInvitation.requestee);
             createdInvitation.status.should.be.eql(invitation.status);
 
             const dbInvitation = db.getInvitation({id: createdInvitation.id});
@@ -303,9 +326,9 @@ describe('invitations', () => {
           should.exist(found1);
           should.exist(found2);
           should.exist(found3);
-          new Invitation(found1).should.be.eql(invitation1);
-          new Invitation(found2).should.be.eql(invitation2);
-          new Invitation(found3).should.be.eql(invitation3);
+          checkInvitations(found1, invitation1);
+          checkInvitations(found2, invitation2);
+          checkInvitations(found3, invitation3);
         });
     });
 
@@ -334,7 +357,10 @@ describe('invitations', () => {
         .then(res => {
           res.body.should.have.property('invitation');
           const updatedInvitation = res.body.invitation;
-          updatedInvitation.status.should.eql('accepted');
+          invitation.status = 'accepted';
+          checkInvitations(invitation, updatedInvitation, {
+            modified: true
+          });
           res.status.should.eql(200);
         })
     });
@@ -350,7 +376,8 @@ describe('invitations', () => {
         .then(res => {
           res.body.should.have.property('invitation');
           const updatedInvitation = res.body.invitation;
-          updatedInvitation.status.should.eql('refused');
+          invitation.status = 'refused';
+          checkInvitations(invitation, updatedInvitation, {modified: true});
           res.status.should.eql(200);
         });
     });
