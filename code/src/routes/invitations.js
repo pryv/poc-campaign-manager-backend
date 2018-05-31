@@ -55,6 +55,13 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
+  if (requestee.id === requester.id) {
+    return res.status(400)
+      .json({
+        error: 'Cannot create invitation for yourself.'
+      })
+  }
+
   if (invitationExists({
     requester: requester,
     requestee: requestee,
