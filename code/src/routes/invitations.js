@@ -120,7 +120,7 @@ router.put('/:invitationId', (req: express$Request, res: express$Response) => {
 
   const updatedInvitation = invitation.update({
     db: database,
-    invitation: invitationUpdate });
+    update: invitationUpdate });
   return res.status(200)
     .json({invitation: updatedInvitation});
 

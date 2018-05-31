@@ -51,17 +51,13 @@ export class Invitation {
 
   update(params: {
     db: Database,
-    invitation: Invitation
+    update: Invitation
   }): Invitation {
-    const update: mixed = _.pick(params.invitation,
-      [
-        'accessToken',
-        'status',
-      ]);
-    this.accessToken = update.accessToken;
-    this.status = update.status;
+    if (params.update.accessToken)
+      this.accessToken = params.update.accessToken;
+    if (params.update.status)
+      this.status = params.update.status;
     this.modified = Date.now() / 1000;
-
     return params.db.updateInvitation({ invitation: this });
   }
 
