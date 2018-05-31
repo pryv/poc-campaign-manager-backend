@@ -38,25 +38,20 @@ describe('campaigns', () => {
 
   describe('when creating a campaign', () => {
 
-    let user1: User;
-
-    before(() => {
-      user1 = fixtures.addUser();
-    });
-
     it('should create the campaign, return 201 with the created campaign when the user exists and all required fields are met', () => {
 
-      const campaign = fixtures.getCampaign({user: user1});
+      const user: User = fixtures.addUser();
+      const campaign = fixtures.getCampaign({user: user});
 
       return request(app)
-        .post(makeUrl({username: user1.username}))
+        .post(makeUrl({username: user.username}))
         .send(campaign)
         .then(res => {
           res.status.should.eql(201);
           res.body.should.have.property('campaign').which.is.an.Object();
           new Campaign(res.body.campaign).should.be.eql(campaign);
 
-          const userCampaigns = db.getCampaigns({user: user1});
+          const userCampaigns = db.getCampaigns({user: user});
           let found = null;
           userCampaigns.forEach((c) => {
             if (c.id === campaign.id) {
@@ -79,15 +74,18 @@ describe('campaigns', () => {
         });
     });
 
+
+
     it('should return a 400 response with an error message when the campaign schema is wrong', () => {
 
+      const user: User = fixtures.addUser();
       const incompleteCampaign = {
         id: 'blop',
         title: 'blip'
       };
 
       return request(app)
-        .post(makeUrl({username: user1.username}))
+        .post(makeUrl({username: user.username}))
         .send(incompleteCampaign)
         .then(res => {
           res.status.should.eql(400);
@@ -99,18 +97,13 @@ describe('campaigns', () => {
 
   describe('when querying campaigns', () => {
 
-    let user1: User;
-    let campaign: Campaign;
-
-    before(() => {
-      user1 = fixtures.addUser();
-      campaign = fixtures.addCampaign({user: user1});
-    });
-
     it('should return the user\'s list of campaigns when the user exists', () => {
 
+      let user: User = fixtures.addUser();
+      let campaign: Campaign = fixtures.addCampaign({user: user});
+
       return request(app)
-        .get(makeUrl({username: user1.username}))
+        .get(makeUrl({username: user.username}))
         .then(res => {
           res.status.should.eql(200);
           res.body.should.have.property('campaigns').which.is.a.Array();
@@ -142,15 +135,10 @@ describe('campaigns', () => {
       return '/' + params.username + '/campaigns/' + params.campaignId;
     }
 
-    let user: User;
-    let campaign: Campaign;
-
-    before(() => {
-      user = fixtures.addUser();
-      campaign = fixtures.addCampaign({user: user});
-    });
-
     it('should return the campaign', () => {
+
+      const user: User = fixtures.addUser();
+      const campaign: Campaign = fixtures.addCampaign({user: user});
 
       return request(app)
         .get(makeUrl({username: user.username, campaignId: campaign.id}))
@@ -173,6 +161,8 @@ describe('campaigns', () => {
     });
 
     it('should return an error if the campaign does not exist', () => {
+
+      const user: User = fixtures.addUser();
 
       return request(app)
         .get(makeUrl({username: user.username, campaignId: 'nonexistantId'}))

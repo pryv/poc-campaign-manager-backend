@@ -61,7 +61,6 @@ export class Invitation {
     return params.db.updateInvitation({ invitation: this });
   }
 
-
   save(params: {
     db: Database,
   }): void {
