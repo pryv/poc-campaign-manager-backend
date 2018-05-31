@@ -27,38 +27,21 @@ describe('Database', () => {
 
   describe('Invitations', () => {
 
-    it('should create an invitation', () => {
-
-      const invitation: Invitation = fixtures.addInvitation();
-
-      const invitations = db.getInvitations({
-        user: invitation.requester
-      });
-
-      let createdInvitation = null;
-      invitations.forEach((i) => {
-        if (i.id === invitation.id) {
-          createdInvitation = i;
-        }
-      });
-      should.exist(createdInvitation);
-
-      invitation.id.should.eql(createdInvitation.id);
-      invitation.campaign.should.eql(createdInvitation.campaign);
-      invitation.requester.should.eql(createdInvitation.requester);
-      invitation.requestee.should.eql(createdInvitation.requestee);
-      invitation.created.should.eql(createdInvitation.created);
-      invitation.modified.should.eql(createdInvitation.modified);
-      invitation.status.should.eql(createdInvitation.status);
-      invitation.accessToken.should.eql(createdInvitation.accessToken);
-    });
-
     it('should retrieve an invitation', () => {
 
       const invitation: Invitation = fixtures.addInvitation();
       const createdInvitation = db.getInvitation({id: invitation.id});
       should.exist(createdInvitation);
-      createdInvitation.should.eql(invitation);
+      invitation.campaign.should.eql(createdInvitation.campaign);
+      invitation.created.should.eql(createdInvitation.created);
+      invitation.modified.should.eql(createdInvitation.modified);
+      invitation.status.should.eql(createdInvitation.status);
+      invitation.accessToken.should.eql(createdInvitation.accessToken);
+
+      invitation.requester.id.should.eql(createdInvitation.requester.id);
+      invitation.requestee.id.should.eql(createdInvitation.requestee.id);
+      invitation.requester.username.should.eql(createdInvitation.requester.username);
+      invitation.requestee.username.should.eql(createdInvitation.requestee.username);
     });
 
     it('should update an invitation', () => {
@@ -71,15 +54,17 @@ describe('Database', () => {
       });
       const updatedInvitation = db.getInvitation({id: invitation.id});
 
-      updatedInvitation.status.should.eql(invitation.status);
-      updatedInvitation.modified.should.eql(invitation.modified);
+      should.exist(updatedInvitation);
+      invitation.campaign.should.eql(updatedInvitation.campaign);
+      invitation.created.should.eql(updatedInvitation.created);
+      invitation.modified.should.eql(updatedInvitation.modified);
+      invitation.status.should.eql(updatedInvitation.status);
+      invitation.accessToken.should.eql(updatedInvitation.accessToken);
 
-      updatedInvitation.id.should.eql(invitation.id);
-      updatedInvitation.campaign.should.eql(invitation.campaign);
-      updatedInvitation.requester.should.eql(invitation.requester);
-      updatedInvitation.requestee.should.eql(invitation.requestee);
-      updatedInvitation.created.should.eql(invitation.created);
-      updatedInvitation.accessToken.should.eql(invitation.accessToken);
+      invitation.requester.id.should.eql(updatedInvitation.requester.id);
+      invitation.requestee.id.should.eql(updatedInvitation.requestee.id);
+      invitation.requester.username.should.eql(updatedInvitation.requester.username);
+      invitation.requestee.username.should.eql(updatedInvitation.requestee.username);
     });
 
   });
@@ -116,7 +101,10 @@ describe('Database', () => {
     it('should create an user and Pryv user if both usernames are provided', () => {
       const fullUser: User = fixtures.addUser({full: true});
       const createdUser: User = db.getUser({username: fullUser.username});
-      createdUser.should.eql(fullUser);
+      createdUser.username.should.eql(fullUser.username);
+      createdUser.id.should.eql(fullUser.id);
+      createdUser.pryvId.should.eql(fullUser.pryvId);
+      createdUser.pryvUsername.should.eql(fullUser.pryvUsername);
     });
   });
 

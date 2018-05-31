@@ -57,5 +57,6 @@ describe('User', () => {
     user.pryvId.should.eql(pryvId);
     user.username.should.eql(username);
     user.pryvUsername.should.eql(pryvUsername);
-  })
-})
+  });
+
+});

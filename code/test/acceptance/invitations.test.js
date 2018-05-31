@@ -119,9 +119,9 @@ describe('invitations', () => {
           .then(res => {
             res.body.should.have.property('invitation').which.is.an.Object();
             const createdInvitation = res.body.invitation;
-            campaign.should.be.eql(new Campaign(createdInvitation.campaign));
-            requester.should.be.eql(new User(createdInvitation.requester));
-            requestee.should.be.eql(new User(createdInvitation.requestee));
+            campaign.id.should.be.eql(createdInvitation.campaign.id);
+            requester.username.should.be.eql(createdInvitation.requester.username);
+            requestee.username.should.be.eql(createdInvitation.requestee.username);
 
             const requesterInvitations = db.getInvitations({user: requester});
             let found = null;
@@ -191,7 +191,7 @@ describe('invitations', () => {
 
       it('should create create the invitation in the database, return the created invitation with status 201', async () => {
         const requester = fixtures.addUser();
-        const requestee = fixtures.addUser({pryvOnly: true});
+        const requestee = fixtures.addUser({pryvOnly: true);
         const campaign = fixtures.addCampaign({user: requester});
 
         const invitation = {
@@ -201,36 +201,25 @@ describe('invitations', () => {
           requestee: _.pick(requestee, ['pryvUsername']),
         };
 
-        const response = await request(app)
+        return request(app)
           .post(makeUrl({username: requester.username}))
-          .send(invitation);
+          .send(invitation)
+          .then(res => {
+            const body = res.body;
+            const status = res.status;
+            status.should.eql(201);
 
-        const body = response.body;
-        const status = response.status;
-        if (body.err) {
-          console.log('err', body);
-          console.log('err', body.details[0].params);
-        }
-        should.not.exist(body.error);
+            body.should.have.property('invitation').which.is.an.Object();
+            const createdInvitation = body.invitation;
+            createdInvitation.campaign.id.should.be.eql(invitation.campaign.id);
+            createdInvitation.requestee.pryvUsername.should.be.eql(invitation.requestee.pryvUsername);
+            createdInvitation.requester.id.should.be.eql(requester.id);
+            createdInvitation.status.should.be.eql(invitation.status);
 
-        status.should.eql(201);
+            const dbInvitation = db.getInvitation({id: createdInvitation.id});
+            should.exist(dbInvitation);
+          });
 
-        body.should.have.property('invitation').which.is.an.Object();
-        const createdInvitation = body.invitation;
-
-        createdInvitation.campaign.id.should.be.eql(invitation.campaign.id);
-        createdInvitation.requestee.pryvUsername.should.be.eql(invitation.requestee.pryvUsername);
-        createdInvitation.requester.id.should.be.eql(requester.id);
-        createdInvitation.status.should.be.eql(invitation.status);
-
-        const invitations = db.getInvitations({user: requester});
-        let found = null;
-        invitations.forEach((i) => {
-          if (i.id === createdInvitation.id) {
-            found = i;
-          }
-        });
-        should.exist(found);
       });
 
       it('should return an error with status 400 if the invitation already exists', () => {
@@ -273,8 +262,8 @@ describe('invitations', () => {
       let campaign1, campaign2: Campaign;
       let invitation1, invitation2, invitation3: Invitation;
 
-      user1 = fixtures.addUser({noPassword: true});
-      user2 = fixtures.addUser({noPassword: true});
+      user1 = fixtures.addUser();
+      user2 = fixtures.addUser();
       campaign1 = fixtures.addCampaign({user: user1});
       invitation1 = fixtures.addInvitation({
         requester: user1,
