@@ -180,36 +180,36 @@ export class Invitations {
 
 }
 
-function convertFromDB(dbResult: mixed): Invitation {
-  if (dbResult == null) {
+function convertFromDB(result: mixed): Invitation {
+  if (result == null) {
     return null;
   }
 
   return new Invitation({
-    id: dbResult.invitation_id,
-    accessToken: dbResult.access_token,
-    status: dbResult.status,
-    created: dbResult.created,
-    modified: dbResult.modified,
+    id: result.invitation_id,
+    accessToken: result.access_token,
+    status: result.status,
+    created: result.created,
+    modified: result.modified,
     requester: new User({
-      id: dbResult.requester_id,
-      username: dbResult.requester_username,
-      pryvUsername: dbResult.requester_pryv_username,
-      pryvId: dbResult.requester_pryv_id
+      id: result.requester_id,
+      username: result.requester_username,
+      pryvUsername: result.requester_pryv_username,
+      pryvId: result.requester_pryv_id
       }),
     requestee: new User({
-      id: dbResult.requestee_id,
-      username: dbResult.requestee_username,
-      pryvUsername: dbResult.requestee_pryv_username,
-      pryvId: dbResult.requestee_pryv_id,
+      id: result.requestee_id,
+      username: result.requestee_username,
+      pryvUsername: result.requestee_pryv_username,
+      pryvId: result.requestee_pryv_id,
     }),
     campaign: new Campaign({
-    id: dbResult.campaign_id,
-    title: dbResult.campaign_title,
-    pryvAppId: dbResult.campaign_pryv_app_id,
-    description: dbResult.campaign_description,
-    permissions: JSON.parse(dbResult.campaign_permissions),
-    created: dbResult.campaign_created,
+    id: result.campaign_id,
+    title: result.campaign_title,
+    pryvAppId: result.campaign_pryv_app_id,
+    description: result.campaign_description,
+    permissions: JSON.parse(result.campaign_permissions),
+    created: result.campaign_created,
     })
   });
 }

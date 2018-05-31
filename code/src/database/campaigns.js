@@ -69,14 +69,14 @@ export class Campaigns {
 }
 
 
-function convertFromDB(campaign: mixed): User {
+function convertFromDB(result: mixed): User {
   return new Campaign({
-    id: campaign.campaign_id,
-    title: campaign.title,
-    pryvAppId: campaign.pryv_app_id,
-    description: campaign.description,
-    permissions: JSON.parse(campaign.permissions),
-    created: campaign.created,
+    id: result.campaign_id,
+    title: result.title,
+    pryvAppId: result.pryv_app_id,
+    description: result.description,
+    permissions: JSON.parse(result.permissions),
+    created: result.created,
 
   });
 }

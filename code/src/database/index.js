@@ -100,7 +100,7 @@ export class Database {
       pryvUsername?: string,
       pryv_id?: string,
   }): User {
-    return this.users.getUser(params);
+    return this.users.getOne(params);
   }
 
   saveUser(user: User): User {
@@ -111,7 +111,7 @@ export class Database {
     user: User,
     update: mixed
   }): User {
-    return this.users.update(params);
+    return this.users.updateOne(params);
   }
 
   getInvitations(params: {

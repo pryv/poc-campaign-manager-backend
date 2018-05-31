@@ -170,7 +170,7 @@ export class Users {
     ).all().map(convertFromDB);
   }
 
-  getUser(params: {
+  getOne(params: {
     id?: string,
     username?: string,
     pryvUsername?: string,
@@ -198,7 +198,7 @@ export class Users {
     }
   }
 
-  update(params: {
+  updateOne(params: {
     user: User,
     update: mixed
   }): User {
