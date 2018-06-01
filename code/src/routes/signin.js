@@ -34,8 +34,8 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  const user = new User(signInObject);
-  if (! user.exists(database)) {
+  const user = database.getUser({username: signInObject.username});
+  if (user == null) {
     return res.status(400)
       .json({
         error: 'wrong username or password',

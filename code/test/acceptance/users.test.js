@@ -15,6 +15,8 @@ import {DbCleaner} from '../support/DbCleaner';
 import {Database} from '../../src/database';
 import {User} from '../../src/business';
 
+import {checkUsers} from '../support/validation';
+
 const DB_PATH = config.get('database:path');
 
 describe('users', () => {
@@ -173,11 +175,10 @@ describe('users', () => {
           password: user.password,
         })
         .then(res => {
-
           res.status.should.eql(200);
           res.body.should.have.property('user');
           const loggedUser: mixed = res.body.user;
-          loggedUser.username.should.eql(user.username);
+          checkUsers(loggedUser, user);
           loggedUser.should.have.property('token');
         });
     });
