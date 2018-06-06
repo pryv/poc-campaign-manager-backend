@@ -152,7 +152,7 @@ describe('invitations', () => {
                 found = i;
               }
             });
-            should.exist(found);
+            checkInvitations(createdInvitation, found);
 
             const requesteeInvitations = db.getInvitations({user: requestee});
             found = null;
@@ -161,7 +161,7 @@ describe('invitations', () => {
                 found = i;
               }
             });
-            should.exist(found);
+            checkInvitations(createdInvitation, found);
           });
       });
 
@@ -322,9 +322,6 @@ describe('invitations', () => {
               found3 = i;
             }
           });
-          should.exist(found1);
-          should.exist(found2);
-          should.exist(found3);
           checkInvitations(found1, invitation1);
           checkInvitations(found2, invitation2);
           checkInvitations(found3, invitation3);

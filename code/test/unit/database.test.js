@@ -74,7 +74,6 @@ describe('Database', () => {
     });
 
     it('should return a local user when querying by username', () => {
-      console.log('checkin db', db.getUsers());
       const user: User = fixtures.addUser({localOnly: true});
       const createdUser: User = db.getUser({username: user.username});
       should.exist(createdUser);

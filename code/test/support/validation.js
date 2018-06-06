@@ -9,6 +9,8 @@ export function checkInvitations(expected: Invitation, actual: Invitation, omit:
   if (omit == null)
     omit = {};
 
+  should.exist(actual);
+
   if (expected.id)
     expected.id.should.eql(actual.id);
   if (expected.accessToken)
@@ -27,6 +29,9 @@ export function checkInvitations(expected: Invitation, actual: Invitation, omit:
 }
 
 export function checkUsers(expected: User, actual: User): void {
+
+  should.exist(actual);
+
   if (expected.id)
     expected.id.should.eql(actual.id);
   if (expected.username)
@@ -40,6 +45,8 @@ export function checkUsers(expected: User, actual: User): void {
 }
 
 export function checkCampaigns(expected: Campaign, actual: Campaign): void {
+  should.exist(actual);
+
   expected.id.should.eql(actual.id);
   expected.title.should.eql(actual.title);
   expected.pryvAppId.should.eql(actual.pryvAppId);
