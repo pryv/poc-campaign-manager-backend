@@ -123,12 +123,15 @@ export class Fixtures {
   }
 
   addCampaign(params: {user: User}): Campaign {
+    if (! params) {
+      params = {};
+    }
 
-    const campaign = this.getCampaign({user: params.user});
+    const campaign = this.getCampaign(params);
 
     this.db.saveCampaign({
       campaign: campaign,
-      user: params.user
+      user: params.user || this.addUser()
     });
 
     return campaign;
