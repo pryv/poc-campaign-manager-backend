@@ -76,7 +76,14 @@ export class Database {
   }
 
   getCampaigns(params: {user: User}): Array<Campaign> {
-    return this.campaigns.get({user: params.user});
+    return this.campaigns.get(params);
+  }
+
+  getCampaign(params: {
+    user: User,
+    campaignId: string,
+  }): Campaign {
+    return this.campaigns.getOne(params);
   }
 
   saveCampaign(params: {

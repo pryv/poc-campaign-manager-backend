@@ -63,7 +63,7 @@ router.get('/:campaignId', (req: express$Request, res: express$Response) => {
   const user = res.locals.user;
   const campaignId = req.params.campaignId;
 
-  let campaign = getCampaign({user: user, campaignId: campaignId});
+  let campaign = database.getCampaign({user: user, campaignId: campaignId});
   if (! campaign) {
     return campaignNotExists(res);
   }
@@ -82,16 +82,3 @@ function campaignNotExists(res: express$Response) {
     });
 }
 
-function getCampaign(params: {
-  user: User,
-  campaignId: string
-}): Campaign {
-  const campaigns = database.getCampaigns({user: params.user});
-  let found = null;
-  campaigns.forEach((c) => {
-    if (c.id === params.campaignId) {
-      found = c;
-    }
-  });
-  return found;
-}

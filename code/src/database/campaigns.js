@@ -11,7 +11,11 @@ const logger = require('../logger');
 export class Campaigns {
 
   db: sqlite3;
+
   saveStatement: Statement;
+
+  getStatement: Statement;
+  getOneStatement: Statement;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
@@ -38,14 +42,23 @@ export class Campaigns {
       '@permissions,' +
       '@created,' +
       '@user_id' +
-      ')'
+      ');'
     );
 
     this.getStatement = this.db.prepare(
       'SELECT * ' +
       'FROM campaigns ' +
-      'WHERE user_id = @user_id'
+      'WHERE user_id = @user_id;'
     );
+
+    this.getOneStatement = this.db.prepare(
+      'SELECT * ' +
+      'FROM campaigns ' +
+      'WHERE ' +
+      ' user_id = @user_id ' +
+      ' AND ' +
+      ' campaign_id = @campaign_id;'
+    )
   }
 
   save(params: {campaign: Campaign, user: User}): void {
@@ -66,10 +79,23 @@ export class Campaigns {
     }).map(convertFromDB);
   }
 
+  getOne(params: {
+    user: User,
+    campaignId: string,
+  }): Campaign {
+    return convertFromDB(this.getOneStatement.get({
+      user_id: params.user.id,
+      campaign_id: params.campaignId,
+    }));
+  }
+
 }
 
 
 function convertFromDB(result: mixed): User {
+  if (result == null) {
+    return null;
+  }
   return new Campaign({
     id: result.campaign_id,
     title: result.title,
