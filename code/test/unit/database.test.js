@@ -6,6 +6,7 @@ import should from 'should';
 import {Database} from '../../src/database';
 import {User, Campaign, Invitation} from '../../src/business';
 import {Fixtures} from '../support/Fixtures';
+import {checkInvitations, checkCampaigns, checkUsers} from '../support/validation';
 import {DbCleaner} from '../support/DbCleaner';
 
 const config = require('../../src/config');
@@ -24,6 +25,10 @@ describe('Database', () => {
     fixtures.close();
   });
 
+  describe('Mixed', () => {
+
+  });
+
   describe('Invitations', () => {
 
     it('should retrieve an invitation', () => {
@@ -31,16 +36,7 @@ describe('Database', () => {
       const invitation: Invitation = fixtures.addInvitation();
       const createdInvitation = db.getInvitation({id: invitation.id});
       should.exist(createdInvitation);
-      invitation.campaign.should.eql(createdInvitation.campaign);
-      invitation.created.should.eql(createdInvitation.created);
-      invitation.modified.should.eql(createdInvitation.modified);
-      invitation.status.should.eql(createdInvitation.status);
-      invitation.accessToken.should.eql(createdInvitation.accessToken);
-
-      invitation.requester.id.should.eql(createdInvitation.requester.id);
-      invitation.requestee.id.should.eql(createdInvitation.requestee.id);
-      invitation.requester.username.should.eql(createdInvitation.requester.username);
-      invitation.requestee.username.should.eql(createdInvitation.requestee.username);
+      checkInvitations(invitation, createdInvitation);
     });
 
     it('should update an invitation', () => {
@@ -77,34 +73,42 @@ describe('Database', () => {
       notCreatedUser.exists(db).should.eql(false);
     });
 
-    it('should create an app user only if no pryv username is provided', () => {
+    it('should return a local user when querying by username', () => {
+      console.log('checkin db', db.getUsers());
       const user: User = fixtures.addUser({localOnly: true});
       const createdUser: User = db.getUser({username: user.username});
       should.exist(createdUser);
-      createdUser.username.should.eql(user.username);
-      should.exist(createdUser.id);
-      should.not.exist(createdUser.pryvId);
-      should.not.exist(createdUser.pryvUsername);
+      checkUsers(user, createdUser);
     });
 
-    it('should create a Pryv user and an app user if username is not provided', () => {
+    it('should return a pryv user when querying by pryv username', () => {
       const pryvUser = fixtures.addUser({pryvOnly: true});
       const createdPryvUser = db.getUser({pryvUsername: pryvUser.pryvUsername});
       should.exist(createdPryvUser);
-      createdPryvUser.pryvUsername.should.eql(pryvUser.pryvUsername);
-      should.exist(createdPryvUser.id);
-      should.exist(createdPryvUser.pryvId);
-      should.not.exist(createdPryvUser.username);
+      checkUsers(pryvUser, createdPryvUser);
     });
 
-    it('should create an user and Pryv user if both usernames are provided', () => {
-      const fullUser: User = fixtures.addUser({full: true});
-      const createdUser: User = db.getUser({username: fullUser.username});
-      createdUser.username.should.eql(fullUser.username);
-      createdUser.id.should.eql(fullUser.id);
-      createdUser.pryvId.should.eql(fullUser.pryvId);
-      createdUser.pryvUsername.should.eql(fullUser.pryvUsername);
+    it('should return a pryv user when querying by pryv id', () => {
+      const pryvUser = fixtures.addUser({pryvOnly: true});
+      const createdPryvUser = db.getUser({pryv_id: pryvUser.pryvId});
+      should.exist(createdPryvUser);
+      checkUsers(pryvUser, createdPryvUser);
     });
+
+    it('should return a full user when querying by username', () => {
+      const user: User = fixtures.addUser();
+      const createdUser: User = db.getUser({username: user.username});
+      should.exist(createdUser);
+      checkUsers(user, createdUser);
+    });
+
+    it('should return a full user when querying by pryv username', () => {
+      const user: User = fixtures.addUser();
+      const createdUser: User = db.getUser({pryvUsername: user.pryvUsername});
+      should.exist(createdUser);
+      checkUsers(user, createdUser);
+    });
+
   });
 
   describe('Campaigns', () => {
@@ -116,12 +120,7 @@ describe('Database', () => {
 
       let campaigns = db.getCampaigns({user: user});
       campaigns.should.be.Array();
-      campaigns[0].title.should.be.eql(campaign.title);
-      campaigns[0].pryvAppId.should.be.eql(campaign.pryvAppId);
-      campaigns[0].created.should.be.eql(campaign.created);
-      campaigns[0].description.should.be.eql(campaign.description);
-      JSON.stringify(campaigns[0].permissions).should.be.eql(JSON.stringify(campaign.permissions));
-      campaigns[0].should.have.property('id');
+      checkCampaigns(campaign, campaigns[0]);
     });
   })
 });

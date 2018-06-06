@@ -50,12 +50,14 @@ export class Invitations {
       'i.*, ' +
       '' +
       'rer.user_id as requester_id, ' +
-      'rer.username as requester_username, ' +
+      'rerl.username as requester_username, ' +
+      'rerl.local_user_id as requester_local_id, ' +
       'rerp.pryv_username as requester_pryv_username, ' +
       'rerp.pryv_user_id as requester_pryv_id, ' +
       '' +
       'ree.user_id as requestee_id, ' +
-      'ree.username as requestee_username, ' +
+      'reel.username as requestee_username, ' +
+      'reel.local_user_id as requestee_local_id, ' +
       'reep.pryv_username as requestee_pryv_username, ' +
       'reep.pryv_user_id as requestee_pryv_id, ' +
       '' +
@@ -73,6 +75,9 @@ export class Invitations {
       '' +
       ' LEFT OUTER JOIN pryv_users rerp ON rerp.user_id=rer.user_id ' +
       ' LEFT OUTER JOIN pryv_users reep ON reep.user_id=ree.user_id ' +
+      '' +
+      ' LEFT OUTER JOIN local_users rerl ON rerl.user_id=rer.user_id ' +
+      ' LEFT OUTER JOIN local_users reel ON reel.user_id=ree.user_id ' +
       '' +
       ' INNER JOIN campaigns c ON c.campaign_id=i.campaign_id ' +
       '' +
@@ -92,12 +97,14 @@ export class Invitations {
       'i.*, ' +
       '' +
       'rer.user_id as requester_id, ' +
-      'rer.username as requester_username, ' +
+      'rerl.username as requester_username, ' +
+      'rerl.local_user_id as requester_local_id, ' +
       'rerp.pryv_username as requester_pryv_username, ' +
       'rerp.pryv_user_id as requester_pryv_id, ' +
       '' +
       'ree.user_id as requestee_id, ' +
-      'ree.username as requestee_username, ' +
+      'reel.username as requestee_username, ' +
+      'reel.local_user_id as requestee_local_id, ' +
       'reep.pryv_username as requestee_pryv_username, ' +
       'reep.pryv_user_id as requestee_pryv_id, ' +
       '' +
@@ -115,6 +122,9 @@ export class Invitations {
       '' +
       ' LEFT OUTER JOIN pryv_users rerp ON rerp.user_id=rer.user_id ' +
       ' LEFT OUTER JOIN pryv_users reep ON reep.user_id=ree.user_id ' +
+      '' +
+      ' LEFT OUTER JOIN local_users rerl ON rerl.user_id=rer.user_id ' +
+      ' LEFT OUTER JOIN local_users reel ON reel.user_id=ree.user_id ' +
       '' +
       ' INNER JOIN campaigns c ON c.campaign_id=i.campaign_id ' +
       '' +
@@ -195,13 +205,15 @@ function convertFromDB(result: mixed): Invitation {
       id: result.requester_id,
       username: result.requester_username,
       pryvUsername: result.requester_pryv_username,
-      pryvId: result.requester_pryv_id
+      pryvId: result.requester_pryv_id,
+      localId: result.requester_local_id,
       }),
     requestee: new User({
       id: result.requestee_id,
       username: result.requestee_username,
       pryvUsername: result.requestee_pryv_username,
       pryvId: result.requestee_pryv_id,
+      localId: result.requestee_local_id,
     }),
     campaign: new Campaign({
     id: result.campaign_id,

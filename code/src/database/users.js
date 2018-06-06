@@ -10,8 +10,9 @@ export class Users {
 
   db: sqlite3;
 
-  saveStatement: Statement;
   saveWithPryvTransaction: Transaction;
+  saveWithLocalTransaction: Transaction;
+  saveWithBothTransaction: Transaction;
 
   getUserByIdStatement: Statement;
   getUserByUsernameStatement: Statement;
@@ -29,47 +30,80 @@ export class Users {
   }
 
   initStatements(): void {
-    this.saveStatement = this.db.prepare(
-      'INSERT INTO users (' +
-      'user_id, ' +
-      'username,' +
-      'password ' +
-      ') VALUES (' +
-      '@user_id, ' +
-      '@username,' +
-      '@password ' +
-      ');'
-    );
 
     this.saveWithPryvTransaction = this.db.transaction([
-        'INSERT INTO users (' +
-        'user_id, ' +
-        'username, ' +
-        'password ' +
-        ') VALUES (' +
-        '@user_id, ' +
-        '@username, ' +
-        '@password ' +
-        ');',
-        'INSERT INTO pryv_users (' +
-        'pryv_user_id, ' +
-        'pryv_username, ' +
-        'user_id' +
-        ') VALUES (' +
-        '@pryv_user_id, ' +
-        '@pryv_username, ' +
-        '@user_id' +
-        ');'
+      'INSERT INTO users (' +
+      'user_id ' +
+      ') VALUES (' +
+      '@user_id ' +
+      ');',
+      'INSERT INTO pryv_users (' +
+      'pryv_user_id, ' +
+      'pryv_username, ' +
+      'user_id' +
+      ') VALUES (' +
+      '@pryv_user_id, ' +
+      '@pryv_username, ' +
+      '@user_id' +
+      ');'
+    ]);
+
+    this.saveWithLocalTransaction = this.db.transaction([
+      'INSERT INTO users (' +
+      'user_id ' +
+      ') VALUES (' +
+      '@user_id ' +
+      ');',
+      'INSERT INTO local_users (' +
+      'local_user_id, ' +
+      'username, ' +
+      'password, ' +
+      'user_id' +
+      ') VALUES (' +
+      '@local_user_id, ' +
+      '@username, ' +
+      '@password, ' +
+      '@user_id' +
+      ');'
+    ]);
+
+    this.saveWithBothTransaction = this.db.transaction([
+      'INSERT INTO users (' +
+      'user_id ' +
+      ') VALUES (' +
+      '@user_id' +
+      ');',
+      'INSERT INTO local_users (' +
+      'local_user_id, ' +
+      'username, ' +
+      'password, ' +
+      'user_id' +
+      ') VALUES (' +
+      '@local_user_id, ' +
+      '@username, ' +
+      '@password, ' +
+      '@user_id' +
+      ');',
+      'INSERT INTO pryv_users (' +
+      'pryv_user_id, ' +
+      'pryv_username, ' +
+      'user_id' +
+      ') VALUES (' +
+      '@pryv_user_id, ' +
+      '@pryv_username, ' +
+      '@user_id' +
+      ');'
     ]);
 
     this.getUserByIdStatement = this.db.prepare(
       'SELECT ' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, lu.local_user_id, lu.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM users u ' +
       ' ' +
       'LEFT OUTER JOIN pryv_users pu ON u.user_id = pu.user_id ' +
+      'LEFT OUTER JOIN local_users lu ON u.user_id = lu.user_id ' +
       ' ' +
       'WHERE u.user_id = @user_id;'
     );
@@ -77,23 +111,24 @@ export class Users {
     this.getUserByUsernameStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'lu.user_id, lu.local_user_id, lu.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
-      'FROM users u' +
+      'FROM local_users lu' +
       ' ' +
-      'LEFT OUTER JOIN pryv_users pu ON u.user_id = pu.user_id' +
+      'LEFT OUTER JOIN pryv_users pu ON lu.user_id = pu.user_id ' +
       ' ' +
-      'WHERE u.username = @username;'
+      'WHERE lu.username = @username;'
     );
 
     this.getUserByPryvUsernameStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, lu.local_user_id, lu.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM pryv_users pu' +
       ' ' +
-      'INNER JOIN users u ON pu.user_id = u.user_id' +
+      'LEFT JOIN users u ON pu.user_id = u.user_id ' +
+      'LEFT JOIN local_users lu ON pu.user_id = lu.user_id ' +
       ' ' +
       'WHERE pu.pryv_username = @pryv_username;'
     );
@@ -101,15 +136,17 @@ export class Users {
     this.getUserByPryvIdStatement = this.db.prepare(
       'SELECT' +
       ' ' +
-      'u.user_id, u.username, pu.pryv_user_id, pu.pryv_username' +
+      'u.user_id, lu.username, pu.pryv_user_id, pu.pryv_username' +
       ' ' +
       'FROM pryv_users pu' +
       ' ' +
-      'INNER JOIN users u ON pu.user_id = u.user_id' +
+      'LEFT JOIN users u ON pu.user_id = u.user_id ' +
+      'LEFT JOIN local_users lu ON pu.user_id = lu.user_id ' +
       ' ' +
       'WHERE pu.pryv_user_id = @pryv_id;'
     );
 
+    // TODO: remove when merging is implemented and some use cases are figured out.
     this.linkPryvUserToUserStatement = this.db.prepare(
       'UPDATE pryv_users ' +
       '' +
@@ -122,16 +159,25 @@ export class Users {
 
     this.getPasswordStatement = this.db.prepare(
       'SELECT ' +
-      ' u.password ' +
+      ' lu.password ' +
       'FROM ' +
-      ' users u ' +
+      ' local_users lu ' +
       'WHERE ' +
-      ' u.username = @username'
+      ' lu.username = @username'
     );
   }
 
   save(user: User): User {
-    if (user.pryvUsername) {
+    if (user.pryvUsername && user.username) {
+      this.saveWithBothTransaction.run({
+        user_id: user.id,
+        username: user.username,
+        password: user.password,
+        pryv_user_id: user.pryvId,
+        pryv_username: user.pryvUsername,
+        local_user_id: user.localId,
+      })
+    } else if (user.pryvUsername) {
       this.saveWithPryvTransaction.run({
         user_id: user.id,
         username: user.username,
@@ -140,8 +186,9 @@ export class Users {
         pryv_username: user.pryvUsername,
       });
     } else {
-      this.saveStatement.run({
+      this.saveWithLocalTransaction.run({
           user_id: user.id,
+          local_user_id: user.localId,
           username: user.username,
           password: user.password,
         }
@@ -166,7 +213,15 @@ export class Users {
 
   get(): Array<User> {
     return this.db.prepare(
-      'SELECT * FROM users'
+      'SELECT ' +
+      ' ' +
+      'u.user_id, lu.local_user_id, lu.username, pu.pryv_user_id, pu.pryv_username ' +
+      '' +
+      ' FROM users u' +
+      '' +
+      ' LEFT JOIN local_users lu ON u.user_id = lu.user_id' +
+      ' ' +
+      ' LEFT JOIN pryv_users pu ON u.user_id = pu.user_id;'
     ).all().map(convertFromDB);
   }
 
@@ -219,6 +274,7 @@ function convertFromDB(result: mixed): User {
       username: result.username,
       pryvUsername: result.pryv_username,
       pryvId: result.pryv_user_id,
+      localId: result.local_user_id,
     });
     if (result.password) {
       createdUser.password = result.password;

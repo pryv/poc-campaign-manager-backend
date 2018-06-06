@@ -38,12 +38,12 @@ describe('users', () => {
     return option ? base + '/' + option : base;
   }
 
-  describe('when creating a user', () => {
+  describe('when creating a local user', () => {
 
-    it('should create a user in the users table, return a 201', () => {
+    it('should create a user in the local_users and users table, return a 201', () => {
 
       const user = _.pick(
-        fixtures.getUser({appOnly: true}),
+        fixtures.getUser({localOnly: true}),
         ['username']);
 
       return request(app)

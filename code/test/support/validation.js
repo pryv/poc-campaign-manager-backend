@@ -35,6 +35,8 @@ export function checkUsers(expected: User, actual: User): void {
     expected.pryvId.should.eql(actual.pryvId);
   if (expected.pryvUsername)
     expected.pryvUsername.should.eql(actual.pryvUsername);
+  if (expected.localId)
+    expected.localId.should.eql(actual.localId);
 }
 
 export function checkCampaigns(expected: Campaign, actual: Campaign): void {

@@ -13,10 +13,12 @@ describe('User', () => {
     should.exist(user.id);
     should.not.exist(user.username);
     should.not.exist(user.pryvId);
+    should.not.exist(user.localId);
     should.not.exist(user.pryvUsername);
+    should.not.exist(user.password);
   });
 
-  it('when a username is provided, should only have a username', () => {
+  it('when a username is provided, should only have a username and localId', () => {
 
     const username = 'bob';
     const user: User = new User({
@@ -24,9 +26,11 @@ describe('User', () => {
     });
     should.exist(user);
     should.exist(user.id);
+    should.exist(user.localId);
     user.username.should.eql(username);
     should.not.exist(user.pryvId);
     should.not.exist(user.pryvUsername);
+    should.not.exist(user.password);
   });
 
   it('when a pryv username is provided, should have a pryvUsername and id, but no username', () => {
@@ -39,6 +43,8 @@ describe('User', () => {
     should.exist(user.pryvId);
     user.pryvUsername.should.eql(pryvUsername);
     should.not.exist(user.username);
+    should.not.exist(user.localId);
+    should.not.exist(user.password);
   });
 
   it('should have all fields when they are provided', () => {
@@ -46,17 +52,23 @@ describe('User', () => {
     const pryvUsername = 'bob';
     const id = 'c3o1n2o3kn1';
     const pryvId = 'ckn1o2k3no1';
+    const password = 'n1o2kn3oin';
+    const localId = '1nok2noin3o';
     const user: User = new User({
       id: id,
       username: username,
       pryvUsername: pryvUsername,
-      pryvId: pryvId
+      pryvId: pryvId,
+      password: password,
+      localId: localId,
   });
     should.exist(user);
     user.id.should.eql(id);
     user.pryvId.should.eql(pryvId);
     user.username.should.eql(username);
     user.pryvUsername.should.eql(pryvUsername);
+    user.localId.should.eql(localId);
+    user.password.should.eql(password);
   });
 
 });

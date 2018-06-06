@@ -10,6 +10,8 @@ import _ from 'lodash';
 export class User {
 
   id: string;
+
+  localId:? string;
   username:? string;
   password:? string;
 
@@ -18,14 +20,17 @@ export class User {
 
   constructor(params: {
     id?: string,
+    localId?: string,
     username?: string,
     pryvId?: string,
     pryvUsername?: string,
+    password?: string
   }) {
     if (params == null) {
       params = {};
     }
     this.id = params.id || cuid();
+    this.localId = params.localId || null;
     this.username = params.username || null;
     this.password = params.password || null;
     this.pryvId = params.pryvId || null;
@@ -33,6 +38,9 @@ export class User {
 
     if (this.pryvUsername != null && this.pryvId == null) {
       this.pryvId = cuid();
+    }
+    if (this.username != null && this.localId == null) {
+      this.localId = cuid();
     }
   }
 

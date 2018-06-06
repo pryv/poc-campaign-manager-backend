@@ -33,9 +33,14 @@ export class Database {
   initTables(): void {
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users (' +
-      'user_id string PRIMARY_KEY, ' +
-      'username string UNIQUE,' +
-      'password string ' +
+      'user_id string PRIMARY_KEY ' +
+      ')').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS local_users (' +
+      'local_user_id string PRIMARY_KEY, ' +
+      'username string UNIQUE, ' +
+      'password string, ' +
+      'user_id string UNIQUE' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS pryv_users (' +
