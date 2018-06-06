@@ -17,7 +17,7 @@ export class Fixtures {
 
   getUser(params: {
     full: boolean,
-    appOnly: boolean,
+    localOnly: boolean,
     pryvOnly: boolean,
   }): User {
     if (params == null) {
@@ -30,7 +30,7 @@ export class Fixtures {
       user = new User({
         pryvUsername: charlatan.Name.firstName().toLowerCase(),
       });
-    } else if (params.appOnly) {
+    } else if (params.localOnly) {
       user = new User({
         username: charlatan.Name.firstName().toLowerCase(),
         password: charlatan.Internet.password(),
@@ -48,7 +48,7 @@ export class Fixtures {
 
   addUser(params: {
     full: boolean,
-    appOnly: boolean,
+    localOnly: boolean,
     pryvOnly: boolean,
   }): User {
     const user: User = this.getUser(params);

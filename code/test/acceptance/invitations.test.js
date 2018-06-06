@@ -122,8 +122,8 @@ describe('invitations', () => {
     describe('for a registered user', () => {
 
       it('should create the invitation in the database, return the created invitation with status 201', () => {
-        const requester = fixtures.addUser({appOnly: true});
-        const requestee = fixtures.addUser({appOnly: true});
+        const requester = fixtures.addUser({localOnly: true});
+        const requestee = fixtures.addUser({localOnly: true});
         const campaign = fixtures.addCampaign({user: requester});
 
         const invitation = {

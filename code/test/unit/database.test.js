@@ -78,7 +78,7 @@ describe('Database', () => {
     });
 
     it('should create an app user only if no pryv username is provided', () => {
-      const user: User = fixtures.addUser({appOnly: true});
+      const user: User = fixtures.addUser({localOnly: true});
       const createdUser: User = db.getUser({username: user.username});
       should.exist(createdUser);
       createdUser.username.should.eql(user.username);

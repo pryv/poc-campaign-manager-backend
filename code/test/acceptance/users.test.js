@@ -112,7 +112,7 @@ describe('users', () => {
 
     it('should add a pryv_user pointing to the user account', () => {
 
-      const user: User = fixtures.addUser({appOnly: true});
+      const user: User = fixtures.addUser({localOnly: true});
       const pryvUsername: string = 'bloppp';
 
       return request(app)
