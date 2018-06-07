@@ -46,6 +46,7 @@ export class Database {
       'CREATE TABLE IF NOT EXISTS pryv_users (' +
       'pryv_user_id string PRIMARY_KEY, ' +
       'pryv_username string UNIQUE, ' +
+      'pryv_token string, ' +
       'user_id string UNIQUE' +
       ')').run();
     this.db.prepare(
@@ -124,6 +125,12 @@ export class Database {
     update: mixed
   }): User {
     return this.users.updateOne(params);
+  }
+
+  linkUserToPryvUser(params: {
+    user: User,
+  }): User {
+    return this.users.addPryvUser(params);
   }
 
   getInvitations(params: {

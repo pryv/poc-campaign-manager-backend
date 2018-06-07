@@ -17,6 +17,11 @@ export default {
       minlength: 5,
       maxLength: 24
     },
+    pryvToken: {
+      type: 'string',
+      minLength: 10,
+      maxLength: 30,
+    },
     password: {
       type: 'string',
       minLength: 5,

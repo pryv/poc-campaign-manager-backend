@@ -20,6 +20,7 @@ export class Users {
   getUserByPryvIdStatement: Statement;
 
   linkPryvUserToUserStatement: Statement;
+  addPryvUserToUserStatement: Statement;
 
   getPasswordStatement: Statement;
 
@@ -157,6 +158,20 @@ export class Users {
       ' pryv_username = @pryv_username'
     );
 
+    this.addPryvUserToUserStatement = this.db.prepare(
+      'INSERT INTO pryv_users (' +
+      'pryv_user_id, ' +
+      'pryv_username, ' +
+      'pryv_token, ' +
+      'user_id ' +
+      ') VALUES ( ' +
+      '@pryv_user_id, ' +
+      '@pryv_username, ' +
+      '@pryv_token, ' +
+      '@user_id ' +
+      ');'
+    );
+
     this.getPasswordStatement = this.db.prepare(
       'SELECT ' +
       ' lu.password ' +
@@ -262,6 +277,16 @@ export class Users {
       user_id: params.user.id,
     });
     params.user.pryvUsername = params.update.pryvUsername;
+    return params.user;
+  }
+
+  addPryvUser(params: {user: User}): User {
+    this.addPryvUserToUserStatement.run({
+      pryv_username: params.user.pryvUsername,
+      pryv_token: params.user.pryvToken,
+      pryv_user_id: params.user.pryvId,
+      user_id: params.user.id,
+    });
     return params.user;
   }
 

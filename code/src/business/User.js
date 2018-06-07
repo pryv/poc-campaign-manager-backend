@@ -17,14 +17,16 @@ export class User {
 
   pryvId:? string;
   pryvUsername:? string;
+  pryvToken:? string;
 
   constructor(params: {
     id?: string,
     localId?: string,
     username?: string,
+    password?: string,
     pryvId?: string,
     pryvUsername?: string,
-    password?: string
+    pryvToken?: string,
   }) {
     if (params == null) {
       params = {};
@@ -35,6 +37,7 @@ export class User {
     this.password = params.password || null;
     this.pryvId = params.pryvId || null;
     this.pryvUsername = params.pryvUsername || null;
+    this.pryvToken = params.pryvToken || null;
 
     if (this.pryvUsername != null && this.pryvId == null) {
       this.pryvId = cuid();
@@ -54,8 +57,21 @@ export class User {
   }): User {
     return params.db.updateUser({
       user: this,
-      update: _.pick(params.update, ['pryvUsername'])
+      update: _.pick(params.update, ['pryvUsername', 'pryvToken'])
     });
+  }
+
+  linkToPryvAccount(params: {
+    db: Database,
+    pryvParams: {
+      pryvUsername: string,
+      pryvToken: string,
+    }
+  }): User {
+    this.pryvUsername = params.pryvParams.pryvUsername;
+    this.pryvToken = params.pryvParams.pryvToken;
+    this.pryvId = cuid();
+    return params.db.linkUserToPryvUser({user: this})
   }
 
   isValidPassword(params: {

@@ -229,7 +229,30 @@ describe('users', () => {
 
   describe('when merging accounts', () => {
 
-    it('should delete a user and link its pryv_user to the user\'s account, return a 200');
+    it('should delete a user and link its pryv_user to the user\'s account, return a 200', () => {
+
+      const user: User = fixtures.addUser({localOnly: true});
+      const pryvUsername: string = 'testuser';
+      const token: string = 'coiu1n2o3in1o';
+
+
+      return request(app)
+        .put(makeUrl(user.username))
+        .send({
+          pryvUsername: pryvUsername,
+          pryvToken: token,
+        })
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('user').which.is.an.Object();
+          const updatedUser = new User(res.body.user);
+
+          user.pryvUsername = pryvUsername;
+          user.pryvToken = token;
+          user.pryvId = updatedUser.pryvId;
+          checkUsers(user, updatedUser);
+        });
+    });
 
     it('should return a 400 when the user is missing');
 
