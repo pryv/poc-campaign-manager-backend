@@ -106,9 +106,14 @@ export class User {
   }
 
   forApi(params: {
+      db: Database,
       token: string
   }): mixed {
-    const responseFields = _.pick(this, ['id', 'username', 'pryvUsername']);
-    return _.defaults(responseFields, { token: params.token});
+    const user = _.pick(this, ['id', 'username', 'pryvUsername']);
+
+    if (this.isLinkedWithPryv({db: params.db})) {
+      user.pryvToken = params.db.getPryvToken({user: this});
+    }
+    return user;
   }
 }

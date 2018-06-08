@@ -55,14 +55,9 @@ router.post('/', (req: express$Request, res: express$Response) => {
   }
 
   const response: mixed = {
-    user: user.forApi({
-      token: generateToken()
-    })
+    user: user.forApi({db: database})
   };
-
-  if (user.isLinkedWithPryv({db: database})) {
-    response.user.pryvToken = database.getPryvToken({user: user});
-  }
+  response.user.token = generateToken();
 
   res.status(200)
     .json(response);

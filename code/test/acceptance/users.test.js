@@ -38,6 +38,60 @@ describe('users', () => {
     return option ? base + '/' + option : base;
   }
 
+  describe('when fetching a user\s data', () => {
+
+    describe('for a local user', () => {
+
+      it('should return the id and username', () => {
+        const localUser: User = fixtures.addUser({localOnly: true});
+
+        return request(app)
+          .get(makeUrl(localUser.username))
+          .set('Authorization', 'abc')
+          .then(res => {
+            res.status.should.eql(200);
+            res.body.should.have.property('user').which.is.an.Object();
+            const fetchedUser = res.body.user;
+            const expected = _.pick(localUser, ['id', 'username']);
+            checkUsers(expected, fetchedUser);
+          });
+      });
+    });
+
+    describe('for a linked user', () => {
+
+      it('should return the id, username, pryvUsername, pryvToken', () => {
+        const linkedUser: User = fixtures.addUser({linked: true});
+
+        return request(app)
+          .get(makeUrl(linkedUser.username))
+          .set('Authorization', 'abc')
+          .then(res => {
+            res.status.should.eql(200);
+            res.body.should.have.property('user').which.is.an.Object();
+            const fetchedUser: mixed = res.body.user;
+            const expected: mixed = _.pick(linkedUser, ['id', 'username', 'pryvUsername', 'pryvToken']);
+            checkUsers(expected, fetchedUser);
+          });
+      });
+
+    });
+
+    it('should return a 400 if the user does not exist', () => {
+      return request(app)
+        .get(makeUrl('unexistentuser'))
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error').which.is.a.String();
+        });
+    });
+
+    it.skip('should return a 400 if the authorization header is invalid', () => {
+      // TODO
+    })
+
+  });
+
   describe('when creating a local user', () => {
 
     it('should create a user in the local_users and users table, return a 201', () => {

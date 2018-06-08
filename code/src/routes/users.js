@@ -51,6 +51,20 @@ router.post('/', (req: express$Request, res: express$Response) => {
     });
 });
 
+router.get('/:username', (req: express$Request, res: express$Response) => {
+
+  // check token validity
+  const token = req.headers.authorization;
+
+  let user: User = res.locals.user;
+  user = user.forApi({db: database});
+  res.status(200)
+    .json({
+      user: user
+    });
+
+});
+
 router.put('/:username', (req: express$Request, res: express$Response) => {
 
   const user: User = res.locals.user;
