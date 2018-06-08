@@ -34,7 +34,7 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  const user = database.getUser({username: signInObject.username});
+  const user: User = database.getUser({username: signInObject.username});
   if (user == null) {
     return res.status(400)
       .json({
@@ -42,24 +42,30 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  const isValidPassword = user.isValidPassword({
+  const isValidPassword: boolean = user.isValidPassword({
     db: database,
     password: signInObject.password
   });
 
-  if (isValidPassword) {
-    return res.status(200)
-      .json({
-        user: user.forApi({
-          token: generateToken()
-        })
-      });
-  } else {
+  if (! isValidPassword) {
     return res.status(400)
       .json({
         error: 'wrong username or password',
       });
   }
+
+  const response: mixed = {
+    user: user.forApi({
+      token: generateToken()
+    })
+  };
+
+  if (user.isLinkedWithPryv({db: database})) {
+    response.user.pryvToken = database.getPryvToken({user: user});
+  }
+
+  res.status(200)
+    .json(response);
 });
 
 function generateToken() {

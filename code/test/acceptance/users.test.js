@@ -164,24 +164,59 @@ describe('users', () => {
       return '/signin';
     }
 
-    it('should return a 200 with the username and token if the credentials are valid', () => {
+    describe('for a local user', () => {
 
-      const user: User = fixtures.addUser();
+      it('should return a 200 with the id, username, token if the credentials are valid', () => {
 
-      return request(app)
-        .post(makeUrl())
-        .send({
-          username: user.username,
-          password: user.password,
-        })
-        .then(res => {
-          res.status.should.eql(200);
-          res.body.should.have.property('user');
-          const loggedUser: mixed = res.body.user;
-          checkUsers(loggedUser, user);
-          loggedUser.should.have.property('token');
-        });
+        const user: User = fixtures.addUser({localOnly: true});
+
+        return request(app)
+          .post(makeUrl())
+          .send({
+            username: user.username,
+            password: user.password,
+          })
+          .then(res => {
+            res.status.should.eql(200);
+            const loggedUser: mixed = res.body.user;
+            const expected = _.pick(user, ['username', 'id']);
+            checkUsers(expected, loggedUser);
+            loggedUser.should.have.property('token');
+            loggedUser.should.not.have.property('pryvId');
+            loggedUser.should.not.have.property('localId');
+            loggedUser.should.not.have.property('password');
+          });
+      });
+
     });
+
+    describe('for a linked user', () => {
+
+      it('should return a 200 with the id, username, token, pryvUsername and pryvToken if the credentials are valid', () => {
+
+        const user: User = fixtures.addUser({linked: true});
+
+        return request(app)
+          .post(makeUrl())
+          .send({
+            username: user.username,
+            password: user.password,
+          })
+          .then(res => {
+            res.status.should.eql(200);
+            const loggedUser: mixed = res.body.user;
+            const expected = _.pick(user, ['username', 'id', 'pryvUsername', 'pryvToken']);
+            checkUsers(expected, loggedUser);
+            loggedUser.should.have.property('token');
+            loggedUser.should.not.have.property('pryvId');
+            loggedUser.should.not.have.property('localId');
+            loggedUser.should.not.have.property('password');
+          });
+      });
+
+    });
+
+
 
     it('should return a 400 with an error if the username is unknown', () => {
 
@@ -254,9 +289,28 @@ describe('users', () => {
         });
     });
 
-    it('should return a 400 when the user is missing');
+    it('should return a 400 when the user is missing', () => {
 
-    it('should return a 400 when the pryvUser is missing')
+      return request(app)
+        .put(makeUrl('unexistentuser'))
+        .send({
+          pryvUsername: 'testuser',
+          pryvToken: 'cowdnaoin',
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it.skip('should return a 400 when the pryvUser is missing', () => {
+      // TODO find out how to separate schema requirements depending on API call
+      return request(app)
+        .put(makeUrl)
+        .send({
+
+        })
+    })
 
   });
 

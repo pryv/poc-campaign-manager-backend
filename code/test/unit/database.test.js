@@ -108,6 +108,32 @@ describe('Database', () => {
       checkUsers(user, createdUser);
     });
 
+    it('should associate a Pryv user to a local user', () => {
+      const user: User = fixtures.addUser({localOnly: true});
+
+      user.pryvUsername = 'testuser';
+      user.pryvToken = 'doanwdoianw';
+      user.pryvId = 'conawidnaowinda';
+      db.linkUserToPryvUser({
+        user: user
+      });
+
+      const linkedUser: User= db.getUser({pryvUsername: user.pryvUsername});
+
+      // because db.getUser() does not return the pryvToken
+      linkedUser.pryvToken = user.pryvToken;
+
+      checkUsers(user, linkedUser);
+    });
+
+    it('should return a pryv token when it exists', () => {
+      const user: User = fixtures.addUser({ linked: true });
+
+      const pryvToken = db.getPryvToken({user: user});
+      should.exist(pryvToken);
+      pryvToken.should.eql(user.pryvToken);
+    });
+
   });
 
   describe('Campaigns', () => {

@@ -103,6 +103,12 @@ export class Database {
     return this.users.getPassword(params);
   }
 
+  getPryvToken(params: {
+    user: User
+  }): string {
+    return this.users.getPryvToken(params);
+  }
+
   getUsers(): Array<User> {
     return this.users.get();
   }

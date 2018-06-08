@@ -41,10 +41,12 @@ export class Users {
       'INSERT INTO pryv_users (' +
       'pryv_user_id, ' +
       'pryv_username, ' +
+      'pryv_token, ' +
       'user_id' +
       ') VALUES (' +
       '@pryv_user_id, ' +
       '@pryv_username, ' +
+      '@pryv_token, ' +
       '@user_id' +
       ');'
     ]);
@@ -88,10 +90,12 @@ export class Users {
       'INSERT INTO pryv_users (' +
       'pryv_user_id, ' +
       'pryv_username, ' +
+      'pryv_token, ' +
       'user_id' +
       ') VALUES (' +
       '@pryv_user_id, ' +
       '@pryv_username, ' +
+      '@pryv_token, ' +
       '@user_id' +
       ');'
     ]);
@@ -180,6 +184,15 @@ export class Users {
       'WHERE ' +
       ' lu.username = @username'
     );
+
+    this.getPryvTokenStatement = this.db.prepare(
+      'SELECT ' +
+      ' pu.pryv_token ' +
+      'FROM ' +
+      ' pryv_users pu ' +
+      'WHERE ' +
+      ' pu.pryv_username = @pryv_username;'
+    )
   }
 
   save(user: User): User {
@@ -191,6 +204,7 @@ export class Users {
         pryv_user_id: user.pryvId,
         pryv_username: user.pryvUsername,
         local_user_id: user.localId,
+        pryv_token: user.pryvToken,
       })
     } else if (user.pryvUsername) {
       this.saveWithPryvTransaction.run({
@@ -199,6 +213,7 @@ export class Users {
         password: user.password,
         pryv_user_id: user.pryvId,
         pryv_username: user.pryvUsername,
+        pryv_token: user.pryvToken,
       });
     } else {
       this.saveWithLocalTransaction.run({
@@ -221,6 +236,20 @@ export class Users {
       });
     if (result != null) {
       return result.password;
+    } else {
+      return null;
+    }
+  }
+
+  getPryvToken(params: {
+     user: User
+  }): string {
+    const result = this.getPryvTokenStatement
+      .get({
+        pryv_username: params.user.pryvUsername,
+      });
+    if (result != null) {
+      return result.pryv_token;
     } else {
       return null;
     }
@@ -301,9 +330,6 @@ function convertFromDB(result: mixed): User {
       pryvId: result.pryv_user_id,
       localId: result.local_user_id,
     });
-    if (result.password) {
-      createdUser.password = result.password;
-    }
     return createdUser;
   }
 }

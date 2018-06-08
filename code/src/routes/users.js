@@ -66,9 +66,9 @@ router.put('/:username', (req: express$Request, res: express$Response) => {
       });
   }
 
-  user.update({
+  user.linkToPryvAccount({
     db: database,
-    update: updateObject,
+    pryvParams: updateObject,
   });
   return res.status(200)
     .json({

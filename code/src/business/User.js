@@ -87,9 +87,11 @@ export class User {
     return db.getUser(_.pick(this, ['username', 'pryvUsername'])) != null;
   }
 
-  isLinkedWithPryv(): boolean {
+  isLinkedWithPryv(params: {
+    db: Database
+  }): boolean {
     if (this.username != null && this.pryvUsername != null) {
-      return true;
+      return (params.db.getPryvToken({user: this}) != null);
     } else {
       return false;
     }

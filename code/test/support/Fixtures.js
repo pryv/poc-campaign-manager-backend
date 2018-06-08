@@ -19,6 +19,7 @@ export class Fixtures {
     full: boolean,
     localOnly: boolean,
     pryvOnly: boolean,
+    linked: boolean,
   }): User {
     if (params == null) {
       params = { full: true }
@@ -36,6 +37,13 @@ export class Fixtures {
         username: charlatan.Name.firstName().toLowerCase(),
         password: charlatan.Internet.password(),
       });
+    } else if (params.linked) {
+      user = new User({
+        username: charlatan.Name.firstName().toLowerCase(),
+        password: charlatan.Internet.password(),
+        pryvUsername: charlatan.Name.firstName().toLowerCase(),
+        pryvToken: cuid(),
+      })
     } else {
       user = new User({
         username: charlatan.Name.firstName().toLowerCase(),
@@ -51,6 +59,7 @@ export class Fixtures {
     full: boolean,
     localOnly: boolean,
     pryvOnly: boolean,
+    linked: boolean,
   }): User {
     const user: User = this.getUser(params);
 

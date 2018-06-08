@@ -119,7 +119,7 @@ describe('invitations', () => {
         });
     });
 
-    describe('for a registered user', () => {
+    describe('for a local user', () => {
 
       it('should create the invitation in the database, return the created invitation with status 201', () => {
         const requester = fixtures.addUser({localOnly: true});
@@ -209,7 +209,7 @@ describe('invitations', () => {
 
     });
 
-    describe('for an unregistered user', () => {
+    describe('for an pryv user', () => {
 
       it('should create create the invitation in the database, return the created invitation with status 201', async () => {
         const requester = fixtures.addUser();
@@ -234,8 +234,8 @@ describe('invitations', () => {
             body.should.have.property('invitation').which.is.an.Object();
             const createdInvitation = body.invitation;
             checkCampaigns(campaign, createdInvitation.campaign);
-            checkUsers(requester, createdInvitation.requester);
-            checkUsers(requestee, createdInvitation.requestee);
+            checkUsers(requester, createdInvitation.requester, {pryvToken: true});
+            checkUsers(requestee, createdInvitation.requestee, {pryvToken: true});
             createdInvitation.status.should.be.eql(invitation.status);
 
             const dbInvitation = db.getInvitation({id: createdInvitation.id});

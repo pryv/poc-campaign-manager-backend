@@ -103,6 +103,10 @@ describe('User', () => {
     });
 
     const linkedUser: User = db.getUser({pryvUsername});
+
+    // because db.getUser() does not return the pryvToken
+    linkedUser.pryvToken = pryvToken;
+
     checkUsers(user, linkedUser);
 
   });
