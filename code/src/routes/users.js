@@ -80,10 +80,18 @@ router.put('/:username', (req: express$Request, res: express$Response) => {
       });
   }
 
-  user.linkToPryvAccount({
-    db: database,
-    pryvParams: updateObject,
-  });
+  if (user.pryvUsername) {
+    user.updatePryvToken({
+      db: database,
+      pryvParams: updateObject,
+    });
+  } else {
+    user.linkToPryvAccount({
+      db: database,
+      pryvParams: updateObject,
+    });
+  }
+
   return res.status(200)
     .json({
       user: user

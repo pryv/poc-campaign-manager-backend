@@ -316,7 +316,7 @@ describe('users', () => {
     });
   });
 
-  describe('when merging accounts', () => {
+  describe('when linking accounts', () => {
 
     it('should delete a user and link its pryv_user to the user\'s account, return a 200', () => {
 
@@ -339,6 +339,24 @@ describe('users', () => {
           user.pryvUsername = pryvUsername;
           user.pryvToken = token;
           user.pryvId = updatedUser.pryvId;
+          checkUsers(user, updatedUser);
+        });
+    });
+
+    it('should update the pryv token to the pryv user when the pryv user already exists', () => {
+      const user: User = fixtures.addUser();
+      const newPryvToken: string = 'cno12n3oi1n2oida';
+
+      return request(app)
+        .put(makeUrl(user.username))
+        .send({
+          pryvUsername: user.pryvUsername,
+          pryvToken: newPryvToken})
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('user');
+          const updatedUser: User = new User(res.body.user);
+          user.pryvToken = newPryvToken;
           checkUsers(user, updatedUser);
         });
     });

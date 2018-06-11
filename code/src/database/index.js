@@ -139,6 +139,12 @@ export class Database {
     return this.users.addPryvUser(params);
   }
 
+  updatePryvToken(params: {
+    user: User,
+  }): User {
+    return this.users.updatePryvToken(params);
+  }
+
   getInvitations(params: {
     user: User,
   }): Array<Invitation> {

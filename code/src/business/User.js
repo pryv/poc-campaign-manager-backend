@@ -74,6 +74,16 @@ export class User {
     return params.db.linkUserToPryvUser({user: this})
   }
 
+  updatePryvToken(params: {
+    db: Database,
+    pryvParams: {
+      pryvToken: string,
+    }
+  }): User {
+    this.pryvToken = params.pryvParams.pryvToken;
+    return params.db.updatePryvToken({user: this});
+  }
+
   isValidPassword(params: {
     db: Database,
     password: string,

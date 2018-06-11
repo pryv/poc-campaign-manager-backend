@@ -21,6 +21,7 @@ export class Users {
 
   linkPryvUserToUserStatement: Statement;
   addPryvUserToUserStatement: Statement;
+  updatePryvTokenStatement: Statement;
 
   getPasswordStatement: Statement;
 
@@ -176,6 +177,14 @@ export class Users {
       ');'
     );
 
+    this.updatePryvTokenStatement = this.db.prepare(
+      'UPDATE pryv_users ' +
+      ' ' +
+      'SET pryv_token = @pryv_token ' +
+      ' ' +
+      'WHERE pryv_username = @pryv_username;'
+    );
+
     this.getPasswordStatement = this.db.prepare(
       'SELECT ' +
       ' lu.password ' +
@@ -315,6 +324,14 @@ export class Users {
       pryv_token: params.user.pryvToken,
       pryv_user_id: params.user.pryvId,
       user_id: params.user.id,
+    });
+    return params.user;
+  }
+
+  updatePryvToken(params: {user: User}): User {
+    this.updatePryvTokenStatement.run({
+      pryv_username: params.user.pryvUsername,
+      pryv_token: params.user.pryvToken,
     });
     return params.user;
   }
