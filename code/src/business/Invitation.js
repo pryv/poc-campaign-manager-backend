@@ -11,8 +11,8 @@ import {User, Campaign} from '../business';
  * seen: when the invitation has been opened - only for targeted
  * accepted: when the invitation has been accepted by the requestee
  * refused: when the invitation has been refused by the requestee
- * cancelled: when the invitation has been stopped by the requester -> can not be accepted anymore
- * hold: when the invitation has been accepter, then revoked -> can be accepted again
+ * cancelled: when the campaign has been stopped by the requester -> can not be accepted anymore
+ * hold: when the invitation has been accepted, then revoked -> can be accepted again
  */
 export type InvitationStatus = 'created' | 'seen' | 'accepted' | 'cancelled' | 'refused' | 'hold';
 
