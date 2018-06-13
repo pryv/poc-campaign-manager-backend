@@ -30,7 +30,6 @@ export class Fixtures {
     if (params.pryvOnly) {
       user = new User({
         pryvUsername: charlatan.Name.firstName().toLowerCase(),
-        pryvToken: cuid(),
       });
     } else if (params.localOnly) {
       user = new User({
@@ -49,6 +48,7 @@ export class Fixtures {
         username: charlatan.Name.firstName().toLowerCase(),
         pryvUsername: charlatan.Name.firstName().toLowerCase(),
         password: charlatan.Internet.password(),
+        pryvToken: cuid(),
       });
     }
 

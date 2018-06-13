@@ -13,9 +13,9 @@ const config = require('../../src/config');
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
 import {Database} from '../../src/database';
-import {User} from '../../src/business';
+import {User, Campaign, Invitation} from '../../src/business';
 
-import {checkUsers} from '../support/validation';
+import {checkUsers, checkInvitations} from '../support/validation';
 
 const DB_PATH = config.get('database:path');
 
@@ -162,56 +162,6 @@ describe('users', () => {
 
   });
 
-  describe('when updating a user account with a Pryv account', () => {
-
-    it('should add a pryv_user pointing to the user account', () => {
-
-      const user: User = fixtures.addUser({localOnly: true});
-      const pryvUsername: string = 'bloppp';
-
-      return request(app)
-        .put(makeUrl(user.username))
-        .send({
-          username: user.username,
-          pryvUsername: pryvUsername,
-        })
-        .then(res => {
-          res.status.should.eql(200);
-          res.body.should.have.property('user');
-          const updatedUser = res.body.user;
-          updatedUser.username.should.eql(user.username);
-          updatedUser.pryvUsername.should.eql(pryvUsername);
-          updatedUser.id.should.eql(user.id);
-        });
-    });
-
-    it('should return a 400 with an error if the schema is not respected', () => {
-
-      const user: User = fixtures.addUser();
-
-      return request(app)
-        .put(makeUrl(user.username))
-        .send({badField: 'yolo'})
-        .then(res => {
-          res.status.should.eql(400);
-          res.body.should.have.property('error');
-        });
-    });
-
-    it('should return a 400 with an error if the user does not exist', () => {
-
-      return request(app)
-        .put(makeUrl('unexistantUsername'))
-        .send({})
-        .then(res => {
-          res.status.should.eql(400);
-          res.body.should.have.property('error');
-        });
-
-    });
-
-  });
-
   describe('when signing in', () => {
 
     function makeUrl(): string {
@@ -318,28 +268,67 @@ describe('users', () => {
 
   describe('when linking accounts', () => {
 
-    it('should delete a user and link its pryv_user to the user\'s account, return a 200', () => {
+    it('if the pryv_user does not exist, should create a pryv_user linked to the local_user, return a 200', () => {
 
       const user: User = fixtures.addUser({localOnly: true});
-      const pryvUsername: string = 'testuser';
-      const token: string = 'coiu1n2o3in1o';
 
+      const pryvUsername: string = 'my-pryv-username';
+      const pryvToken: string = 'co1n2oi3noidaw';
 
       return request(app)
         .put(makeUrl(user.username))
         .send({
           pryvUsername: pryvUsername,
-          pryvToken: token,
+          pryvToken: pryvToken,
         })
         .then(res => {
           res.status.should.eql(200);
           res.body.should.have.property('user').which.is.an.Object();
-          const updatedUser = new User(res.body.user);
+          const linkedUser: User = new User(res.body.user);
 
           user.pryvUsername = pryvUsername;
-          user.pryvToken = token;
-          user.pryvId = updatedUser.pryvId;
-          checkUsers(user, updatedUser);
+          user.pryvToken = pryvToken;
+          user.pryvId = linkedUser.pryvId;
+
+          checkUsers(user, linkedUser);
+        })
+    });
+
+    it('if invitations already exist for this pryv username, should delete the previous user and link its pryv_user and invitations to the user\'s account, return a 200', () => {
+
+      const user: User = fixtures.addUser({localOnly: true});
+      const pryvUser: User = fixtures.addUser({pryvOnly: true});
+      const pryvToken: string = 'c123oi1bno2i3n1';
+
+      const campaign: Campaign = fixtures.addCampaign();
+      const invitation: Invitation = fixtures.addInvitation({
+        campaign: campaign,
+        requestee: pryvUser,
+      });
+
+      return request(app)
+        .put(makeUrl(user.username))
+        .send({
+          pryvUsername: pryvUser.pryvUsername,
+          pryvToken: pryvToken,
+        })
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('user').which.is.an.Object();
+          const linkedUser = new User(res.body.user);
+
+          user.pryvUsername = pryvUser.pryvUsername;
+          user.pryvToken = pryvToken;
+          user.pryvId = linkedUser.pryvId;
+          user.pryvToken = pryvToken;
+          checkUsers(user, linkedUser);
+
+          const deletedUser = db.getUser({id: pryvUser.id});
+          should.not.exist(deletedUser);
+
+          invitation.requestee = user;
+          const updatedInvitation: Invitation = db.getInvitations({user: user})[0];
+          checkInvitations(invitation, updatedInvitation);
         });
     });
 
@@ -361,7 +350,7 @@ describe('users', () => {
         });
     });
 
-    it('should return a 400 when the user is missing', () => {
+    it('should return a 400 when the user is not existing', () => {
 
       return request(app)
         .put(makeUrl('unexistentuser'))
@@ -375,14 +364,18 @@ describe('users', () => {
         });
     });
 
-    it.skip('should return a 400 when the pryvUser is missing', () => {
-      // TODO find out how to separate schema requirements depending on API call
-      return request(app)
-        .put(makeUrl)
-        .send({
+    it('should return a 400 if the shema is not respected', () => {
 
-        })
-    })
+      const user: User = fixtures.addUser();
+
+      return request(app)
+        .put(makeUrl(user.username))
+        .send({badField: 'yolo'})
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
 
   });
 

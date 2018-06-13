@@ -25,10 +25,6 @@ describe('Database', () => {
     fixtures.close();
   });
 
-  describe('Mixed', () => {
-
-  });
-
   describe('Invitations', () => {
 
     it('should retrieve an invitation', () => {
@@ -114,7 +110,7 @@ describe('Database', () => {
       user.pryvUsername = 'testuser';
       user.pryvToken = 'doanwdoianw';
       user.pryvId = 'conawidnaowinda';
-      db.linkUserToPryvUser({
+      db.addPryvAccountToUser({
         user: user
       });
 

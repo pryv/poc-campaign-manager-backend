@@ -80,13 +80,21 @@ router.put('/:username', (req: express$Request, res: express$Response) => {
       });
   }
 
-  if (user.pryvUsername) {
+  const pryvUser: User = database.getUser({pryvUsername: updateObject.pryvUsername});
+
+  if (pryvUser != null && user.pryvId == null) {
+    user.mergePryvUser({
+      db: database,
+      pryvUser: pryvUser,
+      pryvToken: updateObject.pryvToken,
+    });
+  } else if (user.pryvUsername) {
     user.updatePryvToken({
       db: database,
       pryvParams: updateObject,
     });
   } else {
-    user.linkToPryvAccount({
+    user.addPryvAccountToUser({
       db: database,
       pryvParams: updateObject,
     });

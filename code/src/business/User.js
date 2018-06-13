@@ -61,7 +61,7 @@ export class User {
     });
   }
 
-  linkToPryvAccount(params: {
+  addPryvAccountToUser(params: {
     db: Database,
     pryvParams: {
       pryvUsername: string,
@@ -71,7 +71,7 @@ export class User {
     this.pryvUsername = params.pryvParams.pryvUsername;
     this.pryvToken = params.pryvParams.pryvToken;
     this.pryvId = cuid();
-    return params.db.linkUserToPryvUser({user: this})
+    return params.db.addPryvAccountToUser({user: this})
   }
 
   updatePryvToken(params: {
@@ -82,6 +82,20 @@ export class User {
   }): User {
     this.pryvToken = params.pryvParams.pryvToken;
     return params.db.updatePryvToken({user: this});
+  }
+
+  mergePryvUser(params: {
+    db: Database,
+    pryvUser: User,
+    pryvToken: string,
+  }): User {
+    this.pryvId = params.pryvUser.pryvId;
+    this.pryvUsername = params.pryvUser.pryvUsername;
+    this.pryvToken = params.pryvToken;
+    return params.db.mergePryvUser({
+      user: this,
+      pryvUser: params.pryvUser,
+    });
   }
 
   isValidPassword(params: {

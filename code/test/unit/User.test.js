@@ -94,7 +94,7 @@ describe('User', () => {
     const pryvUsername = 'testuser';
     const pryvToken = 'coi1n23oi1n2';
 
-    user.linkToPryvAccount({
+    user.addPryvAccountToUser({
       db: db,
       pryvParams: {
         pryvUsername: pryvUsername,

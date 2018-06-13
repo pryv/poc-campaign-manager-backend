@@ -133,7 +133,7 @@ export class Database {
     return this.users.updateOne(params);
   }
 
-  linkUserToPryvUser(params: {
+  addPryvAccountToUser(params: {
     user: User,
   }): User {
     return this.users.addPryvUser(params);
@@ -143,6 +143,13 @@ export class Database {
     user: User,
   }): User {
     return this.users.updatePryvToken(params);
+  }
+
+  mergePryvUser(params: {
+    user: User,
+    pryvUser: User,
+  }): User {
+    return this.users.mergePryvUser(params);
   }
 
   getInvitations(params: {

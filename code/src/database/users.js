@@ -19,11 +19,12 @@ export class Users {
   getUserByPryvUsernameStatement: Statement;
   getUserByPryvIdStatement: Statement;
 
-  linkPryvUserToUserStatement: Statement;
+  linkPryvUserToUserTransaction: Transaction;
   addPryvUserToUserStatement: Statement;
   updatePryvTokenStatement: Statement;
 
   getPasswordStatement: Statement;
+  getPryvTokenStatement: Statement;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
@@ -152,16 +153,31 @@ export class Users {
       'WHERE pu.pryv_user_id = @pryv_id;'
     );
 
-    // TODO: remove when merging is implemented and some use cases are figured out.
-    this.linkPryvUserToUserStatement = this.db.prepare(
-      'UPDATE pryv_users ' +
-      '' +
+    this.linkPryvUserToUserTransaction = this.db.transaction([
+      'UPDATE invitations ' +
+      ' ' +
       'SET ' +
-      ' user_id = @user_id ' +
-      '' +
-      'WHERE' +
-      ' pryv_username = @pryv_username'
-    );
+      ' requestee_id = @new_id ' +
+      ' ' +
+      'WHERE ' +
+      ' requestee_id = @old_id;',
+
+      'UPDATE pryv_users ' +
+      ' ' +
+      'SET ' +
+      ' user_id = @new_id,' +
+      ' pryv_token = @pryv_token ' +
+      ' ' +
+      'WHERE ' +
+      ' user_id = @old_id;',
+
+      'DELETE ' +
+      ' ' +
+      'FROM users' +
+      ' ' +
+      'WHERE ' +
+      ' user_id = @old_id;'
+    ]);
 
     this.addPryvUserToUserStatement = this.db.prepare(
       'INSERT INTO pryv_users (' +
@@ -306,18 +322,6 @@ export class Users {
     }
   }
 
-  updateOne(params: {
-    user: User,
-    update: mixed
-  }): User {
-    this.linkPryvUserToUserStatement.run({
-      pryv_username: params.update.pryvUsername,
-      user_id: params.user.id,
-    });
-    params.user.pryvUsername = params.update.pryvUsername;
-    return params.user;
-  }
-
   addPryvUser(params: {user: User}): User {
     this.addPryvUserToUserStatement.run({
       pryv_username: params.user.pryvUsername,
@@ -332,6 +336,19 @@ export class Users {
     this.updatePryvTokenStatement.run({
       pryv_username: params.user.pryvUsername,
       pryv_token: params.user.pryvToken,
+    });
+    return params.user;
+  }
+
+  mergePryvUser(params: {
+    user: User,
+    pryvUser: User,
+  }): User {
+    this.linkPryvUserToUserTransaction.run({
+      pryv_username: params.user.pryvUsername,
+      pryv_token: params.user.pryvToken,
+      old_id: params.pryvUser.id,
+      new_id: params.user.id,
     });
     return params.user;
   }
