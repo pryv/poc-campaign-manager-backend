@@ -12,11 +12,6 @@ export default {
       minLength: 3,
       maxLength: 20
     },
-    pryvAppId: {
-      type: 'string',
-      minlength: 5,
-      maxLength: 20
-    },
     description: {
       type: 'string',
       minlength: 3,
@@ -50,7 +45,6 @@ export default {
   },
   required: [
     'title',
-    'pryvAppId',
     'description',
     'permissions'
   ],

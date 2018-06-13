@@ -4,6 +4,7 @@ import typeof {Database} from '../database';
 import typeof {User} from '../business';
 import cuid from 'cuid';
 import slugify from 'slugify';
+const uuidv4 = require('uuid/v4');
 
 type Permission = {
   streamId: string,
@@ -54,19 +55,5 @@ export class Campaign {
 }
 
 function derivateFromTitle(title: string): string {
-  let slugged = slugify(title);
-  slugged = slugged.substring(0,24);
-  if (slugged[23] === '-') {
-    slugged = slugged.slice(0, -1);
-  }
-  if (slugged.length < 6) {
-    slugged += give6randomNumbers();
-  }
-
-  return slugged;
-
-  function give6randomNumbers(): string {
-    return Math.floor(Math.random() * 1000000);
-  }
-
+  return 'cm-' + slugify(title) + '-' + uuidv4();
 }

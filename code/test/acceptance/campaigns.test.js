@@ -4,6 +4,7 @@
 
 const request: any = require('supertest');
 const should: any = require('should');
+const _: mixed = require('lodash');
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
@@ -12,6 +13,8 @@ import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
 import {Database} from '../../src/database';
 import {Campaign, User} from '../../src/business';
+
+import {checkCampaigns} from '../support/validation';
 
 const DB_PATH = config.get('database:path');
 
@@ -44,21 +47,16 @@ describe('campaigns', () => {
 
       return request(app)
         .post(makeUrl({username: user.username}))
-        .send(campaign)
+        .send(_.pick(campaign, ['title', 'description', 'permissions']))
         .then(res => {
           res.status.should.eql(201);
           res.body.should.have.property('campaign').which.is.an.Object();
-          new Campaign(res.body.campaign).should.be.eql(campaign);
 
-          const userCampaigns = db.getCampaigns({user: user});
-          let found = null;
-          userCampaigns.forEach((c) => {
-            if (c.id === campaign.id) {
-              found = c;
-            }
-          });
-          found.should.not.be.null();
-          campaign.should.be.eql(found);
+          const createdCampaign: Campaign = new Campaign(res.body.campaign);
+          checkCampaigns(campaign, createdCampaign, {id: true});
+
+          const localCampaign: Campaign = db.getCampaign({user: user, campaignId: createdCampaign.id});
+          checkCampaigns(createdCampaign, localCampaign);
         });
     });
 

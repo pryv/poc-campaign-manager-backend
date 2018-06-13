@@ -4,6 +4,7 @@ import {User, Campaign, Invitation} from '../../src/business';
 
 import should from 'should';
 
+const slugify = require('slugify');
 
 export function checkInvitations(expected: Invitation, actual: Invitation, omit: mixed): void {
   if (omit == null)
@@ -44,13 +45,20 @@ export function checkUsers(expected: User, actual: User): void {
     expected.localId.should.eql(actual.localId);
 }
 
-export function checkCampaigns(expected: Campaign, actual: Campaign): void {
+export function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Object): void {
+  if (omit == null)
+    omit = {};
+
   should.exist(actual);
 
-  expected.id.should.eql(actual.id);
+  if (expected.id && (! omit.id))
+    expected.id.should.eql(actual.id);
+
   expected.title.should.eql(actual.title);
-  expected.pryvAppId.should.eql(actual.pryvAppId);
+  (expected.pryvAppId.substring(3, slugify(actual.title).length + 3)).should.eql(slugify(actual.title));
   expected.description.should.eql(actual.description);
   expected.permissions.should.eql(actual.permissions);
-  expected.created.should.eql(actual.created);
+
+  //if (expected.created && (! omit.created))
+    expected.created.should.approximately(actual.created, 1.0);
 }

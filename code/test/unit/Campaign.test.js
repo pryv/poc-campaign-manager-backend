@@ -17,18 +17,10 @@ describe('User', () => {
       });
 
       should.exist(campaign.pryvAppId);
-      campaign.pryvAppId.should.eql(slugify(campaign.title));
-    });
-
-    it('should remove the last dash if it is finishing by it', () => {
-      const campaign: Campaign = new Campaign({
-        title: 'abcdefghijklmnopqrstuvw xyz',
-        description: 'blop',
-        permission: [],
-      });
-
-      should.exist(campaign.pryvAppId);
-      campaign.pryvAppId.should.eql(campaign.title.substr(0,23));
+      const appId = campaign.pryvAppId;
+      appId.substring(0,3).should.eql('cm-');
+      appId.length.should.eql(3 + campaign.title.length + 37);
+      (appId.substring(3,3 + campaign.title.length)).should.eql(slugify(campaign.title));
     });
 
 });
