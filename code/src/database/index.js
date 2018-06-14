@@ -87,6 +87,12 @@ export class Database {
     return this.campaigns.getOne(params);
   }
 
+  getCampaignByAppId(params: {
+    pryvAppId: string,
+  }): Campaign {
+    return this.campaigns.getOneByPryvAppId(params);
+  }
+
   saveCampaign(params: {
     campaign: Campaign,
     user: User

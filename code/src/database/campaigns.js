@@ -16,6 +16,7 @@ export class Campaigns {
 
   getStatement: Statement;
   getOneStatement: Statement;
+  getOneByPryvAppIdStatement: Statement;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
@@ -58,7 +59,14 @@ export class Campaigns {
       ' user_id = @user_id ' +
       ' AND ' +
       ' campaign_id = @campaign_id;'
-    )
+    );
+
+    this.getOneByPryvAppIdStatement = this.db.prepare(
+      'SELECT * ' +
+      'FROM campaigns ' +
+      'WHERE ' +
+      ' pryv_app_id = @pryvAppId;'
+    );
   }
 
   save(params: {campaign: Campaign, user: User}): void {
@@ -87,6 +95,15 @@ export class Campaigns {
       user_id: params.user.id,
       campaign_id: params.campaignId,
     }));
+  }
+
+  getOneByPryvAppId(params: {
+    pryvAppId: string,
+  }): Campaign {
+    return convertFromDB(this.getOneByPryvAppIdStatement
+      .get({
+        pryvAppId: params.pryvAppId,
+      }));
   }
 
 }

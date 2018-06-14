@@ -143,5 +143,12 @@ describe('Database', () => {
       campaigns.should.be.Array();
       checkCampaigns(campaign, campaigns[0]);
     });
+
+    it('should return a campaign when querying by pryvAppId', () => {
+      const campaign: Campaign = fixtures.addCampaign();
+
+      const retrievedCampaign: Campaign = db.getCampaignByAppId({pryvAppId: campaign.pryvAppId});
+      checkCampaigns(campaign, retrievedCampaign);
+    });
   })
 });
