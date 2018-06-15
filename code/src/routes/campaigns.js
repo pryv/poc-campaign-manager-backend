@@ -66,8 +66,7 @@ router.get('/title/:pryvAppId', (req: express$Request, res: express$Response) =>
   const DELTA_TIME_SECONDS = 20;
 
   const timestamp: number = req.query.message;
-  const raw: Array<string> = req.query.signature.split(',');
-  const signature: Array<number> = raw.map((itemString) => {return Number(itemString)});
+  const rawSignature: string = req.query.signature;
   const pryvUsername: string = req.query.pryvUsername;
 
   const campaign = database.getCampaignByAppId({
@@ -77,12 +76,15 @@ router.get('/title/:pryvAppId', (req: express$Request, res: express$Response) =>
     pryvUsername: pryvUsername,
   });
 
-  if ((campaign == null) || (timestamp == null) || (signature == null)) {
+  if ((campaign == null) || (timestamp == null) || (rawSignature == null)) {
     return res.status(400)
       .json({
         error: 'wrong campaign or unauthorized'
       });
   }
+
+  const raw: Array<string> = rawSignature.split(',');
+  const signature: Array<number> = raw.map((itemString) => {return Number(itemString)});
 
   const now: number = Date.now() / 1000;
 
