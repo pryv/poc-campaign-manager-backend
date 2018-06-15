@@ -188,9 +188,11 @@ describe('campaigns', () => {
 
       it('should return the campaign if the token is correct', () => {
 
+        const requester = fixtures.addUser({localOnly: true});
         user = fixtures.addUser({pryvOnly: true});
-        campaign = fixtures.addCampaign();
+        campaign = fixtures.addCampaign({ user: requester });
         invitation = fixtures.addInvitation({
+          requester: requester,
           campaign: campaign,
           requestee: user,
         });
@@ -209,6 +211,9 @@ describe('campaigns', () => {
             res.body.should.have.property('campaign').which.is.an.Object();
             const retrievedCampaign: Campaign = res.body.campaign;
             checkCampaigns(campaign, retrievedCampaign);
+
+            retrievedCampaign.requester.should.eql(requester.username);
+            retrievedCampaign.invitationId.should.eql(invitation.id);
           });
 
       });

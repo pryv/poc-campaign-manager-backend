@@ -121,6 +121,7 @@ router.get('/title/:pryvAppId', (req: express$Request, res: express$Response) =>
   }
 
   campaign.requester = invitation.requester.username;
+  campaign.invitationId = invitation.id;
 
   return res.status(200)
     .json({
