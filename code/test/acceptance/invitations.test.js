@@ -119,24 +119,24 @@ describe('invitations', () => {
         });
     });
 
-    describe('for a local user', () => {
+    describe('following a targeted invitation', () => {
 
       it('should create the invitation in the database, return the created invitation with status 201', () => {
         const requester = fixtures.addUser({localOnly: true});
-        const requestee = fixtures.addUser({localOnly: true});
+        const requestee = fixtures.addUser({pryvOnly: true});
         const campaign = fixtures.addCampaign({user: requester});
 
         const invitation = {
           campaign: _.pick(campaign, ['id']),
           requester: _.pick(requester, ['username']),
-          requestee: _.pick(requestee, ['username']),
+          requestee: _.pick(requestee, ['pryvUsername']),
         };
 
         return request(app)
           .post(makeUrl({username: requester.username}))
           .send(invitation)
-          .expect(201)
           .then(res => {
+            res.status.should.eql(201);
             res.body.should.have.property('invitation').which.is.an.Object();
             const createdInvitation = res.body.invitation;
             checkUsers(requester, createdInvitation.requester);
@@ -145,17 +145,11 @@ describe('invitations', () => {
             createdInvitation.should.have.property('id').which.is.String();
             createdInvitation.status.should.eql('created');
 
-            const requesterInvitations = db.getInvitations({user: requester});
-            let found = null;
-            requesterInvitations.forEach((i) => {
-              if (i.id === createdInvitation.id) {
-                found = i;
-              }
-            });
-            checkInvitations(createdInvitation, found);
+            const retrievedInvitation = db.getInvitation({id: createdInvitation.id});
+            checkInvitations(createdInvitation, retrievedInvitation);
 
             const requesteeInvitations = db.getInvitations({user: requestee});
-            found = null;
+            let found = null;
             requesteeInvitations.forEach((i) => {
               if (i.id === createdInvitation.id) {
                 found = i;
@@ -168,7 +162,7 @@ describe('invitations', () => {
       it('should return an error with status 400 if the requestee does not exist', () => {
         const requester = fixtures.addUser();
         const requestee = {
-          username: 'idontexist'
+          pryvUsername: 'idontexist'
         };
 
         const campaign = fixtures.addCampaign({user: requester});
@@ -190,7 +184,7 @@ describe('invitations', () => {
 
       it('should return an error with status 400 if the invitation already exists', () => {
         const requester = fixtures.addUser();
-        const requestee = fixtures.addUser();
+        const requestee = fixtures.addUser({pryvOnly: true});
         const campaign = fixtures.addCampaign({user: requester});
         const invitation = fixtures.addInvitation({
           campaign: campaign,
@@ -209,7 +203,7 @@ describe('invitations', () => {
 
     });
 
-    describe('for an pryv user', () => {
+    describe('following an anonymous invitation', () => {
 
       it('should create create the invitation in the database, return the created invitation with status 201', async () => {
         const requester = fixtures.addUser();
