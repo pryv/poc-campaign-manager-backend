@@ -35,7 +35,7 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  const campaign: Campaign = getCampaign({
+  const campaign: Campaign = database.campaigns.getOne({
     campaignId: invitationObject.campaign.id,
     user: requester
   });
@@ -46,7 +46,7 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  let requestee: User = database.getUser(invitationObject.requestee);
+  let requestee: User = database.users.getOne(invitationObject.requestee);
 
   if (requestee == null) {
     return res.status(400)
@@ -139,7 +139,7 @@ function getCampaign(params: {
   user: User,
   campaignId: string
 }): Campaign {
-  const campaigns: Array<Campaign> = database.getCampaigns({user: params.user});
+  const campaigns: Array<Campaign> = database.campaigns.get({user: params.user});
   let found = null;
   campaigns.forEach((c) => {
     if (c.id === params.campaignId) {

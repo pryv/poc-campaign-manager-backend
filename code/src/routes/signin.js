@@ -34,7 +34,7 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  const user: User = database.getUser({username: signInObject.username});
+  const user: User = database.users.getOne({username: signInObject.username});
   if (user == null) {
     return res.status(400)
       .json({

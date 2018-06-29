@@ -80,7 +80,7 @@ router.put('/:username', (req: express$Request, res: express$Response) => {
       });
   }
 
-  const pryvUser: User = database.getUser({pryvUsername: updateObject.pryvUsername});
+  const pryvUser: User = database.users.getOne({pryvUsername: updateObject.pryvUsername});
 
   if (pryvUser != null && user.pryvId == null) {
     user.mergePryvUser({

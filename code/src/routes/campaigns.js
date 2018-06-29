@@ -54,7 +54,7 @@ router.get('/', (req: express$Request, res: express$Response) => {
 
   const user = res.locals.user;
 
-  const campaigns = database.getCampaigns(({user: user}));
+  const campaigns = database.campaigns.get(({user: user}));
 
   res.status(200)
     .header('Access-Control-Allow-Origin', '*')
@@ -69,10 +69,10 @@ router.get('/title/:pryvAppId', (req: express$Request, res: express$Response) =>
   const rawSignature: string = req.query.signature;
   const pryvUsername: string = req.query.pryvUsername;
 
-  const campaign = database.getCampaignByAppId({
+  const campaign = database.campaigns.getOneByPryvAppId({
     pryvAppId: req.params.pryvAppId
   });
-  const user: User = database.getUser({
+  const user: User = database.users.getOne({
     pryvUsername: pryvUsername,
   });
 
@@ -134,7 +134,7 @@ router.get('/:campaignId', (req: express$Request, res: express$Response) => {
   const user = res.locals.user;
   const campaignId = req.params.campaignId;
 
-  let campaign = database.getCampaign({user: user, campaignId: campaignId});
+  let campaign = database.campaigns.getOne({user: user, campaignId: campaignId});
   if (! campaign) {
     return campaignNotExists(res);
   }

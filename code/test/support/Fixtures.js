@@ -64,7 +64,7 @@ export class Fixtures {
   }): User {
     const user: User = this.getUser(params);
 
-    this.db.saveUser(user);
+    this.db.users.save(user);
     return user;
   }
 
@@ -140,7 +140,7 @@ export class Fixtures {
 
     const campaign = this.getCampaign(params);
 
-    this.db.saveCampaign({
+    this.db.campaigns.save({
       campaign: campaign,
       user: params.user || this.addUser()
     });

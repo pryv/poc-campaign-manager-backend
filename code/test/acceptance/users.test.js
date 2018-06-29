@@ -105,7 +105,7 @@ describe('users', () => {
         .send(user)
         .then(res => {
           res.status.should.be.eql(201);
-          const createdUser = db.getUser({username: user.username});
+          const createdUser = db.users.getOne({username: user.username});
           should.exist(createdUser);
           createdUser.username.should.eql(user.username);
         });
@@ -139,7 +139,7 @@ describe('users', () => {
         .then(res => {
           res.status.should.eql(201);
 
-          const createdPryvUser = db.getUser({pryvUsername: user.pryvUsername});
+          const createdPryvUser = db.users.getOne({pryvUsername: user.pryvUsername});
           should.exist(createdPryvUser);
           createdPryvUser.pryvUsername.should.eql(user.pryvUsername);
           should.exist(createdPryvUser.id);
@@ -323,7 +323,7 @@ describe('users', () => {
           user.pryvToken = pryvToken;
           checkUsers(user, linkedUser);
 
-          const deletedUser = db.getUser({id: pryvUser.id});
+          const deletedUser = db.users.getOne({id: pryvUser.id});
           should.not.exist(deletedUser);
 
           invitation.requestee = user;

@@ -2,8 +2,6 @@
 
 const sqlite3 = require('better-sqlite3');
 
-import typeof {Campaign, User, Invitation} from '../business';
-
 import {Campaigns} from './campaigns';
 import {Users} from './users';
 import {Invitations} from './invitations';
@@ -74,88 +72,6 @@ export class Database {
 
   close(): void {
     return this.db.close();
-  }
-
-  getCampaigns(params: {user: User}): Array<Campaign> {
-    return this.campaigns.get(params);
-  }
-
-  getCampaign(params: {
-    user: User,
-    campaignId: string,
-  }): Campaign {
-    return this.campaigns.getOne(params);
-  }
-
-  getCampaignByAppId(params: {
-    pryvAppId: string,
-  }): Campaign {
-    return this.campaigns.getOneByPryvAppId(params);
-  }
-
-  saveCampaign(params: {
-    campaign: Campaign,
-    user: User
-  }): void {
-    return this.campaigns.save({
-      campaign: params.campaign,
-      user: params.user
-    });
-  }
-
-  getPassword(params: {
-    user: User
-  }): string {
-    return this.users.getPassword(params);
-  }
-
-  getPryvToken(params: {
-    user: User
-  }): string {
-    return this.users.getPryvToken(params);
-  }
-
-  getUsers(): Array<User> {
-    return this.users.get();
-  }
-
-  getUser(params: {
-      id?: string,
-      username?: string,
-      pryvUsername?: string,
-      pryv_id?: string,
-  }): User {
-    return this.users.getOne(params);
-  }
-
-  saveUser(user: User): User {
-    return this.users.save(user);
-  }
-
-  updateUser(params: {
-    user: User,
-    update: mixed
-  }): User {
-    return this.users.updateOne(params);
-  }
-
-  addPryvAccountToUser(params: {
-    user: User,
-  }): User {
-    return this.users.addPryvUser(params);
-  }
-
-  updatePryvToken(params: {
-    user: User,
-  }): User {
-    return this.users.updatePryvToken(params);
-  }
-
-  mergePryvUser(params: {
-    user: User,
-    pryvUser: User,
-  }): User {
-    return this.users.mergePryvUser(params);
   }
 
 }

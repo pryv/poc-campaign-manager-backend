@@ -48,14 +48,14 @@ export class User {
   }
 
   save(db: Database): User {
-    return db.saveUser(this);
+    return db.users.save(this);
   }
 
   update(params: {
     db: Database,
     update: mixed
   }): User {
-    return params.db.updateUser({
+    return params.db.users.updateOne({
       user: this,
       update: _.pick(params.update, ['pryvUsername', 'pryvToken'])
     });
@@ -71,7 +71,7 @@ export class User {
     this.pryvUsername = params.pryvParams.pryvUsername;
     this.pryvToken = params.pryvParams.pryvToken;
     this.pryvId = cuid();
-    return params.db.addPryvAccountToUser({user: this})
+    return params.db.users.addPryvAccountToUser({user: this})
   }
 
   updatePryvToken(params: {
@@ -81,7 +81,7 @@ export class User {
     }
   }): User {
     this.pryvToken = params.pryvParams.pryvToken;
-    return params.db.updatePryvToken({user: this});
+    return params.db.users.updatePryvToken({user: this});
   }
 
   mergePryvUser(params: {
@@ -92,7 +92,7 @@ export class User {
     this.pryvId = params.pryvUser.pryvId;
     this.pryvUsername = params.pryvUser.pryvUsername;
     this.pryvToken = params.pryvToken;
-    return params.db.mergePryvUser({
+    return params.db.users.mergePryvUser({
       user: this,
       pryvUser: params.pryvUser,
     });
@@ -102,20 +102,20 @@ export class User {
     db: Database,
     password: string,
   }): boolean {
-    return params.db.getPassword({
+    return params.db.users.getPassword({
       user: this
     }) === params.password;
   }
 
   exists(db: Database): boolean {
-    return db.getUser(_.pick(this, ['username', 'pryvUsername'])) != null;
+    return db.users.getOne(_.pick(this, ['username', 'pryvUsername'])) != null;
   }
 
   isLinkedWithPryv(params: {
     db: Database
   }): boolean {
     if (this.username != null && this.pryvUsername != null) {
-      return (params.db.getPryvToken({user: this}) != null);
+      return (params.db.users.getPryvToken({user: this}) != null);
     } else {
       return false;
     }
@@ -136,7 +136,7 @@ export class User {
     const user = _.pick(this, ['id', 'username', 'pryvUsername']);
 
     if (this.isLinkedWithPryv({db: params.db})) {
-      user.pryvToken = params.db.getPryvToken({user: this});
+      user.pryvToken = params.db.users.getPryvToken({user: this});
     }
     return user;
   }

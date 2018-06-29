@@ -102,7 +102,7 @@ describe('User', () => {
       }
     });
 
-    const linkedUser: User = db.getUser({pryvUsername});
+    const linkedUser: User = db.users.getOne({pryvUsername: pryvUsername});
 
     // because db.getUser() does not return the pryvToken
     linkedUser.pryvToken = pryvToken;

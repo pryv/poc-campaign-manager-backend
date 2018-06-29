@@ -58,7 +58,7 @@ describe('campaigns', () => {
           const createdCampaign: Campaign = new Campaign(res.body.campaign);
           checkCampaigns(campaign, createdCampaign, {id: true});
 
-          const localCampaign: Campaign = db.getCampaign({user: user, campaignId: createdCampaign.id});
+          const localCampaign: Campaign = db.campaigns.getOne({user: user, campaignId: createdCampaign.id});
           checkCampaigns(createdCampaign, localCampaign);
         });
     });

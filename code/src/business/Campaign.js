@@ -47,7 +47,7 @@ export class Campaign {
     db: Database,
     user: User
   }): void {
-    params.db.saveCampaign({
+    params.db.campaigns.save({
       campaign: this,
       user: params.user
     });

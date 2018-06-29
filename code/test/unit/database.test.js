@@ -71,35 +71,35 @@ describe('Database', () => {
 
     it('should return a local user when querying by username', () => {
       const user: User = fixtures.addUser({localOnly: true});
-      const createdUser: User = db.getUser({username: user.username});
+      const createdUser: User = db.users.getOne({username: user.username});
       should.exist(createdUser);
       checkUsers(user, createdUser);
     });
 
     it('should return a pryv user when querying by pryv username', () => {
       const pryvUser = fixtures.addUser({pryvOnly: true});
-      const createdPryvUser = db.getUser({pryvUsername: pryvUser.pryvUsername});
+      const createdPryvUser = db.users.getOne({pryvUsername: pryvUser.pryvUsername});
       should.exist(createdPryvUser);
       checkUsers(pryvUser, createdPryvUser);
     });
 
     it('should return a pryv user when querying by pryv id', () => {
       const pryvUser = fixtures.addUser({pryvOnly: true});
-      const createdPryvUser = db.getUser({pryv_id: pryvUser.pryvId});
+      const createdPryvUser = db.users.getOne({pryv_id: pryvUser.pryvId});
       should.exist(createdPryvUser);
       checkUsers(pryvUser, createdPryvUser);
     });
 
     it('should return a full user when querying by username', () => {
       const user: User = fixtures.addUser();
-      const createdUser: User = db.getUser({username: user.username});
+      const createdUser: User = db.users.getOne({username: user.username});
       should.exist(createdUser);
       checkUsers(user, createdUser);
     });
 
     it('should return a full user when querying by pryv username', () => {
       const user: User = fixtures.addUser();
-      const createdUser: User = db.getUser({pryvUsername: user.pryvUsername});
+      const createdUser: User = db.users.getOne({pryvUsername: user.pryvUsername});
       should.exist(createdUser);
       checkUsers(user, createdUser);
     });
@@ -110,11 +110,11 @@ describe('Database', () => {
       user.pryvUsername = 'testuser';
       user.pryvToken = 'doanwdoianw';
       user.pryvId = 'conawidnaowinda';
-      db.addPryvAccountToUser({
+      db.users.addPryvAccountToUser({
         user: user
       });
 
-      const linkedUser: User= db.getUser({pryvUsername: user.pryvUsername});
+      const linkedUser: User= db.users.getOne({pryvUsername: user.pryvUsername});
 
       // because db.getUser() does not return the pryvToken
       linkedUser.pryvToken = user.pryvToken;
@@ -125,7 +125,7 @@ describe('Database', () => {
     it('should return a pryv token when it exists', () => {
       const user: User = fixtures.addUser({ linked: true });
 
-      const pryvToken = db.getPryvToken({user: user});
+      const pryvToken = db.users.getPryvToken({user: user});
       should.exist(pryvToken);
       pryvToken.should.eql(user.pryvToken);
     });
@@ -139,7 +139,7 @@ describe('Database', () => {
 
       const campaign: Campaign = fixtures.addCampaign({user: user});
 
-      let campaigns = db.getCampaigns({user: user});
+      let campaigns = db.campaigns.get({user: user});
       campaigns.should.be.Array();
       checkCampaigns(campaign, campaigns[0]);
     });
@@ -147,7 +147,7 @@ describe('Database', () => {
     it('should return a campaign when querying by pryvAppId', () => {
       const campaign: Campaign = fixtures.addCampaign();
 
-      const retrievedCampaign: Campaign = db.getCampaignByAppId({pryvAppId: campaign.pryvAppId});
+      const retrievedCampaign: Campaign = db.campaigns.getOneByPryvAppId({pryvAppId: campaign.pryvAppId});
       checkCampaigns(campaign, retrievedCampaign);
     });
   })

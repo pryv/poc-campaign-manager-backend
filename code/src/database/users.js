@@ -322,7 +322,7 @@ export class Users {
     }
   }
 
-  addPryvUser(params: {user: User}): User {
+  addPryvAccountToUser(params: {user: User}): User {
     this.addPryvUserToUserStatement.run({
       pryv_username: params.user.pryvUsername,
       pryv_token: params.user.pryvToken,
