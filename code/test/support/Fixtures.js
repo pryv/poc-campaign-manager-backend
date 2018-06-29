@@ -108,7 +108,7 @@ export class Fixtures {
   }): Invitation {
 
     const invitation = this.getInvitation(params);
-    this.db.saveInvitation({
+    this.db.invitations.save({
       invitation: invitation,
     });
     return invitation;

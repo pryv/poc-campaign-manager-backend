@@ -158,29 +158,5 @@ export class Database {
     return this.users.mergePryvUser(params);
   }
 
-  getInvitations(params: {
-    user: User,
-  }): Array<Invitation> {
-    return this.invitations.get({user: params.user});
-  }
-
-  getInvitation(params: {
-    id: string,
-  }): Invitation {
-    return this.invitations.getOne(params);
-  }
-
-  saveInvitation(params: {
-    invitation: Invitation,
-  }): Invitation {
-    return this.invitations.save(params);
-  }
-
-  updateInvitation(params: {
-    invitation: Invitation,
-  }): Invitation {
-    return this.invitations.updateOne(params);
-  }
-
 }
 

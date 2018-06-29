@@ -145,10 +145,10 @@ describe('invitations', () => {
             createdInvitation.should.have.property('id').which.is.String();
             createdInvitation.status.should.eql('created');
 
-            const retrievedInvitation = db.getInvitation({id: createdInvitation.id});
+            const retrievedInvitation = db.invitations.getOne({id: createdInvitation.id});
             checkInvitations(createdInvitation, retrievedInvitation);
 
-            const requesteeInvitations = db.getInvitations({user: requestee});
+            const requesteeInvitations = db.invitations.get({user: requestee});
             let found = null;
             requesteeInvitations.forEach((i) => {
               if (i.id === createdInvitation.id) {
@@ -232,7 +232,7 @@ describe('invitations', () => {
             checkUsers(requestee, createdInvitation.requestee, {pryvToken: true});
             createdInvitation.status.should.be.eql(invitation.status);
 
-            const dbInvitation = db.getInvitation({id: createdInvitation.id});
+            const dbInvitation = db.invitations.getOne({id: createdInvitation.id});
             should.exist(dbInvitation);
           });
 

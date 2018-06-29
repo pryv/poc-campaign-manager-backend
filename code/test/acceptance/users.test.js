@@ -327,7 +327,7 @@ describe('users', () => {
           should.not.exist(deletedUser);
 
           invitation.requestee = user;
-          const updatedInvitation: Invitation = db.getInvitations({user: user})[0];
+          const updatedInvitation: Invitation = db.invitations.get({user: user})[0];
           checkInvitations(invitation, updatedInvitation);
         });
     });

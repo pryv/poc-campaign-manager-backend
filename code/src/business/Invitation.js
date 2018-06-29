@@ -58,12 +58,12 @@ export class Invitation {
     if (params.update.status)
       this.status = params.update.status;
     this.modified = Date.now() / 1000;
-    return params.db.updateInvitation({ invitation: this });
+    return params.db.invitations.updateOne({ invitation: this });
   }
 
   save(params: {
     db: Database,
   }): void {
-    params.db.saveInvitation({invitation: this});
+    params.db.invitations.save({invitation: this});
   }
 }

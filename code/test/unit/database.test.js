@@ -30,7 +30,7 @@ describe('Database', () => {
     it('should retrieve an invitation', () => {
 
       const invitation: Invitation = fixtures.addInvitation();
-      const createdInvitation = db.getInvitation({id: invitation.id});
+      const createdInvitation = db.invitations.getOne({id: invitation.id});
       should.exist(createdInvitation);
       checkInvitations(invitation, createdInvitation);
     });
@@ -40,10 +40,10 @@ describe('Database', () => {
       const invitation: Invitation = fixtures.addInvitation();
       invitation.status = 'accepted';
       invitation.modified = Date.now() / 1000;
-      db.updateInvitation({
+      db.invitations.updateOne({
         invitation: invitation
       });
-      const updatedInvitation = db.getInvitation({id: invitation.id});
+      const updatedInvitation = db.invitations.getOne({id: invitation.id});
 
       should.exist(updatedInvitation);
       invitation.campaign.should.eql(updatedInvitation.campaign);

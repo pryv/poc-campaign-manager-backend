@@ -100,7 +100,7 @@ router.get('/title/:pryvAppId', (req: express$Request, res: express$Response) =>
   }
 
   const invitation: Invitation = findInvitation({
-    invitations: database.getInvitations({user: user}),
+    invitations: database.invitations.get({user: user}),
     campaign: campaign,
   });
 

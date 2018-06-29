@@ -100,7 +100,7 @@ router.get('/', (req: express$Request, res: express$Response) => {
 
   const user = res.locals.user;
 
-  const invitations = database.getInvitations({
+  const invitations = database.invitations.get({
     user: user
   });
   return res.status(200)
@@ -116,7 +116,7 @@ router.put('/:invitationId', (req: express$Request, res: express$Response) => {
   const invitationId: string = req.params.invitationId;
   const invitationUpdate = req.body;
 
-  const invitation: Invitation = database.getInvitation({id: invitationId});
+  const invitation: Invitation = database.invitations.getOne({id: invitationId});
   if (invitation == null) {
     return res.status(404)
       .json({
@@ -154,7 +154,7 @@ function invitationExists(params: {
     requestee: User,
     campaign: Campaign
 }): boolean {
-      const invitations: Array<Invitation> = database.getInvitations({user: params.requester});
+      const invitations: Array<Invitation> = database.invitations.get({user: params.requester});
       let exists: boolean = false;
       invitations.forEach((i) => {
         if (i.campaign.id === params.campaign.id && i.requestee.id === params.requestee.id) {
