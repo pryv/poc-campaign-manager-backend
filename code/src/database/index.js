@@ -5,6 +5,7 @@ const sqlite3 = require('better-sqlite3');
 import {Campaigns} from './campaigns';
 import {Users} from './users';
 import {Invitations} from './invitations';
+import {Accesses} from './accesses';
 
 const logger = require('../logger');
 const config = require('../config');
@@ -26,6 +27,7 @@ export class Database {
     this.users = new Users({db: this.db});
     this.campaigns = new Campaigns({db: this.db});
     this.invitations = new Invitations({db: this.db});
+    this.accesses = new Accesses({db: this.db});
   }
 
   initTables(): void {
@@ -67,6 +69,13 @@ export class Database {
       'campaign_id string NOT NULL,' +
       'requester_id string NOT NULL,' +
       'requestee_id string NOT NULL' +
+      ')').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS accesses (' +
+      'access_id string PRIMARY_KEY, ' +
+      'created integer NOT NULL, ' +
+      'valid integer NOT NULL, ' +
+      'user_id string NOT NULL ' +
       ')').run();
   }
 

@@ -1,6 +1,6 @@
 // @flow
 
-import {User, Campaign, Invitation} from '../../src/business';
+import {User, Campaign, Invitation, Access} from '../../src/business';
 
 import should from 'should';
 
@@ -61,4 +61,10 @@ export function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Obje
 
   //if (expected.created && (! omit.created))
     expected.created.should.approximately(actual.created, 1.0);
+}
+
+export function checkAccesses(expected: Access, actual: Access): void {
+  expected.id.should.eql(actual.id);
+  expected.created.should.eql(actual.created);
+  expected.validUntil.should.eql(actual.validUntil);
 }

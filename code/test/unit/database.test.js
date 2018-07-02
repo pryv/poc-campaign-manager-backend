@@ -4,9 +4,9 @@
 
 import should from 'should';
 import {Database} from '../../src/database';
-import {User, Campaign, Invitation} from '../../src/business';
+import {User, Campaign, Invitation, Access} from '../../src/business';
 import {Fixtures} from '../support/Fixtures';
-import {checkInvitations, checkCampaigns, checkUsers} from '../support/validation';
+import {checkInvitations, checkCampaigns, checkUsers, checkAccesses} from '../support/validation';
 import {DbCleaner} from '../support/DbCleaner';
 
 const config = require('../../src/config');
@@ -149,6 +149,46 @@ describe('Database', () => {
 
       const retrievedCampaign: Campaign = db.campaigns.getOneByPryvAppId({pryvAppId: campaign.pryvAppId});
       checkCampaigns(campaign, retrievedCampaign);
+    });
+  });
+
+  describe('Accesses', () => {
+
+    it('should create and retrieve an access', () => {
+      const user: User = fixtures.addUser();
+      const access: Access = new Access();
+
+      db.accesses.save({
+        user: user,
+        access: access
+      });
+      const retrievedAccess: Access = db.accesses.getOne({
+        user: user,
+        accessId: access.id,
+      });
+      checkAccesses(retrievedAccess, access);
+    });
+
+    it('should update an access', () => {
+      const user: User = fixtures.addUser();
+      const access: Access = new Access();
+
+      access.save({
+        db: db,
+        user: user,
+      });
+
+      access.validUntil = Date.now() + (60 * 60 * 24 * 28);
+
+      db.accesses.updateOne({
+        user: user,
+        access: access,
+      });
+      const retrievedAccess: Access = db.accesses.getOne({
+        user: user,
+        accessId: access.id,
+      });
+      checkAccesses(retrievedAccess, access);
     });
   })
 });
