@@ -178,7 +178,7 @@ describe('Database', () => {
         user: user,
       });
 
-      access.validUntil = Date.now() + (60 * 60 * 24 * 28);
+      access.isValid = false;
 
       db.accesses.updateOne({
         user: user,
@@ -190,5 +190,6 @@ describe('Database', () => {
       });
       checkAccesses(retrievedAccess, access);
     });
+
   })
 });

@@ -66,5 +66,5 @@ export function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Obje
 export function checkAccesses(expected: Access, actual: Access): void {
   expected.id.should.eql(actual.id);
   expected.created.should.eql(actual.created);
-  expected.validUntil.should.eql(actual.validUntil);
+  expected.isValidUntil.should.eql(actual.isValidUntil);
 }

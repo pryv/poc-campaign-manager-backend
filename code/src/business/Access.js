@@ -8,19 +8,26 @@ export class Access {
 
   id: string;
   created: number;
-  validUntil: number;
+  isValidUntil: number;
+  isValid: boolean;
 
   constructor(params: {
     id?: string,
     created?: number,
-    validUntil?: number,
+    isValidUntil?: number,
+    isValid?: boolean,
   }) {
     if (params == null) {
       params = {};
     }
     this.id = params.id || cuid();
     this.created = params.created || now();
-    this.validUntil = params.validUntil || inTwoWeeks();
+    this.isValidUntil = params.isValidUntil || inTwoWeeks();
+    if (params.isValid == null) {
+      this.isValid = true;
+    } else {
+      this.isValid = params.isValid
+    }
   }
 
   save(params: {

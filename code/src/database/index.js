@@ -74,7 +74,8 @@ export class Database {
       'CREATE TABLE IF NOT EXISTS accesses (' +
       'access_id string PRIMARY_KEY, ' +
       'created integer NOT NULL, ' +
-      'valid integer NOT NULL, ' +
+      'valid boolean NOT NULL, ' +
+      'valid_until integer NOT NULL, ' +
       'user_id string NOT NULL ' +
       ')').run();
   }

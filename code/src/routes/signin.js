@@ -5,7 +5,7 @@ import _ from 'lodash';
 
 const logger: any = require('../logger');
 import {Database} from '../database';
-import {User} from '../business';
+import {User, Access} from '../business';
 const config = require('../config');
 
 import schema from '../schemas';
@@ -54,17 +54,18 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
+  const access: Access = user.addAccess({
+    db: database,
+    access: new Access()
+  });
+
   const response: mixed = {
     user: user.forApi({db: database})
   };
-  response.user.token = generateToken();
+  response.user.token = access.id;
 
   res.status(200)
     .json(response);
 });
-
-function generateToken() {
-  return 'abc';
-}
 
 module.exports = router;

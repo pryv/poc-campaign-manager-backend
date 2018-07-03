@@ -3,10 +3,10 @@
 /* global describe, it, before, after*/
 
 import should from 'should';
-import {User} from '../../src/business';
+import {User, Access} from '../../src/business';
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
-import {checkUsers} from '../support/validation';
+import {checkUsers, checkAccesses} from '../support/validation';
 import {Database} from '../../src/database';
 
 const config = require('../../src/config');
@@ -110,5 +110,60 @@ describe('User', () => {
     checkUsers(user, linkedUser);
 
   });
+
+  describe('Accesses', () => {
+
+    it('should add the token to the user', () => {
+      const user: User = fixtures.addUser();
+      const access: Access = new Access();
+      user.addAccess({
+        db: db,
+        access: access
+      });
+
+      const retrievedAccess: Access = db.accesses.getOne({
+        user: user,
+        accessId: access.id,
+      });
+      checkAccesses(access, retrievedAccess);
+    });
+
+    it('should return true if the access is valid', () => {
+      const user: User = fixtures.addUser();
+      const access: Access = new Access();
+      user.addAccess({
+        db: db,
+        access: access
+      });
+
+      user.isAccessValid({
+        db: db,
+        accessId: access.id,
+      }).should.be.true();
+    });
+
+    it('should return false if the access is invalid', () => {
+      const user: User = fixtures.addUser();
+      const access: Access = new Access();
+      user.addAccess({
+        db: db,
+        access: access,
+      });
+
+      user.invalidateAccess({
+        db: db,
+        accessId: access.id,
+      });
+
+      user.isAccessValid({
+        db: db,
+        accessId: access.id
+      }).should.be.false();
+
+    });
+
+  });
+
+
 
 });

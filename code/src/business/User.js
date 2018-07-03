@@ -1,6 +1,7 @@
 // @flow
 
 import typeof {Database} from '../database';
+import {Access} from '.';
 import cuid from 'cuid';
 import _ from 'lodash';
 
@@ -140,4 +141,47 @@ export class User {
     }
     return user;
   }
+
+  addAccess(params: {
+    db: Database,
+    access: Access,
+  }): Access {
+    params.access.save({
+      db: params.db,
+      user: this,
+    });
+    return params.access;
+  }
+
+  isAccessValid(params: {
+    db: Database,
+    accessId: string,
+  }): boolean {
+    const access: Access = params.db.accesses.getOne({
+      user: this,
+      accessId: params.accessId,
+    });
+    if (! access.isValid) {
+      return false;
+    }
+
+    return access.isValidUntil > now();
+  }
+
+  invalidateAccess(params: {
+    db: Database,
+    accessId: string,
+  }): Access {
+    return params.db.accesses.updateOne({
+      user: this,
+      access: {
+        id: params.accessId,
+        isValid: false,
+      }
+    });
+  }
+}
+
+function now() {
+  return Date.now() / 1000;
 }
