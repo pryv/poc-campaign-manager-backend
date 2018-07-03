@@ -165,7 +165,7 @@ describe('users', () => {
   describe('when signing in', () => {
 
     function makeUrl(): string {
-      return '/signin';
+      return '/auth';
     }
 
     describe('for a local user', () => {

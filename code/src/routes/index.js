@@ -3,6 +3,6 @@
 import users from './users';
 import campaigns from './campaigns';
 import invitations from './invitations';
-import signin from './signin';
+import auth from './auth';
 
-export {users, campaigns, invitations, signin};
+export {users, campaigns, invitations, auth};
