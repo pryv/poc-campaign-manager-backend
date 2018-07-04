@@ -2,13 +2,11 @@
 
 import express from 'express';
 const bodyParser = require('body-parser');
-import Ajv from 'ajv';
 
 const logger: any = require('./logger');
 import {Database} from './database';
 const config = require('./config');
-import {callLoger, getUser, checkAuth} from './middleware';
-import schema from './schemas';
+import {callLoger, getUser, getUserNew, getUserFromQuery, checkAuth} from './middleware';
 import {campaigns, invitations, users, auth} from './routes';
 
 const app: express$Application = express();
@@ -20,19 +18,22 @@ const database: Database = new Database({
 
 app.use(callLoger);
 app.use(bodyParser.json());
+
+app.get('/campaigns', getUserFromQuery({db: database}));
+app.post('/campaigns', getUserNew({db: database}));
+
+app.get('/campaigns', checkAuth({db: database}));
+app.post('/campaigns', checkAuth({db: database}));
+
 app.all('/:username/invitations', getUser({db: database}));
-app.all('/:username/campaigns', getUser({db: database}));
-app.all('/:username/campaigns/:campaignId', getUser({db: database}));
+
 app.all('/users/:username', getUser({db: database}));
 
 app.get('/:username/invitations', checkAuth({db: database}));
 app.post('/:username/invitations', checkAuth({db: database}));
 app.put('/:username/invitations', checkAuth({db: database}));
 
-app.get('/:username/campaigns', checkAuth({db: database}));
-app.post('/:username/campaigns', checkAuth({db: database}));
 
-app.get('/:username/campaigns/:campaignId', checkAuth({db: database}));
 
 app.get('/users/:username', checkAuth({db: database}));
 app.post('/users/:username', checkAuth({db: database}));
@@ -54,5 +55,5 @@ app.options('*', (req: express$Request, res: express$Response) => {
 
 app.use('/users', users);
 app.use('/:username/invitations', invitations);
-app.use('/:username/campaigns', campaigns);
+app.use('/campaigns', campaigns);
 app.use('/auth', auth);

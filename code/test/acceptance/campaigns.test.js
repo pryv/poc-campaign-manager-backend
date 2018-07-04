@@ -35,10 +35,8 @@ describe('campaigns', () => {
     fixtures.close();
   });
 
-  function makeUrl(params: {
-    username: string
-  }): string {
-    return '/' + params.username + '/campaigns';
+  function makeUrl(): string {
+    return '/campaigns';
   }
 
   describe('when creating a campaign', () => {
@@ -49,12 +47,18 @@ describe('campaigns', () => {
       const access: Access = fixtures.addAccess({user: user});
       const campaign = fixtures.getCampaign({user: user});
 
+      const payload: any = {
+        campaign: _.pick(campaign, ['title', 'description', 'permissions']),
+        user: _.pick(user, ['username']),
+      };
+
       return request(app)
-        .post(makeUrl({username: user.username}))
+        .post(makeUrl())
         .set('authorization', access.id)
-        .send(_.pick(campaign, ['title', 'description', 'permissions']))
+        .send(payload)
         .then(res => {
           res.status.should.eql(201);
+
           res.body.should.have.property('campaign').which.is.an.Object();
 
           const createdCampaign: Campaign = new Campaign(res.body.campaign);
@@ -68,8 +72,10 @@ describe('campaigns', () => {
     it('should return a 400 response with an error message when the user does not exist', () => {
 
       return request(app)
-        .post(makeUrl({username: 'unexistant-user'}))
-        .send({})
+        .post(makeUrl())
+        .send({
+          user: {username: 'unexistant-user'}
+        })
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
@@ -83,12 +89,15 @@ describe('campaigns', () => {
       const user: User = fixtures.addUser();
       const access: Access = fixtures.addAccess({user: user});
       const incompleteCampaign = {
-        id: 'blop',
-        title: 'blip'
+        user: {username: user.username},
+        campaign: {
+          id: 'blop',
+          title: 'blip'
+        }
       };
 
       return request(app)
-        .post(makeUrl({username: user.username}))
+        .post(makeUrl())
         .set('authorization', access.id)
         .send(incompleteCampaign)
         .then(res => {
@@ -108,8 +117,9 @@ describe('campaigns', () => {
       let campaign: Campaign = fixtures.addCampaign({user: user});
 
       return request(app)
-        .get(makeUrl({username: user.username}))
+        .get(makeUrl())
         .set('authorization', access.id)
+        .query({username: user.username})
         .then(res => {
           res.status.should.eql(200);
           res.body.should.have.property('campaigns').which.is.a.Array();
@@ -123,7 +133,8 @@ describe('campaigns', () => {
     it('should return a 400 response with an error message when the user does not exist', () => {
 
       return request(app)
-        .get(makeUrl({username: 'unexistant-user'}))
+        .get(makeUrl())
+        .query({username: 'unexistant-user'})
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
@@ -135,207 +146,34 @@ describe('campaigns', () => {
   describe('when querying a campaign', () => {
 
     function makeUrl(params: {
-      username: string,
       campaignId: string
     }): string {
-      return '/' + params.username + '/campaigns/' + params.campaignId;
+      return '/campaigns/' + params.campaignId;
     }
 
-    describe('as an authentified user', () => {
+    it('should return the campaign', () => {
 
-      it('should return the campaign', () => {
+      const user: User = fixtures.addUser();
+      const campaign: Campaign = fixtures.addCampaign({user: user});
 
-        const user: User = fixtures.addUser();
-        const access: Access = fixtures.addAccess({user: user});
-        const campaign: Campaign = fixtures.addCampaign({user: user});
-
-        return request(app)
-          .get(makeUrl({username: user.username, campaignId: campaign.id}))
-          .set('authorization', access.id)
-          .then(res => {
-            res.status.should.eql(200);
-            res.body.should.have.property('campaign');
-            const retrievedCampaign = res.body.campaign;
-            new Campaign(retrievedCampaign).should.be.eql(campaign);
-          });
-      });
-
-      it('should return an error if the user does not exist', () => {
-
-        return request(app)
-          .get(makeUrl({username: 'nonexistantUser'}))
-          .then(res => {
-            res.status.should.eql(400);
-            res.body.should.have.property('error');
-          });
-      });
-
-      it('should return an error if the campaign does not exist', () => {
-
-        const user: User = fixtures.addUser();
-        const access: Access = fixtures.addAccess({user: user});
-
-        return request(app)
-          .get(makeUrl({username: user.username, campaignId: 'nonexistantId'}))
-          .set('authorization', access.id)
-          .then(res => {
-            res.status.should.eql(400);
-            res.body.should.have.property('error');
-          });
-      });
-
+      return request(app)
+        .get(makeUrl({campaignId: campaign.id}))
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('campaign');
+          const retrievedCampaign = res.body.campaign;
+          new Campaign(retrievedCampaign).should.be.eql(campaign);
+        });
     });
 
-    describe('as a patient', () => {
+    it('should return an error if the campaign does not exist', () => {
 
-      let user: User;
-      let campaign: Campaign;
-      let invitation: Invitation;
-
-      before(() => {
-
-      });
-
-      it('should return the campaign if the token is correct', () => {
-
-        const requester = fixtures.addUser({localOnly: true});
-        user = fixtures.addUser({pryvOnly: true});
-        campaign = fixtures.addCampaign({ user: requester });
-        invitation = fixtures.addInvitation({
-          requester: requester,
-          campaign: campaign,
-          requestee: user,
+      return request(app)
+        .get(makeUrl({campaignId: 'nonexistantId'}))
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
         });
-        const msg: number = Date.now() / 1000;
-        const encodedToken: Uint8Array = nacl.util.decodeUTF8(invitation.accessToken);
-        const encodedTimestamp: Uint8Array = nacl.util.decodeUTF8(msg + '');
-        const hmaced: Array<any> = sha256.hmac(encodedToken, encodedTimestamp);
-
-        return request(app)
-          .get('/all/campaigns/title/' + campaign.pryvAppId)
-          .query('message=' + msg)
-          .query('signature=' + hmaced)
-          .query('pryvUsername=' + user.pryvUsername)
-          .then(res => {
-            res.status.should.eql(200);
-            res.body.should.have.property('campaign').which.is.an.Object();
-            const retrievedCampaign: Campaign = res.body.campaign;
-            checkCampaigns(campaign, retrievedCampaign);
-
-            retrievedCampaign.requester.should.eql(requester.username);
-            retrievedCampaign.invitationId.should.eql(invitation.id);
-          });
-
-      });
-
-      it('should return an error if the campaign has no invitation for the user', () => {
-
-        user = fixtures.addUser({pryvOnly: true});
-        campaign = fixtures.addCampaign();
-
-        const msg: number = Date.now() / 1000;
-
-        return request(app)
-          .get('/all/campaigns/title/' + campaign.pryvAppId)
-          .query('message=' + msg)
-          .query('signature=' + 'irrelevant')
-          .query('pryvUsername=' + user.pryvUsername)
-          .then(res => {
-            res.status.should.eql(400);
-            res.body.should.have.property('error').which.is.a.String();
-          });
-
-      });
-
-      it('should return an error if the campaign does not exist', () => {
-
-        user = fixtures.addUser({pryvOnly: true});
-
-        return request(app)
-          .get('/all/campaigns/title/' + campaign.pryvAppId)
-          .query('message=' + 'irrelevant')
-          .query('signature=' + 'irrelevant')
-          .query('pryvUsername=' + user.pryvUsername)
-          .then(res => {
-            res.status.should.eql(400);
-            res.body.should.have.property('error').which.is.a.String();
-          });
-      });
-
-      it('should return an error if the token is invalid', () => {
-
-        user = fixtures.addUser({pryvOnly: true});
-        campaign = fixtures.addCampaign();
-        invitation = fixtures.addInvitation({
-          campaign: campaign,
-          requestee: user,
-        });
-        const msg: number = Date.now() / 1000;
-        const encodedToken: Uint8Array = nacl.util.decodeUTF8('something-else');
-        const encodedTimestamp: Uint8Array = nacl.util.decodeUTF8(msg + '');
-        const hmaced: Array<any> = sha256.hmac(encodedToken, encodedTimestamp);
-
-        return request(app)
-          .get('/all/campaigns/title/' + campaign.pryvAppId)
-          .query('message=' + msg)
-          .query('signature=' + hmaced)
-          .query('pryvUsername=' + user.pryvUsername)
-          .then(res => {
-            res.status.should.eql(400);
-            res.body.should.have.property('error').which.is.a.String();
-          });
-      });
-
-      it('should return an error if the timestamp is too old', () => {
-
-        user = fixtures.addUser({pryvOnly: true});
-        campaign = fixtures.addCampaign();
-        invitation = fixtures.addInvitation({
-          campaign: campaign,
-          requestee: user,
-        });
-        const msg: number = (Date.now() / 1000) - 100;
-        const encodedToken: Uint8Array = nacl.util.decodeUTF8(invitation.accessToken);
-        const encodedTimestamp: Uint8Array = nacl.util.decodeUTF8(msg + '');
-        const hmaced: Array<any> = sha256.hmac(encodedToken, encodedTimestamp);
-
-        return request(app)
-          .get('/all/campaigns/title/' + campaign.pryvAppId)
-          .query('message=' + msg)
-          .query('signature=' + hmaced)
-          .query('pryvUsername=' + user.pryvUsername)
-          .then(res => {
-            res.status.should.eql(400);
-            res.body.should.have.property('error').which.is.a.String();
-          });
-
-      });
-
-      it('should return an error if the timestamp is too far into the future', () => {
-
-        user = fixtures.addUser({pryvOnly: true});
-        campaign = fixtures.addCampaign();
-        invitation = fixtures.addInvitation({
-          campaign: campaign,
-          requestee: user,
-        });
-        const msg: number = (Date.now() / 1000) + 100;
-        const encodedToken: Uint8Array = nacl.util.decodeUTF8(invitation.accessToken);
-        const encodedTimestamp: Uint8Array = nacl.util.decodeUTF8(msg + '');
-        const hmaced: Array<any> = sha256.hmac(encodedToken, encodedTimestamp);
-
-        return request(app)
-          .get('/all/campaigns/title/' + campaign.pryvAppId)
-          .query('message=' + msg)
-          .query('signature=' + hmaced)
-          .query('pryvUsername=' + user.pryvUsername)
-          .then(res => {
-            res.status.should.eql(400);
-            res.body.should.have.property('error').which.is.a.String();
-          });
-
-      });
-
     });
 
   });

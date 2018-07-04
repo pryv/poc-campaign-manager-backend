@@ -56,8 +56,6 @@ export class Campaigns {
       'SELECT * ' +
       'FROM campaigns ' +
       'WHERE ' +
-      ' user_id = @user_id ' +
-      ' AND ' +
       ' campaign_id = @campaign_id;'
     );
 
@@ -88,11 +86,9 @@ export class Campaigns {
   }
 
   getOne(params: {
-    user: User,
     campaignId: string,
   }): Campaign {
     return convertFromDB(this.getOneStatement.get({
-      user_id: params.user.id,
       campaign_id: params.campaignId,
     }));
   }
