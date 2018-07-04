@@ -33,9 +33,14 @@ describe('users', () => {
     fixtures.close();
   });
 
-  function makeUrl(option:? string): string {
+  function makeUrl(params: {
+    path:? string,
+  }): string {
+    if (params == null) {
+      params = {};
+    }
     const base = '/users';
-    return option ? base + '/' + option : base;
+    return params.path ? base + '/' + params.path : base;
   }
 
   describe('when fetching a user\s data', () => {
@@ -44,10 +49,11 @@ describe('users', () => {
 
       it('should return the id and username', () => {
         const localUser: User = fixtures.addUser({localOnly: true});
+        const access: Access = fixtures.addAccess({user: localUser});
 
         return request(app)
-          .get(makeUrl(localUser.username))
-          .set('Authorization', 'abc')
+          .get(makeUrl({path: localUser.username}))
+          .set('authorization', access.id)
           .then(res => {
             res.status.should.eql(200);
             res.body.should.have.property('user').which.is.an.Object();
@@ -62,10 +68,11 @@ describe('users', () => {
 
       it('should return the id, username, pryvUsername, pryvToken', () => {
         const linkedUser: User = fixtures.addUser({linked: true});
+        const access: Access = fixtures.addAccess({user: linkedUser});
 
         return request(app)
-          .get(makeUrl(linkedUser.username))
-          .set('Authorization', 'abc')
+          .get(makeUrl({ path: linkedUser.username}))
+          .set('authorization', access.id)
           .then(res => {
             res.status.should.eql(200);
             res.body.should.have.property('user').which.is.an.Object();
@@ -79,7 +86,7 @@ describe('users', () => {
 
     it('should return a 400 if the user does not exist', () => {
       return request(app)
-        .get(makeUrl('unexistentuser'))
+        .get(makeUrl({path: 'unexistentuser'}))
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error').which.is.a.String();
@@ -271,12 +278,14 @@ describe('users', () => {
     it('if the pryv_user does not exist, should create a pryv_user linked to the local_user, return a 200', () => {
 
       const user: User = fixtures.addUser({localOnly: true});
+      const access: Access = fixtures.addAccess({user: user});
 
       const pryvUsername: string = 'my-pryv-username';
       const pryvToken: string = 'co1n2oi3noidaw';
 
       return request(app)
-        .put(makeUrl(user.username))
+        .put(makeUrl({ path: user.username }))
+        .set('authorization', access.id)
         .send({
           pryvUsername: pryvUsername,
           pryvToken: pryvToken,
@@ -297,6 +306,7 @@ describe('users', () => {
     it('if invitations already exist for this pryv username, should delete the previous user and link its pryv_user and invitations to the user\'s account, return a 200', () => {
 
       const user: User = fixtures.addUser({localOnly: true});
+      const access: Access = fixtures.addAccess({user: user});
       const pryvUser: User = fixtures.addUser({pryvOnly: true});
       const pryvToken: string = 'c123oi1bno2i3n1';
 
@@ -307,7 +317,8 @@ describe('users', () => {
       });
 
       return request(app)
-        .put(makeUrl(user.username))
+        .put(makeUrl({ path: user.username}))
+        .set('authorization', access.id)
         .send({
           pryvUsername: pryvUser.pryvUsername,
           pryvToken: pryvToken,
@@ -335,9 +346,11 @@ describe('users', () => {
     it('should update the pryv token to the pryv user when the pryv user already exists', () => {
       const user: User = fixtures.addUser();
       const newPryvToken: string = 'cno12n3oi1n2oida';
+      const access: Access = fixtures.addAccess({user: user});
 
       return request(app)
-        .put(makeUrl(user.username))
+        .put(makeUrl({ path: user.username }))
+        .set('authorization', access.id)
         .send({
           pryvUsername: user.pryvUsername,
           pryvToken: newPryvToken})
@@ -353,7 +366,7 @@ describe('users', () => {
     it('should return a 400 when the user is not existing', () => {
 
       return request(app)
-        .put(makeUrl('unexistentuser'))
+        .put(makeUrl({ path: 'unexistentuser' }))
         .send({
           pryvUsername: 'testuser',
           pryvToken: 'cowdnaoin',
@@ -367,9 +380,11 @@ describe('users', () => {
     it('should return a 400 if the shema is not respected', () => {
 
       const user: User = fixtures.addUser();
+      const access: Access = fixtures.addAccess({user: user});
 
       return request(app)
-        .put(makeUrl(user.username))
+        .put(makeUrl({ path: user.username }))
+        .set('authorization', access.id)
         .send({badField: 'yolo'})
         .then(res => {
           res.status.should.eql(400);

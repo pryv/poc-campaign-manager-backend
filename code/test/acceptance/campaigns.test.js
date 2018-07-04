@@ -46,10 +46,12 @@ describe('campaigns', () => {
     it('should create the campaign, return 201 with the created campaign when the user exists and all required fields are met', () => {
 
       const user: User = fixtures.addUser();
+      const access: Access = fixtures.addAccess({user: user});
       const campaign = fixtures.getCampaign({user: user});
 
       return request(app)
         .post(makeUrl({username: user.username}))
+        .set('authorization', access.id)
         .send(_.pick(campaign, ['title', 'description', 'permissions']))
         .then(res => {
           res.status.should.eql(201);
@@ -79,6 +81,7 @@ describe('campaigns', () => {
     it('should return a 400 response with an error message when the campaign schema is wrong', () => {
 
       const user: User = fixtures.addUser();
+      const access: Access = fixtures.addAccess({user: user});
       const incompleteCampaign = {
         id: 'blop',
         title: 'blip'
@@ -86,6 +89,7 @@ describe('campaigns', () => {
 
       return request(app)
         .post(makeUrl({username: user.username}))
+        .set('authorization', access.id)
         .send(incompleteCampaign)
         .then(res => {
           res.status.should.eql(400);
@@ -100,10 +104,12 @@ describe('campaigns', () => {
     it('should return the user\'s list of campaigns when the user exists', () => {
 
       let user: User = fixtures.addUser();
+      const access: Access = fixtures.addAccess({user: user});
       let campaign: Campaign = fixtures.addCampaign({user: user});
 
       return request(app)
         .get(makeUrl({username: user.username}))
+        .set('authorization', access.id)
         .then(res => {
           res.status.should.eql(200);
           res.body.should.have.property('campaigns').which.is.a.Array();
@@ -140,10 +146,12 @@ describe('campaigns', () => {
       it('should return the campaign', () => {
 
         const user: User = fixtures.addUser();
+        const access: Access = fixtures.addAccess({user: user});
         const campaign: Campaign = fixtures.addCampaign({user: user});
 
         return request(app)
           .get(makeUrl({username: user.username, campaignId: campaign.id}))
+          .set('authorization', access.id)
           .then(res => {
             res.status.should.eql(200);
             res.body.should.have.property('campaign');
@@ -165,9 +173,11 @@ describe('campaigns', () => {
       it('should return an error if the campaign does not exist', () => {
 
         const user: User = fixtures.addUser();
+        const access: Access = fixtures.addAccess({user: user});
 
         return request(app)
           .get(makeUrl({username: user.username, campaignId: 'nonexistantId'}))
+          .set('authorization', access.id)
           .then(res => {
             res.status.should.eql(400);
             res.body.should.have.property('error');

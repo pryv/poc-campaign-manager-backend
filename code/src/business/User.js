@@ -161,6 +161,11 @@ export class User {
       user: this,
       accessId: params.accessId,
     });
+
+    if (access == null) {
+      return false;
+    }
+
     if (! access.isValid) {
       return false;
     }

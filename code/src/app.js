@@ -7,7 +7,7 @@ import Ajv from 'ajv';
 const logger: any = require('./logger');
 import {Database} from './database';
 const config = require('./config');
-import {callLoger, getUser} from './middleware';
+import {callLoger, getUser, checkAuth} from './middleware';
 import schema from './schemas';
 import {campaigns, invitations, users, auth} from './routes';
 
@@ -27,6 +27,11 @@ app.all('/:username/invitations', getUser({db: database}));
 app.all('/:username/campaigns', getUser({db: database}));
 app.all('/:username/campaigns/:campaignId', getUser({db: database}));
 app.all('/users/:username', getUser({db: database}));
+
+app.all('/:username/invitations', checkAuth({db: database}));
+app.all('/:username/campaigns', checkAuth({db: database}));
+app.all('/:username/campaigns/:campaignId', checkAuth({db: database}));
+app.all('/users/:username', checkAuth({db: database}));
 
 app.use((req: express$Request, res: express$Response, next: express$NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');

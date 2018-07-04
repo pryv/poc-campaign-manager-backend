@@ -1,7 +1,7 @@
 // @flow
 
 import {Database} from '../../src/database';
-import {User, Campaign, Invitation, InvitationStatus} from '../../src/business';
+import {User, Campaign, Invitation, Access} from '../../src/business';
 import charlatan from 'charlatan';
 import cuid from 'cuid';
 
@@ -65,7 +65,17 @@ export class Fixtures {
     const user: User = this.getUser(params);
 
     this.db.users.save(user);
+
     return user;
+  }
+
+  addAccess(params: {
+    user: User,
+  }): Access {
+    return params.user.addAccess({
+      db: this.db,
+      access: new Access(),
+    });
   }
 
   getInvitation(params: {
