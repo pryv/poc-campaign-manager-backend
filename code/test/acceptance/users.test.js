@@ -196,6 +196,12 @@ describe('users', () => {
             loggedUser.should.not.have.property('pryvId');
             loggedUser.should.not.have.property('localId');
             loggedUser.should.not.have.property('password');
+
+            const access: Access = db.accesses.getOne({
+              user: user,
+              accessId: loggedUser.token,
+            });
+            should.exist(access);
           });
       });
 
