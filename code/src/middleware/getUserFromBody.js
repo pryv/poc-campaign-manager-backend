@@ -22,7 +22,7 @@ module.exports = (params: {
     }
 
     const username: string = body.user.username;
-    const user = params.db.users.getOne({
+    const user: User = params.db.users.getOne({
       username: username
     });
 

@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const logger: any = require('./logger');
 import {Database} from './database';
 const config = require('./config');
-import {callLoger, getUser, getUserNew, getUserFromQuery, checkAuth} from './middleware';
+import {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth} from './middleware';
 import {campaigns, invitations, users, auth} from './routes';
 
 const app: express$Application = express();
@@ -19,18 +19,29 @@ const database: Database = new Database({
 app.use(callLoger);
 app.use(bodyParser.json());
 
+/**
+ * Campaigns
+ */
 app.get('/campaigns', getUserFromQuery({db: database}));
-app.post('/campaigns', getUserNew({db: database}));
+app.post('/campaigns', getUserFromBody({db: database}));
 
 app.get('/campaigns', checkAuth({db: database}));
 app.post('/campaigns', checkAuth({db: database}));
 
+/**
+ * Invitations
+ */
 app.get('/invitations', getUserFromQuery({db: database}));
 
 app.get('/invitations', checkAuth({db: database}));
 
+/**
+ * Users
+ */
+app.get('/users/:username', getUserFromPath({db: database}));
+app.put('/users/:username', getUserFromPath({db: database}));
+
 app.get('/users/:username', checkAuth({db: database}));
-app.post('/users/:username', checkAuth({db: database}));
 app.put('/users/:username', checkAuth({db: database}));
 
 app.use((req: express$Request, res: express$Response, next: express$NextFunction) => {

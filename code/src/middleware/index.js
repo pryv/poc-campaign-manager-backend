@@ -1,7 +1,8 @@
 import callLoger from './callLoger';
 import getUser from './getUser';
-import getUserNew from './getUserNew';
+import getUserFromBody from './getUserFromBody';
 import getUserFromQuery from './getUserFromQuery';
+import getUserFromPath from './getUserFromPath';
 import checkAuth from './checkAuth';
 
-export {callLoger, getUser, getUserNew, getUserFromQuery, checkAuth};
+export {callLoger, getUser, getUserFromBody, getUserFromQuery, getUserFromPath, checkAuth};
