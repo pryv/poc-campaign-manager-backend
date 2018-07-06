@@ -25,15 +25,9 @@ app.post('/campaigns', getUserNew({db: database}));
 app.get('/campaigns', checkAuth({db: database}));
 app.post('/campaigns', checkAuth({db: database}));
 
-app.all('/:username/invitations', getUser({db: database}));
+app.get('/invitations', getUserFromQuery({db: database}));
 
-app.all('/users/:username', getUser({db: database}));
-
-app.get('/:username/invitations', checkAuth({db: database}));
-app.post('/:username/invitations', checkAuth({db: database}));
-app.put('/:username/invitations', checkAuth({db: database}));
-
-
+app.get('/invitations', checkAuth({db: database}));
 
 app.get('/users/:username', checkAuth({db: database}));
 app.post('/users/:username', checkAuth({db: database}));
@@ -54,6 +48,6 @@ app.options('*', (req: express$Request, res: express$Response) => {
 });
 
 app.use('/users', users);
-app.use('/:username/invitations', invitations);
+app.use('/invitations', invitations);
 app.use('/campaigns', campaigns);
 app.use('/auth', auth);

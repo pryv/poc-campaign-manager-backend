@@ -29,11 +29,15 @@ export function checkInvitations(expected: Invitation, actual: Invitation, omit:
   checkUsers(expected.requestee, actual.requestee);
 }
 
-export function checkUsers(expected: User, actual: User): void {
+export function checkUsers(expected: User, actual: User, omit: mixed): void {
+
+  if (omit == null) {
+    omit = {};
+  }
 
   should.exist(actual);
 
-  if (expected.id)
+  if (expected.id && (omit.id != true))
     expected.id.should.eql(actual.id);
   if (expected.username)
     expected.username.should.eql(actual.username);

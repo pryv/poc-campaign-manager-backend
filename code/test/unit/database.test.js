@@ -46,16 +46,7 @@ describe('Database', () => {
       const updatedInvitation = db.invitations.getOne({id: invitation.id});
 
       should.exist(updatedInvitation);
-      invitation.campaign.should.eql(updatedInvitation.campaign);
-      invitation.created.should.eql(updatedInvitation.created);
-      invitation.modified.should.eql(updatedInvitation.modified);
-      invitation.status.should.eql(updatedInvitation.status);
-      invitation.accessToken.should.eql(updatedInvitation.accessToken);
-
-      invitation.requester.id.should.eql(updatedInvitation.requester.id);
-      invitation.requestee.id.should.eql(updatedInvitation.requestee.id);
-      invitation.requester.username.should.eql(updatedInvitation.requester.username);
-      invitation.requestee.username.should.eql(updatedInvitation.requestee.username);
+      checkInvitations(invitation, updatedInvitation);
     });
 
   });
@@ -142,6 +133,15 @@ describe('Database', () => {
       let campaigns = db.campaigns.get({user: user});
       campaigns.should.be.Array();
       checkCampaigns(campaign, campaigns[0]);
+    });
+
+    it('should return a campaign with a requester when querying by campaign id', () => {
+      const user: User = fixtures.addUser();
+      const campaign: Campaign = fixtures.addCampaign({user: user});
+
+      const retrievedCampaign: Campaign = db.campaigns.getOne({campaignId: campaign.id});
+      checkCampaigns(campaign, retrievedCampaign);
+      retrievedCampaign.requester.should.eql(user.username);
     });
 
     it('should return a campaign when querying by pryvAppId', () => {

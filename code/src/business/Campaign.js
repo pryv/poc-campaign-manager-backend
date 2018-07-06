@@ -5,6 +5,7 @@ import typeof {User} from '../business';
 import cuid from 'cuid';
 import slugify from 'slugify';
 const uuidv4 = require('uuid/v4');
+const _ = require('lodash');
 
 type Permission = {
   streamId: string,
@@ -26,6 +27,7 @@ export class Campaign {
   description: string;
   permissions: Array<Permission>;
   created: number;
+  requester: string;
 
   constructor(params: {
     id?: string,
@@ -33,7 +35,8 @@ export class Campaign {
     pryvAppId?: string,
     description: string,
     permissions: Array<Permission>,
-    created?: number
+    created?: number,
+    requester?: string,
   }) {
     this.id = params.id || cuid();
     this.title = params.title;
@@ -41,6 +44,7 @@ export class Campaign {
     this.description = params.description;
     this.permissions = params.permissions;
     this.created = params.created || Date.now() / 1000;
+    this.requester = params.requester || null;
   }
 
   save(params: {

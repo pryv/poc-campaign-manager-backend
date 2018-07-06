@@ -5,6 +5,7 @@
 const request: any = require('supertest');
 const should: any = require('should');
 import _ from 'lodash';
+const cuid = require('cuid');
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
@@ -33,10 +34,8 @@ describe('invitations', () => {
   });
 
 
-  function makeUrl(params: {
-    username: string
-  }): string {
-    return '/' + params.username + '/invitations';
+  function makeUrl(): string {
+    return '/invitations';
   }
 
   describe('when creating an invitation', () => {
@@ -53,30 +52,41 @@ describe('invitations', () => {
         requester: requester
       });
 
+      const payload: mixed = {
+        campaign: _.pick(campaign, ['id']),
+        requester: _.pick(requester, ['username'])
+      };
+
       return request(app)
-        .post(makeUrl({username: requester.username}))
-        .send(invitation)
+        .post(makeUrl())
+        .send(payload)
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
         });
     });
 
-    it('should return a 400 with an error message when the requestee is the requester', () => {
+    it.skip('should return a 400 with an error message when the requestee is the requester', () => {
       const requester: User = fixtures.addUser();
       const access: Access = fixtures.addAccess({user: requester});
       const campaign: Campaign = fixtures.addCampaign({user: requester});
 
-      const invitation = fixtures.getInvitation({
+      const invitation: Invitation = fixtures.getInvitation({
         campaign: campaign,
         requester: requester,
         requestee: requester,
       });
 
+      const payload: mixed = {
+        campaign: _.pick(campaign, ['id']),
+        requester: _.pick(requester, ['username']),
+        requestee: _.pick(requestee, ['username']),
+      };
+
       return request(app)
-        .post(makeUrl({username: requester.username}))
+        .post(makeUrl())
         .set('authorization', access.id)
-        .send(invitation)
+        .send(payload)
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
@@ -89,18 +99,17 @@ describe('invitations', () => {
       const access: Access = fixtures.addAccess({user: requester});
 
       const requestee: User = fixtures.addUser();
-      const unexistantCampaign = fixtures.getCampaign({user: requester});
+      const unexistantCampaign: Campaign = fixtures.getCampaign({user: requester});
 
-      const invitation = fixtures.getInvitation({
-        requester: requester,
-        requestee: requestee,
-        campaign: unexistantCampaign
-      });
+      const payload: mixed = {
+        campaign: _.pick(unexistantCampaign, ['id']),
+        requestee: _.pick(requestee, ['username']),
+      };
 
       return request(app)
-        .post(makeUrl({username: requester.username}))
-        .set('authorization', access.id)
-        .send(invitation)
+        .post(makeUrl())
+        //.set('authorization', access.id)
+        .send(payload)
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
@@ -109,17 +118,19 @@ describe('invitations', () => {
 
     it('should return a 400 when the invitation schema is not respected', () => {
 
-      const requester: User = fixtures.addUser();
-      const access: Access = fixtures.addAccess({user: requester});
+      //const requester: User = fixtures.addUser();
+      //const access: Access = fixtures.addAccess({user: requester});
 
-      const invalidInvitation = {
-        invalidKey: 'blopblopblop'
+      const payload: mixed = {
+        invalidKey: 'blopblopblop',
+        campaign: { id: 'doesnotmatter' },
+        requestee: { username: 'doesNotMatter' },
       };
 
       return request(app)
-        .post(makeUrl({username: requester.username}))
-        .set('authorization', access.id)
-        .send(invalidInvitation)
+        .post(makeUrl())
+        //.set('authorization', access.id)
+        .send(payload)
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
@@ -131,19 +142,19 @@ describe('invitations', () => {
       it('should create the invitation in the database, return the created invitation with status 201', () => {
         const requester = fixtures.addUser({localOnly: true});
         const access: Access = fixtures.addAccess({user: requester});
-        const requestee = fixtures.addUser({pryvOnly: true});
-        const campaign = fixtures.addCampaign({user: requester});
+        const requestee: User = fixtures.addUser({pryvOnly: true});
+        const campaign: Campaign = fixtures.addCampaign({user: requester});
 
-        const invitation = {
+        const payload: mixed = {
           campaign: _.pick(campaign, ['id']),
           requester: _.pick(requester, ['username']),
           requestee: _.pick(requestee, ['pryvUsername']),
         };
 
         return request(app)
-          .post(makeUrl({username: requester.username}))
-          .set('authorization', access.id)
-          .send(invitation)
+          .post(makeUrl())
+          //.set('authorization', access.id)
+          .send(payload)
           .then(res => {
             res.status.should.eql(201);
             res.body.should.have.property('invitation').which.is.an.Object();
@@ -169,24 +180,23 @@ describe('invitations', () => {
       });
 
       it('should return an error with status 400 if the requestee does not exist', () => {
-        const requester = fixtures.addUser();
+        const requester: User = fixtures.addUser();
         const access: Access = fixtures.addAccess({user: requester});
-        const requestee = {
+        const requestee: mixed = {
           pryvUsername: 'idontexist'
         };
 
-        const campaign = fixtures.addCampaign({user: requester});
+        const campaign: Campaign = fixtures.addCampaign({user: requester});
 
-        const invitation = fixtures.getInvitation({
-          campaign: campaign,
-          requester: requester,
+        const payload = {
+          campaign: _.pick(campaign, ['id']),
           requestee: requestee
-        });
+        };
 
         return request(app)
-          .post(makeUrl({username: requester.username}))
+          .post(makeUrl())
           .set('authorization', access.id)
-          .send(invitation)
+          .send(payload)
           .expect(400)
           .then(res => {
             res.body.should.have.property('error');
@@ -219,21 +229,23 @@ describe('invitations', () => {
     describe('following an anonymous invitation', () => {
 
       it('should create create the invitation in the database, return the created invitation with status 201', async () => {
-        const requester = fixtures.addUser();
-        const access: Access = fixtures.addAccess({user: requester});
-        const requestee = fixtures.addUser({pryvOnly: true});
-        const campaign = fixtures.addCampaign({user: requester});
+        const requester: User = fixtures.addUser();
+        const requestee: User = new User({
+          pryvUsername: 'testuser.pryv.li'
+        });
+        requestee.save(db);
+        const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';
+        const campaign: Campaign = fixtures.addCampaign({user: requester});
 
         const invitation = {
           status: 'accepted',
+          accessToken: pryvToken,
           campaign: _.pick(campaign, ['id']),
-          requester: _.pick(requester, ['username']),
           requestee: _.pick(requestee, ['pryvUsername']),
         };
 
         return request(app)
           .post(makeUrl({username: requester.username}))
-          .set('authorization', access.id)
           .send(invitation)
           .then(res => {
             const body = res.body;
@@ -243,14 +255,40 @@ describe('invitations', () => {
             body.should.have.property('invitation').which.is.an.Object();
             const createdInvitation = body.invitation;
             checkCampaigns(campaign, createdInvitation.campaign);
-            checkUsers(requester, createdInvitation.requester, {pryvToken: true});
-            checkUsers(requestee, createdInvitation.requestee, {pryvToken: true});
+            checkUsers(requester, createdInvitation.requester);
+            checkUsers(requestee, createdInvitation.requestee, {id: true});
             createdInvitation.status.should.be.eql(invitation.status);
 
             const dbInvitation = db.invitations.getOne({id: createdInvitation.id});
             should.exist(dbInvitation);
           });
 
+      });
+
+      it('should return an error with status 400 if the provided token is invalid', () => {
+        const requester: User = fixtures.addUser();
+        const requestee: User = new User({
+          pryvUsername: 'testuser.pryv.li'
+        });
+        requestee.save(db);
+        const invalidToken = 'invalidtoken';
+        const campaign: Campaign = fixtures.addCampaign({user: requester});
+
+        const invitation = {
+          status: 'accepted',
+          accessToken: invalidToken,
+          campaign: _.pick(campaign, ['id']),
+          requester: _.pick(requester, ['username']),
+          requestee: _.pick(requestee, ['pryvUsername']),
+        };
+
+        return request(app)
+          .post(makeUrl({username: requester.username}))
+          .send(invitation)
+          .then(res => {
+            res.status.should.eql(400);
+            should.exist(res.body.error);
+          });
       });
 
       it('should return an error with status 400 if the invitation already exists', () => {
@@ -281,7 +319,7 @@ describe('invitations', () => {
             res.status.should.eql(400);
             should.exist(res.error);
           });
-      })
+      });
 
     });
 
@@ -317,7 +355,8 @@ describe('invitations', () => {
       });
 
       return request(app)
-        .get(makeUrl({username: user1.username}))
+        .get(makeUrl())
+        .query({username: user1.username})
         .set('authorization', access.id)
         .expect(200)
         .then(res => {
@@ -344,7 +383,8 @@ describe('invitations', () => {
     it('should return an error if the user does not exist', () => {
 
       return request(app)
-        .get(makeUrl({username: 'unexistantUser'}))
+        .get(makeUrl())
+        .query({username: 'unexistantUser'})
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
@@ -356,12 +396,21 @@ describe('invitations', () => {
   describe('when updating invitations',  () => {
 
     it ('should return a 200 when the invitation is updated from created to accepted', () => {
-      const invitation = fixtures.addInvitation({ status: 'created'});
+      const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';
+      const requestee: User = new User({
+        pryvUsername: 'testuser.pryv.li'
+      });
+      requestee.save(db);
+      const invitation = fixtures.addInvitation({
+        status: 'created',
+        requestee: requestee,
+      });
 
       return request(app)
-        .put('/' + invitation.requester.username + '/invitations/' + invitation.id)
+        .put('/invitations/' + invitation.id)
         .send({
-          status: 'accepted'
+          status: 'accepted',
+          accessToken: pryvToken,
         })
         .then(res => {
           res.body.should.have.property('invitation');
@@ -378,7 +427,7 @@ describe('invitations', () => {
       const invitation = fixtures.addInvitation({ status: 'created'});
 
       return request(app)
-        .put('/' + invitation.requester.username + '/invitations/' + invitation.id)
+        .put('/invitations/' + invitation.id)
         .send({
           status: 'refused'
         })
@@ -391,12 +440,30 @@ describe('invitations', () => {
         });
     });
 
-    it('should return a 404 if the invitation does not exist', () => {
-
-      const user = fixtures.addUser();
+    it('should return a 400 if the access token is invalid', () => {
+      const invitation = fixtures.addInvitation({
+        status: 'created',
+        requestee: new User({
+          pryvUsername: 'testuser.pryv.li'
+        }),
+      });
 
       return request(app)
-        .put('/' + user.username + '/invitations/unexistant-id')
+        .put('/invitations/' + invitation.id)
+        .send({
+          status: 'accepted',
+          accessToken: 'cinvalidtoken',
+        })
+        .then(res => {
+          res.status.should.eql(404);
+          res.body.should.have.property('error');
+        })
+    });
+
+    it('should return a 404 if the invitation does not exist', () => {
+
+      return request(app)
+        .put('/invitations/unexistant-id')
         .send({})
         .then(res => {
           res.status.should.eql(404);

@@ -155,6 +155,7 @@ describe('campaigns', () => {
 
       const user: User = fixtures.addUser();
       const campaign: Campaign = fixtures.addCampaign({user: user});
+      campaign.requester = user.username;
 
       return request(app)
         .get(makeUrl({campaignId: campaign.id}))
@@ -162,7 +163,7 @@ describe('campaigns', () => {
           res.status.should.eql(200);
           res.body.should.have.property('campaign');
           const retrievedCampaign = res.body.campaign;
-          new Campaign(retrievedCampaign).should.be.eql(campaign);
+          checkCampaigns(campaign, retrievedCampaign);
         });
     });
 

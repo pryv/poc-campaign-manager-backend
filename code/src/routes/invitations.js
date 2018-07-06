@@ -2,6 +2,7 @@
 
 import Ajv from 'ajv';
 import _ from 'lodash';
+const request = require('superagent');
 
 const logger: any = require('../logger');
 import {Database} from '../database';
@@ -19,9 +20,7 @@ const invitationSchema = ajv.compile(schema.Invitation);
 
 const router = require('express').Router();
 
-router.post('/', (req: express$Request, res: express$Response) => {
-
-  const requester: User = res.locals.user;
+router.post('/', async (req: express$Request, res: express$Response) => {
 
   const invitationObject = req.body;
   invitationSchema(invitationObject);
@@ -37,7 +36,6 @@ router.post('/', (req: express$Request, res: express$Response) => {
 
   const campaign: Campaign = database.campaigns.getOne({
     campaignId: invitationObject.campaign.id,
-    user: requester
   });
   if (!campaign) {
     return res.status(400)
@@ -55,15 +53,7 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
-  if ((requestee.pryvUsername == requester.username) || (requester.id == requestee.id)) {
-    return res.status(400)
-      .json({
-        error: 'Cannot create invitation for yourself.'
-      })
-  }
-
   if (invitationExists({
-    requester: requester,
     requestee: requestee,
     campaign: campaign
   })) {
@@ -75,15 +65,49 @@ router.post('/', (req: express$Request, res: express$Response) => {
     }
     return res.status(400)
       .json({
-        error: 'Invitation from ' + requester.username + ' to ' + target
+        error: 'Invitation to ' + target
         + ' for campaign ' + campaign.title + ' already exists'
       });
   }
 
+  if (invitationObject.accessToken) {
+    try {
+      await isTokenValid({
+        requestee: requestee.pryvUsername,
+        accessToken: invitationObject.accessToken,
+      });
+    } catch (e) {
+      if (e.status && e.status === 401) {
+        return res.status(400)
+          .json({
+            error: 'Invalid access token.',
+            details: 'Access token \"' + invitationObject.accessToken + '\" for user '
+              + requestee.pryvUsername + ' is invalid'
+          });
+      } else if (userDoesNotExist(e)) {
+        return res.status(400)
+          .json({
+            error: 'User does not exist',
+            details: 'User ' + requestee.pryvUsername + ' does not exist.'
+          });
+      } else {
+        return res.status(500)
+          .json({
+            error: 'Error while verifying access token validity',
+            details: e.message,
+          });
+      }
+    }
+  }
+
+  const requester: User = database.users.getOne({
+    username: campaign.requester,
+  });
+
   const invitation = new Invitation(_.merge(invitationObject, {
-    requester: requester,
     requestee: requestee,
-    campaign: campaign
+    campaign: campaign,
+    requester: requester,
   }));
   invitation.save({
     db: database,
@@ -112,7 +136,6 @@ router.get('/', (req: express$Request, res: express$Response) => {
 
 router.put('/:invitationId', (req: express$Request, res: express$Response) => {
 
-  const user: User = res.locals.user;
   const invitationId: string = req.params.invitationId;
   const invitationUpdate = req.body;
 
@@ -135,29 +158,25 @@ router.put('/:invitationId', (req: express$Request, res: express$Response) => {
 
 module.exports = router;
 
-function getCampaign(params: {
-  user: User,
-  campaignId: string
-}): Campaign {
-  const campaigns: Array<Campaign> = database.campaigns.get({user: params.user});
-  let found = null;
-  campaigns.forEach((c) => {
-    if (c.id === params.campaignId) {
-      found = c;
-    }
-  });
-  return found;
+function isTokenValid(params: {
+  requestee: string,
+  accessToken: string,
+}): Promise<mixed> {
+  return request.get('https://' + params.requestee + '/access-info?auth=' + params.accessToken)
+}
+
+function userDoesNotExist(error: mixed): boolean {
+  return error.message.indexOf('ENOTFOUND') > -1
 }
 
 function invitationExists(params: {
-    requester: User,
     requestee: User,
     campaign: Campaign
 }): boolean {
-      const invitations: Array<Invitation> = database.invitations.get({user: params.requester});
+      const invitations: Array<Invitation> = database.invitations.get({user: params.requestee});
       let exists: boolean = false;
       invitations.forEach((i) => {
-        if (i.campaign.id === params.campaign.id && i.requestee.id === params.requestee.id) {
+        if (i.campaign.id === params.campaign.id) {
           exists = true;
         }
       });

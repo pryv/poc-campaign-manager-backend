@@ -53,8 +53,16 @@ export class Campaigns {
     );
 
     this.getOneStatement = this.db.prepare(
-      'SELECT * ' +
-      'FROM campaigns ' +
+      'SELECT ' +
+      '' +
+      'c.*, ' +
+      '' +
+      'local_users.username as requester ' +
+      '' +
+      ' FROM campaigns c ' +
+      '' +
+      ' INNER JOIN local_users ON c.user_id=local_users.user_id ' +
+      '' +
       'WHERE ' +
       ' campaign_id = @campaign_id;'
     );
@@ -116,6 +124,6 @@ function convertFromDB(result: mixed): User {
     description: result.description,
     permissions: JSON.parse(result.permissions),
     created: result.created,
-
+    requester: result.requester,
   });
 }

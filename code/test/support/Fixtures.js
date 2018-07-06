@@ -102,7 +102,7 @@ export class Fixtures {
       campaign: params.campaign,
       requester: params.requester,
       requestee: params.requestee,
-      accessToken: params.accesToken || cuid(),
+      accessToken: params.accesToken,
       status: params.status,
       modified: params.modified,
       created: params.created,
@@ -118,8 +118,8 @@ export class Fixtures {
   }): Invitation {
 
     const invitation = this.getInvitation(params);
-    this.db.invitations.save({
-      invitation: invitation,
+    invitation.save({
+      db: this.db,
     });
     return invitation;
   }
