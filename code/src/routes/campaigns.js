@@ -75,6 +75,22 @@ router.get('/:campaignId', (req: express$Request, res: express$Response) => {
     .json({campaign: campaign});
 });
 
+router.get('/by-pryv-app-id/:pryvAppId', (req: express$Request, res: express$Response) => {
+
+  const campaignPryvAppId: string = req.params.pryvAppId;
+
+  const campaign: Campaign = database.campaigns.getOneByPryvAppId({
+    pryvAppId: campaignPryvAppId
+  });
+
+  if (campaign == null) {
+    return campaignNotExists(res);
+  }
+
+  res.status(200)
+    .json({campaign: campaign});
+});
+
 module.exports = router;
 
 function campaignNotExists(res: express$Response) {

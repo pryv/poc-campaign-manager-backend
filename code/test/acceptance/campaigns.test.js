@@ -177,6 +177,43 @@ describe('campaigns', () => {
         });
     });
 
+    describe('by Pryv App Id', () => {
+
+      function makeUrl(params: {
+        pryvAppId: string
+      }): string {
+        return '/campaigns/by-pryv-app-id/' + params.pryvAppId;
+      }
+
+      it('should return the campaign', () => {
+
+        const user: User = fixtures.addUser();
+        const campaign: Campaign = fixtures.addCampaign({user: user});
+        campaign.requester = user.username;
+
+        return request(app)
+          .get(makeUrl({pryvAppId: campaign.pryvAppId}))
+          .then(res => {
+            res.status.should.eql(200);
+            res.body.should.have.property('campaign');
+            const retrievedCampaign = res.body.campaign;
+            console.log('we got', retrievedCampaign)
+            checkCampaigns(campaign, retrievedCampaign);
+          });
+      });
+
+      it('should return an error if the campaign does not exist', () => {
+
+        return request(app)
+          .get(makeUrl({pryvAppId: 'nonexistantId'}))
+          .then(res => {
+            res.status.should.eql(400);
+            res.body.should.have.property('error');
+          });
+      });
+
+    });
+
   });
 
 });

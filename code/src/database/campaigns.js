@@ -68,8 +68,16 @@ export class Campaigns {
     );
 
     this.getOneByPryvAppIdStatement = this.db.prepare(
-      'SELECT * ' +
-      'FROM campaigns ' +
+      'SELECT ' +
+      '' +
+      'c.*, ' +
+      '' +
+      'local_users.username as requester ' +
+      '' +
+      ' FROM campaigns c ' +
+      '' +
+      ' INNER JOIN local_users ON c.user_id=local_users.user_id ' +
+      '' +
       'WHERE ' +
       ' pryv_app_id = @pryvAppId;'
     );
