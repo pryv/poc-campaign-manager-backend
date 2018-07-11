@@ -59,5 +59,5 @@ export class Campaign {
 }
 
 function derivateFromTitle(title: string): string {
-  return 'cm-' + slugify(title) + '-' + uuidv4();
+  return 'cm-' + slugify(title);
 }
