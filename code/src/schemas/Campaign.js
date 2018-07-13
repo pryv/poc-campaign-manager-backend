@@ -10,12 +10,12 @@ export default {
     title: {
       type: 'string',
       minLength: 3,
-      maxLength: 20
+      maxLength: 100
     },
     description: {
       type: 'string',
       minlength: 3,
-      maxLength: 3000
+      maxLength: 10000
     },
     permissions: {
       type: 'array',
