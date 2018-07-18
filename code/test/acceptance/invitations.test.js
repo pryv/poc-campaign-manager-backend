@@ -231,7 +231,7 @@ describe('invitations', () => {
       it('should create create the invitation in the database, return the created invitation with status 201', async () => {
         const requester: User = fixtures.addUser();
         const requestee: User = new User({
-          pryvUsername: 'testuser.pryv.li'
+          pryvUsername: 'testuser'
         });
         requestee.save(db);
         const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';
@@ -268,7 +268,7 @@ describe('invitations', () => {
       it('should return an error with status 400 if the provided token is invalid', () => {
         const requester: User = fixtures.addUser();
         const requestee: User = new User({
-          pryvUsername: 'testuser.pryv.li'
+          pryvUsername: 'testuser'
         });
         requestee.save(db);
         const invalidToken = 'invalidtoken';
@@ -398,7 +398,7 @@ describe('invitations', () => {
     it ('should return a 200 when the invitation is updated from created to accepted', () => {
       const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';
       const requestee: User = new User({
-        pryvUsername: 'testuser.pryv.li'
+        pryvUsername: 'testuser'
       });
       requestee.save(db);
       const invitation = fixtures.addInvitation({
@@ -444,7 +444,7 @@ describe('invitations', () => {
       const invitation = fixtures.addInvitation({
         status: 'created',
         requestee: new User({
-          pryvUsername: 'testuser.pryv.li'
+          pryvUsername: 'testuser'
         }),
       });
 
