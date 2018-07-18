@@ -1,0 +1,18 @@
+{
+  "server": {
+    "port": 9000
+  },
+  "logs": {
+    "console": {
+      "active": true,
+      "timestamp": true
+    }
+  },
+  "database": {
+    "path": "./campaign-management.db",
+    "options": {}
+  },
+  "pryv": {
+    "domain": "pryv.me"
+  }
+}
