@@ -39,7 +39,10 @@ if (process.env.NODE_ENV === 'dev') {
       options: {
         memory: true
       }
-    }
+    },
+    pryv: {
+      domain: 'pryv.li',
+    },
   });
 }
 
@@ -57,5 +60,8 @@ nconf.defaults({
   database: {
     path: './campaign-management.db',
     options: {},
-  }
+  },
+  pryv: {
+    domain: 'pryv.me',
+  },
 });
