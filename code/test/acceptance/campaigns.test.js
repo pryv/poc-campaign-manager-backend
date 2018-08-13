@@ -216,4 +216,20 @@ describe('campaigns', () => {
 
   });
 
+  describe('when cancelling a campaign', () => {
+
+    it('should return a 200, mark all related invitations as \'cancelled\' if the campaign exists and is valid', () => {
+
+    });
+
+    it('should return a 400 if the campaign is already cancelled', () => {
+
+    });
+
+    it('should return a 404 if the campaign does not exist', () => {
+
+    });
+
+  });
+
 });

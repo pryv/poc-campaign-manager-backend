@@ -21,9 +21,9 @@ const DB_PATH = config.get('database:path');
 
 describe('invitations', () => {
 
-  let fixtures: Fixtures = new Fixtures();
-  let db: Database = new Database({path: DB_PATH});
-  let cleaner: DbCleaner = new DbCleaner();
+  const fixtures: Fixtures = new Fixtures();
+  const db: Database = new Database({path: DB_PATH});
+  const cleaner: DbCleaner = new DbCleaner();
 
   beforeEach(() => {
     return cleaner.clean();
@@ -325,6 +325,44 @@ describe('invitations', () => {
         });
     });
 
+  });
+
+  describe('when accepting invitations', () => {
+
+    it('should return a 200 if the invitation was created', () => {
+
+    });
+
+    it('should return a 400 if the invitation has already been accepted', () => {
+
+    });
+
+    it('should return a 400 if the campaign has been cancelled', () => {
+
+    });
+
+    it('should return a 404 if the invitation does not exist', () => {
+
+    });
+  });
+
+  describe('when refusing invitations', () => {
+
+    it('should return a 200 if the invitation was created', () => {
+
+    });
+
+    it('should return a 200 if the invitation was accepted', () => {
+
+    });
+
+    it('should return a 400 if the invitation has already been refused', () => {
+
+    });
+
+    it('should return a 404 if the invitation does not exist', () => {
+
+    });
   });
 
   describe('when updating invitations',  () => {
