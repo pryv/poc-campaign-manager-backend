@@ -6,7 +6,7 @@ import should from 'should';
 import slugify from 'slugify';
 import {Campaign} from '../../src/business';
 
-describe('User', () => {
+describe('Campaign', () => {
 
   describe('pryvAppId', () => {
     it('should slugify the title if none is provided', () => {
@@ -19,7 +19,7 @@ describe('User', () => {
       should.exist(campaign.pryvAppId);
       const appId = campaign.pryvAppId;
       appId.substring(0,3).should.eql('cm-');
-      appId.length.should.eql(3 + campaign.title.length + 37);
+      appId.length.should.eql(3 + campaign.title.length);
       (appId.substring(3,3 + campaign.title.length)).should.eql(slugify(campaign.title));
     });
 
