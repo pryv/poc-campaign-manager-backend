@@ -22,7 +22,7 @@ module.exports = (params: {
     }
 
     const username: string = query.username;
-    const user = params.db.users.getOne({
+    const user: User = params.db.users.getOne({
       username: username
     });
 
@@ -45,6 +45,6 @@ function missingUsername(res: express$Response): express$Response {
 function userNotExists(username: string, res: express$Response): express$Response {
   return res.status(400)
     .json({
-      error: 'User \"' + username + '\" does not exist.'
+      error: 'User "' + username + '" does not exist.'
     });
 }

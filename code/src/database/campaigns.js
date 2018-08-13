@@ -1,12 +1,8 @@
 // @flow
 
-const bluebird = require('bluebird');
-
 import typeof sqlite3 from 'better-sqlite3';
 import typeof {Statement} from 'better-sqlite3';
 import {Campaign, User} from '../business';
-
-const logger = require('../logger');
 
 export class Campaigns {
 

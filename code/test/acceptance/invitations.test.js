@@ -1,11 +1,10 @@
 // @flow
 
-/* global describe, it, before, after */
+/* global describe, it, after, beforeEach */
 
 const request: any = require('supertest');
 const should: any = require('should');
 import _ from 'lodash';
-const cuid = require('cuid');
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');

@@ -124,7 +124,7 @@ export class Fixtures {
     return invitation;
   }
 
-  getCampaign(params: {user: User}): Campaign {
+  getCampaign(): Campaign {
     const streamId = charlatan.Lorem.word();
 
     const campaign = new Campaign({

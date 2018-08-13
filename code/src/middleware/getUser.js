@@ -18,7 +18,7 @@ module.exports = (params: {
   return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
     if(req.params.username === 'all')
       return next();
-    const user = params.db.users.getOne({
+    const user: User = params.db.users.getOne({
       username: req.params.username
     });
     if (! user) {

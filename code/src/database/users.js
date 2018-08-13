@@ -1,9 +1,7 @@
 // @flow
 
-const bluebird = require('bluebird');
-
 import typeof sqlite3 from 'better-sqlite3';
-import {User, Access} from '../business';
+import {User} from '../business';
 import {Statement, Transaction} from 'better-sqlite3';
 
 export class Users {

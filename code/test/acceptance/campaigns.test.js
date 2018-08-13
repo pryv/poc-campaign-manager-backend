@@ -1,13 +1,9 @@
 // @flow
 
-/* global describe, it, before, after */
+/* global describe, it, after, beforeEach */
 
 const request: any = require('supertest');
-const should: any = require('should');
 const _: mixed = require('lodash');
-const sha256: any = require('fast-sha256');
-const nacl: any = require('tweetnacl');
-nacl.util = require('tweetnacl-util');
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
@@ -15,7 +11,7 @@ const config = require('../../src/config');
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
 import {Database} from '../../src/database';
-import {User, Campaign, Invitation} from '../../src/business';
+import {User, Campaign} from '../../src/business';
 
 import {checkCampaigns} from '../support/validation';
 

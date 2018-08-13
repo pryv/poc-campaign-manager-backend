@@ -1,7 +1,6 @@
 // @flow
 
 import cuid from 'cuid';
-import _ from 'lodash';
 
 import typeof {Database} from '../database';
 import {User, Campaign} from '../business';

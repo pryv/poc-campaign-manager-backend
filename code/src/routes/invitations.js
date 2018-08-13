@@ -4,7 +4,6 @@ import Ajv from 'ajv';
 import _ from 'lodash';
 const request = require('superagent');
 
-const logger: any = require('../logger');
 import {Database} from '../database';
 import {Campaign, Invitation, User} from '../business';
 const config = require('../config');
@@ -81,7 +80,7 @@ router.post('/', async (req: express$Request, res: express$Response) => {
         return res.status(400)
           .json({
             error: 'Invalid access token.',
-            details: 'Access token \"' + invitationObject.accessToken + '\" for user '
+            details: 'Access token "' + invitationObject.accessToken + '" for user '
               + requestee.pryvUsername + ' is invalid'
           });
       } else if (userDoesNotExist(e)) {

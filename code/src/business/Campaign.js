@@ -4,8 +4,6 @@ import typeof {Database} from '../database';
 import typeof {User} from '../business';
 import cuid from 'cuid';
 import slugify from 'slugify';
-const uuidv4 = require('uuid/v4');
-const _ = require('lodash');
 
 type Permission = {
   streamId: string,

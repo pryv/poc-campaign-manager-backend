@@ -30,17 +30,10 @@ module.exports = (params: {
     if (! isAccessValid) {
       return res.status(401)
         .json({
-          error: 'invalid token \"' + token + '\"',
+          error: 'invalid token "' + token + '"',
         });
     }
 
     next();
   };
 };
-
-function userNotExists(res: express$Response): express$Response {
-  return res.status(400)
-    .json({
-      error: 'User does not exist.'
-    });
-}

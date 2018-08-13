@@ -1,6 +1,6 @@
 // @flow
 
-/* global describe, it, before, after*/
+/* global describe, it*/
 
 import should from 'should';
 import slugify from 'slugify';

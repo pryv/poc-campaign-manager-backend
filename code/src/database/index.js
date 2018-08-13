@@ -7,7 +7,6 @@ import {Users} from './users';
 import {Invitations} from './invitations';
 import {Accesses} from './accesses';
 
-const logger = require('../logger');
 const config = require('../config');
 
 export class Database {

@@ -3,7 +3,6 @@
 import express from 'express';
 const bodyParser = require('body-parser');
 
-const logger: any = require('./logger');
 import {Database} from './database';
 const config = require('./config');
 import {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth} from './middleware';

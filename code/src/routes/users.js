@@ -3,7 +3,6 @@
 import Ajv from 'ajv';
 import _ from 'lodash';
 
-const logger: any = require('../logger');
 import {Database} from '../database';
 import {User} from '../business';
 const config = require('../config');

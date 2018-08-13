@@ -1,6 +1,6 @@
 // @flow
 
-/* global describe, it, before, after */
+/* global describe, it, beforeEach, after */
 
 const request: any = require('supertest');
 const should: any = require('should');
@@ -43,7 +43,7 @@ describe('users', () => {
     return params.path ? base + '/' + params.path : base;
   }
 
-  describe('when fetching a user\s data', () => {
+  describe('when fetching a user\'s data', () => {
 
     describe('for a local user', () => {
 

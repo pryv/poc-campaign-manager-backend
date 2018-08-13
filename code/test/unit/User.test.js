@@ -1,6 +1,6 @@
 // @flow
 
-/* global describe, it, before, after*/
+/* global describe, it, beforeEach, after*/
 
 import should from 'should';
 import {User, Access} from '../../src/business';
