@@ -25,6 +25,7 @@ export class Invitation {
   status: InvitationStatus;
   created: number;
   modified: number;
+  headId: string; // for versioned invitations
 
   constructor(params: {
     id?: string,
@@ -35,6 +36,7 @@ export class Invitation {
     status?: InvitationStatus,
     created?: number,
     modified?: number,
+    headId?: string,
   }) {
     const defaultTime = Date.now() / 1000;
 
@@ -46,6 +48,7 @@ export class Invitation {
     this.status = params.status || 'created';
     this.created = params.created || defaultTime;
     this.modified = params.modified || this.created;
+    this.headId = params.headId || null;
   }
 
   update(params: {

@@ -78,7 +78,7 @@ export class Fixtures {
     });
   }
 
-  getInvitation(params: {
+  getInvitation(params?: {
     campaign: Campaign,
     requester: User,
     requestee: User,
@@ -111,7 +111,7 @@ export class Fixtures {
     return invitation;
   }
 
-  addInvitation(params: {
+  addInvitation(params?: {
     campaign: Campaign,
     requester: User,
     requestee: User,
@@ -143,7 +143,7 @@ export class Fixtures {
     return campaign;
   }
 
-  addCampaign(params: {user: User}): Campaign {
+  addCampaign(params?: {user: User}): Campaign {
     if (! params) {
       params = {};
     }

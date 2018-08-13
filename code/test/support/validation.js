@@ -12,7 +12,7 @@ export function checkInvitations(expected: Invitation, actual: Invitation, omit:
 
   should.exist(actual);
 
-  if (expected.id)
+  if (expected.id && (! omit.id))
     expected.id.should.eql(actual.id);
   if (expected.accessToken)
     expected.accessToken.should.eql(actual.accessToken);

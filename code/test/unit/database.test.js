@@ -8,6 +8,7 @@ import {User, Campaign, Invitation, Access} from '../../src/business';
 import {Fixtures} from '../support/Fixtures';
 import {checkInvitations, checkCampaigns, checkUsers, checkAccesses} from '../support/validation';
 import {DbCleaner} from '../support/DbCleaner';
+const _ = require('lodash');
 
 const config = require('../../src/config');
 
@@ -35,18 +36,29 @@ describe('Database', () => {
       checkInvitations(invitation, createdInvitation);
     });
 
-    it('should update an invitation', () => {
-
+    it('should update an invitation, creating a version', () => {
       const invitation: Invitation = fixtures.addInvitation();
+      const originalInvitation: Invitation = _.cloneDeep(invitation);
+
       invitation.status = 'accepted';
       invitation.modified = Date.now() / 1000;
       db.invitations.updateOne({
         invitation: invitation
       });
-      const updatedInvitation = db.invitations.getOne({id: invitation.id});
+      const updatedInvitation: Invitation = db.invitations.getOne({id: invitation.id});
 
       should.exist(updatedInvitation);
       checkInvitations(invitation, updatedInvitation);
+
+      const retrievedInvitations: Array<Invitation> = db.invitations.get({ user: invitation.requester});
+      retrievedInvitations.length.should.eql(2);
+
+      const original: Invitation = retrievedInvitations.filter((i) => { return i.headId !== null; })[0];
+      checkInvitations(original, originalInvitation, { id: true });
+      original.headId.should.eql(originalInvitation.id);
+
+      const update: Invitation = retrievedInvitations.filter((i) => { return i.headId == null; })[0];
+      checkInvitations(update, updatedInvitation);
     });
 
   });

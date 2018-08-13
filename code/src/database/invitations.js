@@ -2,7 +2,8 @@
 
 import typeof sqlite3 from 'better-sqlite3';
 import {Invitation, User, Campaign} from '../business';
-import {Statement} from 'better-sqlite3';
+import {Statement, Transaction} from 'better-sqlite3';
+const cuid = require('cuid');
 
 export class Invitations {
 
@@ -10,7 +11,7 @@ export class Invitations {
   saveStatement: Statement;
   getStatement: Statement;
   getOneStatement: Statement;
-  updateOneStatement: Statement;
+  updateOneTransaction: Transaction;
 
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
@@ -130,17 +131,37 @@ export class Invitations {
       ' i.invitation_id=@invitation_id'
     );
 
-    this.updateOneStatement = this.db.prepare(
+    this.updateOneTransaction = this.db.transaction([
       'UPDATE invitations ' +
       '' +
       'SET ' +
-      ' access_token = @access_token, ' +
-      ' status = @status, ' +
-      ' modified = @modified ' +
+      ' head_id = @invitation_id, ' +
+      ' invitation_id = @old_version_id ' +
       '' +
       'WHERE' +
-      ' invitation_id = @invitation_id'
-    );
+      ' invitation_id = @invitation_id;',
+
+      'INSERT INTO invitations (' +
+      'invitation_id, ' +
+      'access_token, ' +
+      'status, ' +
+      'created, ' +
+      'modified, ' +
+      'campaign_id, ' +
+      'requester_id ,' +
+      'requestee_id ' +
+      ') VALUES ( ' +
+      '@invitation_id, ' +
+      '@access_token, ' +
+      '@status, ' +
+      '@created, ' +
+      '@modified, ' +
+      '@campaign_id, ' +
+      '@requester_id, ' +
+      '@requestee_id ' +
+      ');'
+    ]);
+
   }
 
   save(params: {
@@ -177,11 +198,16 @@ export class Invitations {
   updateOne(params: {
     invitation: Invitation
   }): Invitation {
-    this.updateOneStatement.run({
+    this.updateOneTransaction.run({
+      invitation_id: params.invitation.id,
       access_token: params.invitation.accessToken,
       status: params.invitation.status,
+      created: params.invitation.created,
       modified: params.invitation.modified,
-      invitation_id: params.invitation.id,
+      campaign_id: params.invitation.campaign.id,
+      requester_id: params.invitation.requester.id,
+      requestee_id: params.invitation.requestee.id,
+      old_version_id: cuid(),
     });
     return params.invitation;
   }
@@ -199,6 +225,7 @@ function convertFromDB(result: mixed): Invitation {
     status: result.status,
     created: result.created,
     modified: result.modified,
+    headId: result.head_id,
     requester: new User({
       id: result.requester_id,
       username: result.requester_username,
