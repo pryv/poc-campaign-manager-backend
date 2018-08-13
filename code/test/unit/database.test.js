@@ -13,9 +13,9 @@ const config = require('../../src/config');
 
 describe('Database', () => {
 
-  let fixtures: Fixtures = new Fixtures();
-  let db: Database = new Database({path: config.get('database:path')});
-  let cleaner: DbCleaner = new DbCleaner();
+  const fixtures: Fixtures = new Fixtures();
+  const db: Database = new Database({path: config.get('database:path')});
+  const cleaner: DbCleaner = new DbCleaner();
 
   beforeEach(() => {
     return cleaner.clean();

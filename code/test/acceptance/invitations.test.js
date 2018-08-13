@@ -329,7 +329,30 @@ describe('invitations', () => {
   describe('when accepting invitations', () => {
 
     it('should return a 200 if the invitation was created', () => {
+      const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';
+      const requestee: User = new User({
+        pryvUsername: 'testuser'
+      });
+      requestee.save(db);
+      const invitation = fixtures.addInvitation({
+        status: 'created',
+        requestee: requestee,
+      });
 
+      return request(app)
+        .post('/invitations/' + invitation.id + '/accept')
+        .send({
+          accessToken: pryvToken,
+        })
+        .then(res => {
+          res.body.should.have.property('invitation');
+          const updatedInvitation = res.body.invitation;
+          invitation.status = 'accepted';
+          checkInvitations(invitation, updatedInvitation, {
+            modified: true
+          });
+          res.status.should.eql(200);
+        });
     });
 
     it('should return a 400 if the invitation has already been accepted', () => {
