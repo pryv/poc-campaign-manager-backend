@@ -39,6 +39,72 @@ describe('invitations', () => {
 
   describe('when creating an invitation', () => {
 
+    it('should create the invitation in the database, return the created invitation with status 201', () => {
+      const requester: User = fixtures.addUser({localOnly: true});
+      const requestee: User = fixtures.addUser({pryvOnly: true});
+      const campaign: Campaign = fixtures.addCampaign({user: requester});
+
+      const payload: mixed = {
+        campaign: _.pick(campaign, ['id']),
+        requestee: _.pick(requestee, ['pryvUsername']),
+      };
+
+      return request(app)
+        .post(makeUrl())
+        .send(payload)
+        .then(res => {
+          res.status.should.eql(201);
+          res.body.should.have.property('invitation').which.is.an.Object();
+          const createdInvitation = res.body.invitation;
+          checkUsers(requester, createdInvitation.requester);
+          checkUsers(requestee, createdInvitation.requestee);
+          checkCampaigns(campaign, createdInvitation.campaign);
+          createdInvitation.should.have.property('id').which.is.String();
+          createdInvitation.status.should.eql('created');
+
+          const retrievedInvitation = db.invitations.getOne({id: createdInvitation.id});
+          checkInvitations(createdInvitation, retrievedInvitation);
+        });
+    });
+
+    it('should return an error with status 400 if the requestee does not exist', () => {
+      const requestee: mixed = {
+        pryvUsername: 'idontexist'
+      };
+
+      const campaign: Campaign = fixtures.addCampaign();
+
+      const payload = {
+        campaign: _.pick(campaign, ['id']),
+        requestee: requestee
+      };
+
+      return request(app)
+        .post(makeUrl())
+        .send(payload)
+        .expect(400)
+        .then(res => {
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return an error with status 400 if the invitation already exists', () => {
+      const requestee = fixtures.addUser({pryvOnly: true});
+      const campaign = fixtures.addCampaign();
+      const invitation = fixtures.addInvitation({
+        campaign: campaign,
+        requestee: requestee
+      });
+
+      return request(app)
+        .post(makeUrl())
+        .send(invitation)
+        .expect(400)
+        .then(res => {
+          res.body.should.have.property('error');
+        });
+    });
+
     it('should return a 400 when the campaign does not exist', () => {
       const requestee: User = fixtures.addUser();
       const campaign: Campaign = fixtures.getCampaign({user: requestee});
@@ -72,188 +138,6 @@ describe('invitations', () => {
         .then(res => {
           res.body.should.have.property('error');
         });
-    });
-
-    describe('following a targeted invitation', () => {
-
-      it('should create the invitation in the database, return the created invitation with status 201', () => {
-        const requester: User = fixtures.addUser({localOnly: true});
-        const requestee: User = fixtures.addUser({pryvOnly: true});
-        const campaign: Campaign = fixtures.addCampaign({user: requester});
-
-        const payload: mixed = {
-          campaign: _.pick(campaign, ['id']),
-          requestee: _.pick(requestee, ['pryvUsername']),
-        };
-
-        return request(app)
-          .post(makeUrl())
-          .send(payload)
-          .then(res => {
-            res.status.should.eql(201);
-            res.body.should.have.property('invitation').which.is.an.Object();
-            const createdInvitation = res.body.invitation;
-            checkUsers(requester, createdInvitation.requester);
-            checkUsers(requestee, createdInvitation.requestee);
-            checkCampaigns(campaign, createdInvitation.campaign);
-            createdInvitation.should.have.property('id').which.is.String();
-            createdInvitation.status.should.eql('created');
-
-            const retrievedInvitation = db.invitations.getOne({id: createdInvitation.id});
-            checkInvitations(createdInvitation, retrievedInvitation);
-          });
-      });
-
-      it('should return an error with status 400 if the requestee does not exist', () => {
-        const requestee: mixed = {
-          pryvUsername: 'idontexist'
-        };
-
-        const campaign: Campaign = fixtures.addCampaign();
-
-        const payload = {
-          campaign: _.pick(campaign, ['id']),
-          requestee: requestee
-        };
-
-        return request(app)
-          .post(makeUrl())
-          .send(payload)
-          .expect(400)
-          .then(res => {
-            res.body.should.have.property('error');
-          });
-      });
-
-      it('should return an error with status 400 if the invitation already exists', () => {
-        const requestee = fixtures.addUser({pryvOnly: true});
-        const campaign = fixtures.addCampaign();
-        const invitation = fixtures.addInvitation({
-          campaign: campaign,
-          requestee: requestee
-        });
-
-        return request(app)
-          .post(makeUrl())
-          .send(invitation)
-          .expect(400)
-          .then(res => {
-            res.body.should.have.property('error');
-          });
-      });
-
-    });
-
-    describe('following an anonymous invitation', () => {
-
-      it('should create create the invitation in the database, return the created invitation with status 201', async () => {
-        const requestee: User = new User({
-          pryvUsername: 'testuser'
-        });
-        requestee.save(db);
-        const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';
-        const campaign: Campaign = fixtures.addCampaign();
-
-        const invitation = {
-          status: 'accepted',
-          accessToken: pryvToken,
-          campaign: _.pick(campaign, ['id']),
-          requestee: _.pick(requestee, ['pryvUsername']),
-        };
-
-        return request(app)
-          .post(makeUrl())
-          .send(invitation)
-          .then(res => {
-            const body = res.body;
-            const status = res.status;
-            status.should.eql(201);
-
-            body.should.have.property('invitation').which.is.an.Object();
-            const createdInvitation = body.invitation;
-            checkCampaigns(campaign, createdInvitation.campaign);
-            checkUsers(requestee, createdInvitation.requestee, {id: true});
-            createdInvitation.status.should.be.eql(invitation.status);
-
-            const dbInvitation = db.invitations.getOne({id: createdInvitation.id});
-            should.exist(dbInvitation);
-          });
-
-      });
-
-      it('should return an error with status 400 if the requestee does not exist', () => {
-        const campaign: Campaign = fixtures.addCampaign();
-        const requestee: User = fixtures.getUser({pryvOnly: true});
-        const invitation: mixed = {
-          status: 'accepted',
-          accessToken: 'bloublou',
-          campaign: _.pick(campaign, ['id']),
-          requestee: _.pick(requestee, ['pryvUsername'])
-        };
-
-        return request(app)
-          .post(makeUrl())
-          .send(invitation)
-          .then(res => {
-            res.body.should.have.property('error');
-          });
-      });
-
-      it('should return an error with status 400 if the provided token is invalid', () => {
-        const requester: User = fixtures.addUser();
-        const requestee: User = new User({
-          pryvUsername: 'testuser'
-        });
-        requestee.save(db);
-        const invalidToken = 'invalidtoken';
-        const campaign: Campaign = fixtures.addCampaign({user: requester});
-
-        const invitation = {
-          status: 'accepted',
-          accessToken: invalidToken,
-          campaign: _.pick(campaign, ['id']),
-          requester: _.pick(requester, ['username']),
-          requestee: _.pick(requestee, ['pryvUsername']),
-        };
-
-        return request(app)
-          .post(makeUrl({username: requester.username}))
-          .send(invitation)
-          .then(res => {
-            res.status.should.eql(400);
-            should.exist(res.body.error);
-          });
-      });
-
-      it('should return an error with status 400 if the invitation already exists', () => {
-        const requester = fixtures.addUser();
-        const access: Access = fixtures.addAccess({user: requester});
-        const requestee = fixtures.addUser({pryvOnly: true});
-        const campaign = fixtures.addCampaign({user: requester});
-
-        fixtures.addInvitation({
-          campaign: campaign,
-          requester: requester,
-          requestee: requestee,
-          status: 'accepted',
-        });
-
-        const invitation: mixed = {
-          status: 'accepted',
-          campaign: _.pick(campaign, ['id']),
-          requestee: _.pick(requestee, ['pryvUsername']),
-        };
-
-        return request(app)
-          .post(makeUrl({username: requester.username}))
-          .set('authorization', access.id)
-          .send(invitation)
-          .then(res => {
-            res.status.should.eql(400);
-            should.exist(res.error);
-          });
-      });
-
     });
 
   });
@@ -328,6 +212,10 @@ describe('invitations', () => {
 
   describe('when accepting invitations', () => {
 
+    function makeUrl( id: string ) {
+      return '/invitations/' + id + '/accept';
+    }
+
     it('should return a 200 if the invitation was created', () => {
       const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';
       const requestee: User = new User({
@@ -340,7 +228,7 @@ describe('invitations', () => {
       });
 
       return request(app)
-        .post('/invitations/' + invitation.id + '/accept')
+        .post(makeUrl(invitation.id))
         .send({
           accessToken: pryvToken,
         })
@@ -355,16 +243,88 @@ describe('invitations', () => {
         });
     });
 
-    it('should return a 400 if the invitation has already been accepted', () => {
+    it('should return a 400 if the access token is invalid', () => {
+      const requestee: User = new User({
+        pryvUsername: 'testuser'
+      });
+      requestee.save(db);
+      const invitation = fixtures.addInvitation({
+        status: 'created',
+        requestee: requestee,
+      });
 
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .send({
+          accessToken: 'invalidtoken',
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 400 if there is not "accessToken" property in the payload', () => {
+      const invitation: Invitation = fixtures.addInvitation();
+
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .send({
+          wrongProperty: 'yolo'
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 400 if the invitation has already been accepted', () => {
+      const invitation: Invitation = fixtures.addInvitation();
+      invitation.update({
+        db: db,
+        update: { status: 'accepted'}
+      });
+
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .send({
+          accessToken: 'dontmatter',
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
     });
 
     it('should return a 400 if the campaign has been cancelled', () => {
+      const invitation: Invitation = fixtures.addInvitation();
+      invitation.update({
+        db: db,
+        update: { status: 'cancelled'}
+      });
 
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .send({
+          accessToken: 'dontmatter',
+        })
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
     });
 
     it('should return a 404 if the invitation does not exist', () => {
 
+      return request(app)
+        .post(makeUrl('unexistant'))
+        .send({
+          accessToken: 'dontmatter',
+        })
+        .then(res => {
+          res.status.should.eql(404);
+          res.body.should.have.property('error');
+        });
     });
   });
 
@@ -387,7 +347,7 @@ describe('invitations', () => {
     });
   });
 
-  describe('when updating invitations',  () => {
+  describe.skip('when updating invitations',  () => {
 
     it ('should return a 200 when the invitation is updated from created to accepted', () => {
       const pryvToken: string = 'cjj8jxy0100020c0cw28xefx6';

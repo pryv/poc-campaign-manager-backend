@@ -69,36 +69,6 @@ router.post('/', async (req: express$Request, res: express$Response) => {
       });
   }
 
-  if (invitationObject.accessToken) {
-    try {
-      await isTokenValid({
-        requestee: requestee.pryvUsername,
-        accessToken: invitationObject.accessToken,
-      });
-    } catch (e) {
-      if (e.status && e.status === 401) {
-        return res.status(400)
-          .json({
-            error: 'Invalid access token.',
-            details: 'Access token "' + invitationObject.accessToken + '" for user '
-              + requestee.pryvUsername + ' is invalid'
-          });
-      } else if (userDoesNotExist(e)) {
-        return res.status(400)
-          .json({
-            error: 'User does not exist',
-            details: 'User ' + requestee.pryvUsername + ' does not exist.'
-          });
-      } else {
-        return res.status(500)
-          .json({
-            error: 'Error while verifying access token validity',
-            details: e.message,
-          });
-      }
-    }
-  }
-
   const requester: User = database.users.getOne({
     username: campaign.requester,
   });
@@ -115,6 +85,89 @@ router.post('/', async (req: express$Request, res: express$Response) => {
   return res.status(201)
     .json({
       invitation: invitation
+    });
+
+});
+
+router.post('/:invitationId/accept', async (req: express$Request, res: express$Response) => {
+
+  const invitationId: string = req.params.invitationId;
+  const accessToken: string = req.body.accessToken;
+
+  if (accessToken == null) {
+    return res.status(400)
+      .json({
+        error: 'wrong schema',
+        details: 'accessToken is missing'
+      });
+  }
+
+  const invitation: Invitation = database.invitations.getOne({ id: invitationId});
+
+  if (invitation == null) {
+    return res.status(404)
+      .json({
+        error: 'Invitation does not exist.',
+        details: 'invitationId: ' + invitationId,
+      });
+  }
+
+  if (invitation.status == 'accepted') {
+    return res.status(400)
+      .json({
+        error: 'Invitation has already been accepted',
+        details: 'invitationId: ' + invitationId,
+      });
+  }
+
+  if (invitation.status == 'cancelled') {
+    return res.status(400)
+      .json({
+        error: 'Campaign is cancelled.',
+        details: 'invitationId: ' + invitationId,
+      })
+  }
+
+  const requestee: User = invitation.requestee;
+
+  try {
+    await isTokenValid({
+      requestee: requestee.pryvUsername,
+      accessToken: accessToken,
+    });
+  } catch (e) {
+    if (e.status && e.status === 401) {
+      return res.status(400)
+        .json({
+          error: 'Invalid access token.',
+          details: 'Access token "' + accessToken + '" for user '
+          + requestee.pryvUsername + ' is invalid'
+        });
+    } else if (userDoesNotExist(e)) {
+      return res.status(400)
+        .json({
+          error: 'User does not exist',
+          details: 'User ' + requestee.pryvUsername + ' does not exist.'
+        });
+    } else {
+      return res.status(500)
+        .json({
+          error: 'Error while verifying access token validity',
+          details: e.message,
+        });
+    }
+  }
+
+  const acceptedInvitation: Invitation = invitation.update({
+    db: database,
+    update: {
+      status: 'accepted'
+    }
+  });
+
+  return res.status(200)
+    .json({
+      invitation: acceptedInvitation
     });
 
 });
