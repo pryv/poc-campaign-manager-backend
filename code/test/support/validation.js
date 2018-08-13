@@ -62,9 +62,8 @@ export function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Obje
   (expected.pryvAppId.substring(3, slugify(actual.title).length + 3)).should.eql(slugify(actual.title));
   expected.description.should.eql(actual.description);
   expected.permissions.should.eql(actual.permissions);
+  expected.created.should.approximately(actual.created, 1.0);
 
-  //if (expected.created && (! omit.created))
-    expected.created.should.approximately(actual.created, 1.0);
 }
 
 export function checkAccesses(expected: Access, actual: Access): void {
