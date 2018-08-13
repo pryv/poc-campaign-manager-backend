@@ -162,7 +162,7 @@ function isTokenValid(params: {
   requestee: string,
   accessToken: string,
 }): Promise<mixed> {
-  return request.get('https://' + params.requestee + '.' + config.get('pryv:domain') +  '/access-info?auth=' + params.accessToken)
+  return request.get('https://' + params.requestee + '.' + config.get('pryv:domain') + '/access-info?auth=' + params.accessToken)
 }
 
 function userDoesNotExist(error: mixed): boolean {
