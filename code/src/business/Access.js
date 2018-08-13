@@ -26,7 +26,7 @@ export class Access {
     if (params.isValid == null) {
       this.isValid = true;
     } else {
-      this.isValid = params.isValid
+      this.isValid = params.isValid;
     }
   }
 

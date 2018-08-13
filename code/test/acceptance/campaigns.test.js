@@ -138,7 +138,7 @@ describe('campaigns', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
-        })
+        });
     });
 
   });
@@ -197,7 +197,6 @@ describe('campaigns', () => {
             res.status.should.eql(200);
             res.body.should.have.property('campaign');
             const retrievedCampaign = res.body.campaign;
-            console.log('we got', retrievedCampaign)
             checkCampaigns(campaign, retrievedCampaign);
           });
       });

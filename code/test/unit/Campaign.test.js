@@ -23,6 +23,6 @@ describe('Campaign', () => {
       (appId.substring(3,3 + campaign.title.length)).should.eql(slugify(campaign.title));
     });
 
-});
+  });
 
 });

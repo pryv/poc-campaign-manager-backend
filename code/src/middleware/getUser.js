@@ -15,18 +15,18 @@ import {User} from '../business';
 module.exports = (params: {
   db: Database,
   }) => {
-    return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
-      if(req.params.username === 'all')
-        return next();
-      const user = params.db.users.getOne({
-        username: req.params.username
-      });
-      if (! user) {
-        return userNotExists(res);
-      }
-      res.locals.user = user;
-      next();
-    };
+  return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
+    if(req.params.username === 'all')
+      return next();
+    const user = params.db.users.getOne({
+      username: req.params.username
+    });
+    if (! user) {
+      return userNotExists(res);
+    }
+    res.locals.user = user;
+    next();
+  };
 };
 
 function userNotExists(res: express$Response): express$Response {

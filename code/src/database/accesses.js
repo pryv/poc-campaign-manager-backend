@@ -77,7 +77,7 @@ export class Accesses {
       valid_until: params.access.isValidUntil,
     });
     return params.access;
-  };
+  }
 
   get(params: {
     user: User
@@ -95,7 +95,7 @@ export class Accesses {
       user_id: params.user.id,
       access_id: params.accessId,
     }));
-  };
+  }
 
   updateOne(params: {
     user: User,
@@ -107,7 +107,7 @@ export class Accesses {
       valid: params.access.isValid ? 1 : 0,
     });
     return params.access;
-  };
+  }
 }
 
 function convertFromDB(result: mixed): Access {

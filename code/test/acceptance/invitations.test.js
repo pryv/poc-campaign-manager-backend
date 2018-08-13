@@ -392,7 +392,7 @@ describe('invitations', () => {
             modified: true
           });
           res.status.should.eql(200);
-        })
+        });
     });
 
     it('should return a 200 when the invitation is updated from created to refused', () => {
@@ -429,7 +429,7 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(404);
           res.body.should.have.property('error');
-        })
+        });
     });
 
     it('should return a 404 if the invitation does not exist', () => {

@@ -34,7 +34,7 @@ describe('users', () => {
   });
 
   function makeUrl(params: {
-    path:? string,
+    path?: string,
   }): string {
     if (params == null) {
       params = {};
@@ -95,7 +95,7 @@ describe('users', () => {
 
     it.skip('should return a 400 if the authorization header is invalid', () => {
       // TODO
-    })
+    });
 
   });
 
@@ -151,7 +151,7 @@ describe('users', () => {
           createdPryvUser.pryvUsername.should.eql(user.pryvUsername);
           should.exist(createdPryvUser.id);
           should.exist(createdPryvUser.pryvId);
-        })
+        });
     });
 
     it('should return a 400 if the pryv_user already exists', () => {
@@ -306,7 +306,7 @@ describe('users', () => {
           user.pryvId = linkedUser.pryvId;
 
           checkUsers(user, linkedUser);
-        })
+        });
     });
 
     it('if invitations already exist for this pryv username, should delete the previous user and link its pryv_user and invitations to the user\'s account, return a 200', () => {

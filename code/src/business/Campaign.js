@@ -27,6 +27,7 @@ export class Campaign {
   description: string;
   permissions: Array<Permission>;
   created: number;
+  cancelled: ?number;
   requester: string;
 
   constructor(params: {

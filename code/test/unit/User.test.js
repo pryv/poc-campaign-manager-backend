@@ -79,7 +79,7 @@ describe('User', () => {
       pryvId: pryvId,
       password: password,
       localId: localId,
-  });
+    });
     should.exist(user);
     user.id.should.eql(id);
     user.pryvId.should.eql(pryvId);

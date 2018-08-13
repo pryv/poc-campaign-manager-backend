@@ -217,7 +217,7 @@ export class Users {
       ' pryv_users pu ' +
       'WHERE ' +
       ' pu.pryv_username = @pryv_username;'
-    )
+    );
   }
 
   save(user: User): User {
@@ -230,7 +230,7 @@ export class Users {
         pryv_username: user.pryvUsername,
         local_user_id: user.localId,
         pryv_token: user.pryvToken,
-      })
+      });
     } else if (user.pryvUsername) {
       this.saveWithPryvTransaction.run({
         user_id: user.id,
@@ -242,11 +242,11 @@ export class Users {
       });
     } else {
       this.saveWithLocalTransaction.run({
-          user_id: user.id,
-          local_user_id: user.localId,
-          username: user.username,
-          password: user.password,
-        }
+        user_id: user.id,
+        local_user_id: user.localId,
+        username: user.username,
+        password: user.password,
+      }
       );
     }
     return user;

@@ -12,13 +12,13 @@ export class User {
 
   id: string;
 
-  localId:? string;
-  username:? string;
-  password:? string;
+  localId: ?string;
+  username: ?string;
+  password: ?string;
 
-  pryvId:? string;
-  pryvUsername:? string;
-  pryvToken:? string;
+  pryvId: ?string;
+  pryvUsername: ?string;
+  pryvToken: ?string;
 
   constructor(params: {
     id?: string,
@@ -72,7 +72,7 @@ export class User {
     this.pryvUsername = params.pryvParams.pryvUsername;
     this.pryvToken = params.pryvParams.pryvToken;
     this.pryvId = cuid();
-    return params.db.users.addPryvAccountToUser({user: this})
+    return params.db.users.addPryvAccountToUser({user: this});
   }
 
   updatePryvToken(params: {

@@ -162,23 +162,23 @@ function isTokenValid(params: {
   requestee: string,
   accessToken: string,
 }): Promise<mixed> {
-  return request.get('https://' + params.requestee + '.' + config.get('pryv:domain') + '/access-info?auth=' + params.accessToken)
+  return request.get('https://' + params.requestee + '.' + config.get('pryv:domain') + '/access-info?auth=' + params.accessToken);
 }
 
 function userDoesNotExist(error: mixed): boolean {
-  return error.message.indexOf('ENOTFOUND') > -1
+  return error.message.indexOf('ENOTFOUND') > -1;
 }
 
 function invitationExists(params: {
     requestee: User,
     campaign: Campaign
 }): boolean {
-      const invitations: Array<Invitation> = database.invitations.get({user: params.requestee});
-      let exists: boolean = false;
-      invitations.forEach((i) => {
-        if (i.campaign.id === params.campaign.id) {
-          exists = true;
-        }
-      });
-      return exists;
+  const invitations: Array<Invitation> = database.invitations.get({user: params.requestee});
+  let exists: boolean = false;
+  invitations.forEach((i) => {
+    if (i.campaign.id === params.campaign.id) {
+      exists = true;
+    }
+  });
+  return exists;
 }

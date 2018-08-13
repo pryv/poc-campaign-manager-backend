@@ -22,7 +22,7 @@ export class Fixtures {
     linked: boolean,
   }): User {
     if (params == null) {
-      params = { linked: true }
+      params = { linked: true };
     }
 
     let user = null;
@@ -43,7 +43,7 @@ export class Fixtures {
         password: charlatan.Internet.password(),
         pryvUsername: username,
         pryvToken: cuid(),
-      })
+      });
     } else {
       user = new User({
         username: charlatan.Name.firstName().toLowerCase(),

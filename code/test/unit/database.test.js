@@ -191,5 +191,5 @@ describe('Database', () => {
       checkAccesses(retrievedAccess, access);
     });
 
-  })
+  });
 });

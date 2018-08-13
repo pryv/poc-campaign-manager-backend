@@ -207,7 +207,7 @@ function convertFromDB(result: mixed): Invitation {
       pryvUsername: result.requester_pryv_username,
       pryvId: result.requester_pryv_id,
       localId: result.requester_local_id,
-      }),
+    }),
     requestee: new User({
       id: result.requestee_id,
       username: result.requestee_username,
@@ -216,12 +216,12 @@ function convertFromDB(result: mixed): Invitation {
       localId: result.requestee_local_id,
     }),
     campaign: new Campaign({
-    id: result.campaign_id,
-    title: result.campaign_title,
-    pryvAppId: result.campaign_pryv_app_id,
-    description: result.campaign_description,
-    permissions: JSON.parse(result.campaign_permissions),
-    created: result.campaign_created,
+      id: result.campaign_id,
+      title: result.campaign_title,
+      pryvAppId: result.campaign_pryv_app_id,
+      description: result.campaign_description,
+      permissions: JSON.parse(result.campaign_permissions),
+      created: result.campaign_created,
     })
   });
 }
