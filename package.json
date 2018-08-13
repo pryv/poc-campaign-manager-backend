@@ -14,12 +14,16 @@
     "test": "NODE_ENV=dev ./node_modules/.bin/mocha dist/test/**/*.test.js",
     "testOne": "NODE_ENV=dev ./node_modules/.bin/mocha",
     "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'code/src/**/*.js' -t html",
-    "release": "node_modules/.bin/babel code --out-dir lib --copy-files"
+    "release": "node_modules/.bin/babel code --out-dir lib --copy-files",
+    "lint": "node_modules/eslint/bin/eslint.js code/**"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.2.6",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
+    "eslint": "^5.3.0",
+    "eslint-plugin-flowtype": "^2.50.0",
     "flow-bin": "^0.70.0",
     "flow-coverage-report": "^0.5.0",
     "flow-remove-types": "^1.2.3",
