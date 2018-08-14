@@ -3,7 +3,7 @@
 /* global describe, it, after, beforeEach */
 
 const request: any = require('supertest');
-const _: mixed = require('lodash');
+const _: any = require('lodash');
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
@@ -12,7 +12,7 @@ const getInstance = require('../../src/database').getInstance;
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
 import type { Database } from '../../src/database';
-import {User, Campaign} from '../../src/business';
+import {User, Campaign, Access} from '../../src/business';
 
 import {checkCampaigns} from '../support/validation';
 
@@ -73,8 +73,6 @@ describe('campaigns', () => {
         });
     });
 
-
-
     it('should return a 400 response with an error message when the campaign schema is wrong', () => {
 
       const user: User = fixtures.addUser();
@@ -84,6 +82,35 @@ describe('campaigns', () => {
         campaign: {
           id: 'blop',
           title: 'blip'
+        }
+      };
+
+      return request(app)
+        .post(makeUrl())
+        .set('authorization', access.id)
+        .send(incompleteCampaign)
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 400 response with an error message when the permissions schema is wrong', () => {
+
+      const user: User = fixtures.addUser();
+      const access: Access = fixtures.addAccess({user: user});
+      const incompleteCampaign = {
+        user: {username: user.username},
+        campaign: {
+          title: 'some title',
+          description: 'blablalla',
+          permissions: [
+            {
+              streamId: '',
+              defaultName: '',
+              level: 'read'
+            }
+          ]
         }
       };
 

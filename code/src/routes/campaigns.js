@@ -21,9 +21,9 @@ router.post('/', (req: express$Request, res: express$Response) => {
 
   const user: User = res.locals.user;
 
-  const campaignObject: mixed = req.body.campaign;
+  const campaignObject: any = req.body.campaign;
   campaignSchema(campaignObject);
-  const checkResult: mixed = _.cloneDeep(campaignSchema);
+  const checkResult: any = _.cloneDeep(campaignSchema);
 
   if (checkResult.errors) {
     return res.status(400)

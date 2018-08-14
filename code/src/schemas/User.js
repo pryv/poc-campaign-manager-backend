@@ -14,7 +14,7 @@ export default {
     },
     pryvUsername: {
       type: 'string',
-      minlength: 5,
+      minLength: 5,
       maxLength: 24
     },
     pryvToken: {

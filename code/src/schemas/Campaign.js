@@ -14,7 +14,7 @@ export default {
     },
     description: {
       type: 'string',
-      minlength: 3,
+      minLength: 3,
       maxLength: 10000
     },
     permissions: {
@@ -24,8 +24,8 @@ export default {
         properties: {
           streamId: {
             type: 'string',
-            minlength: 1,
-            maxLengh: 64
+            minLength: 1,
+            maxLength: 64
           },
           level: {
             type: 'string',
@@ -33,8 +33,8 @@ export default {
           },
           defaultName: {
             type: 'string',
-            minlength: 1,
-            maxlength: 64
+            minLength: 1,
+            maxLength: 64
           }
         }
       }
