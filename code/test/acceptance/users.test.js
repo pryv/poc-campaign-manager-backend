@@ -13,7 +13,7 @@ const config = require('../../src/config');
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
 import {Database} from '../../src/database';
-import {User, Campaign, Invitation} from '../../src/business';
+import {User, Campaign, Invitation, Access} from '../../src/business';
 
 import {checkUsers, checkInvitations} from '../support/validation';
 
@@ -91,10 +91,6 @@ describe('users', () => {
           res.status.should.eql(400);
           res.body.should.have.property('error').which.is.a.String();
         });
-    });
-
-    it.skip('should return a 400 if the authorization header is invalid', () => {
-      // TODO
     });
 
   });
@@ -383,7 +379,7 @@ describe('users', () => {
         });
     });
 
-    it('should return a 400 if the shema is not respected', () => {
+    it('should return a 400 if the schema is not respected', () => {
 
       const user: User = fixtures.addUser();
       const access: Access = fixtures.addAccess({user: user});
