@@ -1,28 +1,25 @@
 // @flow
 
-/* global describe, it, beforeEach, after*/
+/* global describe, it, beforeEach*/
 
 import should from 'should';
 import {User, Access} from '../../src/business';
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
 import {checkUsers, checkAccesses} from '../support/validation';
-import {Database} from '../../src/database';
+import type { Database } from '../../src/database';
 
 const config = require('../../src/config');
+const getInstance = require('../../src/database').getInstance;
 
 describe('User', () => {
 
   let fixtures: Fixtures = new Fixtures();
-  let db: Database = new Database({path: config.get('database:path')});
+  let db: Database = getInstance();
   let cleaner: DbCleaner = new DbCleaner();
 
   beforeEach(() => {
     return cleaner.clean();
-  });
-
-  after(() => {
-    fixtures.close();
   });
 
   it('when no parameters are provided, should only generate an id', () => {

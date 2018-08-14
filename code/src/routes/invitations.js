@@ -4,15 +4,14 @@ import Ajv from 'ajv';
 import _ from 'lodash';
 const request = require('superagent');
 
-import {Database} from '../database';
+import type { Database } from '../database';
 import {Campaign, Invitation, User} from '../business';
 const config = require('../config');
+const getInstance = require('../database').getInstance
 
 import schema from '../schemas';
 
-const database: Database = new Database({
-  path: config.get('database:path')
-});
+const database: Database = getInstance();
 
 const ajv = new Ajv();
 const invitationSchema = ajv.compile(schema.Invitation);

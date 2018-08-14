@@ -7,28 +7,23 @@ const _: mixed = require('lodash');
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
+const getInstance = require('../../src/database').getInstance;
 
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
-import {Database} from '../../src/database';
+import type { Database } from '../../src/database';
 import {User, Campaign} from '../../src/business';
 
 import {checkCampaigns} from '../support/validation';
 
-const DB_PATH = config.get('database:path');
-
 describe('campaigns', () => {
 
   let fixtures: Fixtures = new Fixtures();
-  let db: Database = new Database({path: DB_PATH});
+  let db: Database = getInstance();
   let cleaner: DbCleaner = new DbCleaner();
 
   beforeEach(() => {
     return cleaner.clean();
-  });
-
-  after(() => {
-    fixtures.close();
   });
 
   function makeUrl(): string {

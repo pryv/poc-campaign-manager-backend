@@ -9,28 +9,23 @@ import _ from 'lodash';
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
+const getInstance = require('../../src/database').getInstance;
 
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
-import {Database} from '../../src/database';
+import type { Database } from '../../src/database';
 import {User, Campaign, Invitation, Access} from '../../src/business';
 
 import {checkUsers, checkInvitations} from '../support/validation';
 
-const DB_PATH = config.get('database:path');
-
 describe('users', () => {
 
   let fixtures: Fixtures = new Fixtures();
-  let db: Database = new Database({path: DB_PATH});
+  let db: Database = getInstance();
   let cleaner: DbCleaner = new DbCleaner();
 
   beforeEach(() => {
     return cleaner.clean();
-  });
-
-  after(() => {
-    fixtures.close();
   });
 
   function makeUrl(params: {

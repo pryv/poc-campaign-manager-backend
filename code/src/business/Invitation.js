@@ -2,7 +2,7 @@
 
 import cuid from 'cuid';
 
-import typeof {Database} from '../database';
+import type {Database} from '../database';
 import {User, Campaign} from '../business';
 
 /**

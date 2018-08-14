@@ -3,7 +3,7 @@
 /* global describe, it, beforeEach, after*/
 
 import should from 'should';
-import {Database} from '../../src/database';
+import type { Database } from '../../src/database';
 import {User, Campaign, Invitation, Access} from '../../src/business';
 import {Fixtures} from '../support/Fixtures';
 import {checkInvitations, checkCampaigns, checkUsers, checkAccesses} from '../support/validation';
@@ -11,19 +11,16 @@ import {DbCleaner} from '../support/DbCleaner';
 const _ = require('lodash');
 
 const config = require('../../src/config');
+const getInstance = require('../../src/database').getInstance;
 
 describe('Database', () => {
 
   const fixtures: Fixtures = new Fixtures();
-  const db: Database = new Database({path: config.get('database:path')});
+  const db: Database = getInstance();
   const cleaner: DbCleaner = new DbCleaner();
 
   beforeEach(() => {
     return cleaner.clean();
-  });
-
-  after(() => {
-    fixtures.close();
   });
 
   describe('Invitations', () => {

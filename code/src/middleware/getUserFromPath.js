@@ -1,6 +1,6 @@
 // @flow
 
-import {Database} from 'better-sqlite3';
+import type { Database } from '../database';
 import {User} from '../business';
 
 /**

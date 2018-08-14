@@ -1,10 +1,11 @@
 // @flow
 
-import {Database} from '../../src/database';
+import type { Database } from '../../src/database';
 import {User, Campaign, Invitation, Access} from '../../src/business';
 import charlatan from 'charlatan';
 import cuid from 'cuid';
 
+const getInstance = require('../../src/database').getInstance;
 const config = require('../../src/config');
 
 export class Fixtures {
@@ -12,7 +13,7 @@ export class Fixtures {
   db: Database;
 
   constructor() {
-    this.db = new Database({path: config.get('database:path')});
+    this.db = getInstance();
   }
 
   getUser(params?: {

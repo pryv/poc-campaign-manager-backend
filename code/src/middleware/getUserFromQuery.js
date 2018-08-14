@@ -1,6 +1,6 @@
 // @flow
 
-import {Database} from 'better-sqlite3';
+import type { Database } from '../database';
 import {User} from '../business';
 
 /**
@@ -15,7 +15,7 @@ import {User} from '../business';
 module.exports = (params: {
   db: Database,
 }) => {
-  return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
+  return (req: express$Request, res: express$Response, next: express$NextFunction): mixed => {
     const query: mixed = req.query;
     if (query == null || query.username == null) {
       return missingUsername(res);

@@ -8,30 +8,24 @@ import _ from 'lodash';
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
+const getInstance = require('../../src/database').getInstance;
 
 import {Fixtures} from '../support/Fixtures';
 import {DbCleaner} from '../support/DbCleaner';
-import {Database} from '../../src/database';
+import type { Database } from '../../src/database';
 import {Campaign, User, Invitation, Access} from '../../src/business';
 
 import {checkInvitations, checkCampaigns, checkUsers} from '../support/validation';
 
-const DB_PATH = config.get('database:path');
-
 describe('invitations', () => {
 
   const fixtures: Fixtures = new Fixtures();
-  const db: Database = new Database({path: DB_PATH});
+  const db: Database = getInstance();
   const cleaner: DbCleaner = new DbCleaner();
 
   beforeEach(() => {
     return cleaner.clean();
   });
-
-  after(() => {
-    fixtures.close();
-  });
-
 
   function makeUrl(): string {
     return '/invitations';

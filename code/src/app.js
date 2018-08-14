@@ -3,7 +3,8 @@
 import express from 'express';
 const bodyParser = require('body-parser');
 
-import {Database} from './database';
+import type { Database } from './database';
+const getInstance = require('./database').getInstance;
 const config = require('./config');
 import {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth} from './middleware';
 import {campaigns, invitations, users, auth} from './routes';
@@ -11,9 +12,7 @@ import {campaigns, invitations, users, auth} from './routes';
 const app: express$Application = express();
 module.exports = app;
 
-const database: Database = new Database({
-  path: config.get('database:path')
-});
+const database: Database = getInstance();
 
 app.use(callLoger);
 app.use(bodyParser.json());

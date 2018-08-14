@@ -1,6 +1,6 @@
 // @flow
 
-import typeof {Database} from '../database';
+import type { Database } from '../database';
 import {Access} from '.';
 import cuid from 'cuid';
 import _ from 'lodash';

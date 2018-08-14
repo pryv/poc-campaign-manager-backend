@@ -3,15 +3,14 @@
 import Ajv from 'ajv';
 import _ from 'lodash';
 
-import {Database} from '../database';
+import type { Database } from '../database';
 import {User, Campaign} from '../business';
 const config = require('../config');
+const getInstance = require('../database').getInstance;
 
 import schema from '../schemas';
 
-const database: Database = new Database({
-  path: config.get('database:path')
-});
+const database: Database = getInstance();
 
 const ajv = new Ajv();
 const campaignSchema = ajv.compile(schema.Campaign);
