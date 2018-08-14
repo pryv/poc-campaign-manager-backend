@@ -2,12 +2,12 @@
 
 /* global describe, it, beforeEach, after*/
 
-import should from 'should';
+const should = require('should');
 import type { Database } from '../../src/database';
-import {User, Campaign, Invitation, Access} from '../../src/business';
-import {Fixtures} from '../support/Fixtures';
-import {checkInvitations, checkCampaigns, checkUsers, checkAccesses} from '../support/validation';
-import {DbCleaner} from '../support/DbCleaner';
+const {User, Campaign, Invitation, Access} = require('../../src/business');
+const Fixtures = require('../support/Fixtures');
+const {checkInvitations, checkCampaigns, checkUsers, checkAccesses} = require('../support/validation');
+const DbCleaner = require('../support/DbCleaner');
 const _ = require('lodash');
 
 const config = require('../../src/config');

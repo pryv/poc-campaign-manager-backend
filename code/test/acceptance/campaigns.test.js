@@ -9,12 +9,12 @@ const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
 const getInstance = require('../../src/database').getInstance;
 
-import {Fixtures} from '../support/Fixtures';
-import {DbCleaner} from '../support/DbCleaner';
+const Fixtures = require('../support/Fixtures');
+const DbCleaner  = require('../support/DbCleaner');
 import type { Database } from '../../src/database';
-import {User, Campaign, Access} from '../../src/business';
+const {User, Campaign, Access} = require('../../src/business');
 
-import {checkCampaigns} from '../support/validation';
+const {checkCampaigns} = require('../support/validation');
 
 describe('campaigns', () => {
 

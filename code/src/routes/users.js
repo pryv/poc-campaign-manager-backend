@@ -1,13 +1,13 @@
 // @flow
 
-import Ajv from 'ajv';
-import _ from 'lodash';
+const Ajv = require('ajv');
+const _ = require('lodash');
 
 import type { Database } from '../database';
-import {User} from '../business';
+const {User} = require('../business');
 const config = require('../config');
 const getInstance = require('../database').getInstance
-import schema from '../schemas';
+const schema = require('../schemas');
 
 const database: Database = getInstance();
 

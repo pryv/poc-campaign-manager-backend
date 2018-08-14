@@ -1,15 +1,15 @@
 // @flow
 
-import Ajv from 'ajv';
-import _ from 'lodash';
+const Ajv = require('ajv');
+const _ = require('lodash');
 const request = require('superagent');
 
 import type { Database } from '../database';
-import {Campaign, Invitation, User} from '../business';
-const config = require('../config');
-const getInstance = require('../database').getInstance
 
-import schema from '../schemas';
+const {Campaign, Invitation, User} = require('../business');
+const config = require('../config');
+const getInstance = require('../database').getInstance;
+const schema = require('../schemas');
 
 const database: Database = getInstance();
 

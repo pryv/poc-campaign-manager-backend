@@ -1,6 +1,6 @@
 // @flow
 
-export default {
+module.exports = {
   title: 'invitation',
   type: 'object',
   properties: {

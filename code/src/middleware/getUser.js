@@ -1,7 +1,7 @@
 // @flow
 
 import type { Database } from '../database';
-import {User} from '../business';
+const {User} = require('../business');
 
 /**
  * If user exists, register the User to reg.params.user,

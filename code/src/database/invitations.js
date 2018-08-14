@@ -1,11 +1,12 @@
 // @flow
 
-import typeof sqlite3 from 'better-sqlite3';
-import {Invitation, User, Campaign} from '../business';
-import {Statement, Transaction} from 'better-sqlite3';
+import type sqlite3 from 'better-sqlite3';
+import type {Statement, Transaction} from 'better-sqlite3';
+
+const {Invitation, User, Campaign} = require('../business');
 const cuid = require('cuid');
 
-export class Invitations {
+class Invitations {
 
   db: sqlite3;
   saveStatement: Statement;
@@ -213,6 +214,7 @@ export class Invitations {
   }
 
 }
+module.exports = Invitations;
 
 function convertFromDB(result: mixed): Invitation {
   if (result == null) {

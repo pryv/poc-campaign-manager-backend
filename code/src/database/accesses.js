@@ -1,10 +1,11 @@
 // @flow
 
-import typeof sqlite3 from 'better-sqlite3';
-import {User, Access} from '../business';
-import {Statement} from 'better-sqlite3';
+import type sqlite3 from 'better-sqlite3';
+import type { Statement } from 'better-sqlite3';
 
-export class Accesses {
+const {User, Access} = require('../business');
+
+class Accesses {
 
   db: sqlite3;
 
@@ -109,6 +110,7 @@ export class Accesses {
     return params.access;
   }
 }
+module.exports = Accesses;
 
 function convertFromDB(result: mixed): Access {
   if (result == null) {

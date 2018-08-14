@@ -2,11 +2,12 @@
 
 /* global describe, it, beforeEach*/
 
-import should from 'should';
-import {User, Access} from '../../src/business';
-import {Fixtures} from '../support/Fixtures';
-import {DbCleaner} from '../support/DbCleaner';
-import {checkUsers, checkAccesses} from '../support/validation';
+const should = require('should');
+const {User, Access} = require('../../src/business');
+const Fixtures = require('../support/Fixtures');
+const DbCleaner = require('../support/DbCleaner');
+const {checkUsers, checkAccesses} = require('../support/validation');
+
 import type { Database } from '../../src/database';
 
 const config = require('../../src/config');

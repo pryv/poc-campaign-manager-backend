@@ -1,10 +1,11 @@
 // @flow
 
-import typeof sqlite3 from 'better-sqlite3';
-import {User} from '../business';
-import {Statement, Transaction} from 'better-sqlite3';
+import type sqlite3 from 'better-sqlite3';
+import type {Statement, Transaction} from 'better-sqlite3';
 
-export class Users {
+const {User} = require('../business');
+
+class Users {
 
   db: sqlite3;
 
@@ -352,6 +353,7 @@ export class Users {
   }
 
 }
+module.exports = Users;
 
 function convertFromDB(result: mixed): User {
   if (result) {

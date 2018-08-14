@@ -5,18 +5,18 @@
 const request: any = require('supertest');
 const should: any = require('should');
 
-import _ from 'lodash';
+const _ = require('lodash');
 
 const app: express$Application = require('../../src/app');
 const config = require('../../src/config');
 const getInstance = require('../../src/database').getInstance;
 
-import {Fixtures} from '../support/Fixtures';
-import {DbCleaner} from '../support/DbCleaner';
+const Fixtures = require('../support/Fixtures');
+const DbCleaner = require('../support/DbCleaner');
 import type { Database } from '../../src/database';
-import {User, Campaign, Invitation, Access} from '../../src/business';
+const {User, Campaign, Invitation, Access} = require('../../src/business');
 
-import {checkUsers, checkInvitations} from '../support/validation';
+const {checkUsers, checkInvitations} = require('../support/validation');
 
 describe('users', () => {
 

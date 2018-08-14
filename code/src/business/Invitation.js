@@ -1,9 +1,11 @@
 // @flow
 
-import cuid from 'cuid';
-
 import type {Database} from '../database';
-import {User, Campaign} from '../business';
+
+const cuid = require('cuid');
+
+const Campaign = require('./Campaign');
+const User = require('./User');
 
 /**
  * created: when the invitation has been created - only for targeted
@@ -15,7 +17,7 @@ import {User, Campaign} from '../business';
  */
 export type InvitationStatus = 'created' | 'seen' | 'accepted' | 'cancelled' | 'refused' | 'hold';
 
-export class Invitation {
+class Invitation {
 
   id: string;
   campaign: Campaign;
@@ -69,3 +71,4 @@ export class Invitation {
     params.db.invitations.save({invitation: this});
   }
 }
+module.exports = Invitation;

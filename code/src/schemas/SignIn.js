@@ -1,6 +1,6 @@
 // @flow
 
-export default {
+module.exports = {
   title: 'signIn',
   type: 'object',
   properties: {

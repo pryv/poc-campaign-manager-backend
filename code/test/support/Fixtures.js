@@ -1,14 +1,19 @@
 // @flow
 
 import type { Database } from '../../src/database';
-import {User, Campaign, Invitation, Access} from '../../src/business';
-import charlatan from 'charlatan';
-import cuid from 'cuid';
+
+const User = require('../../src/business').User;
+const Campaign = require('../../src/business').Campaign;
+const Invitation = require('../../src/business').Invitation;
+const Access = require('../../src/business').Access;
+
+const charlatan = require('charlatan');
+const cuid = require('cuid');
 
 const getInstance = require('../../src/database').getInstance;
 const config = require('../../src/config');
 
-export class Fixtures {
+class Fixtures {
 
   db: Database;
 
@@ -163,3 +168,4 @@ export class Fixtures {
     this.db.close();
   }
 }
+module.exports = Fixtures;

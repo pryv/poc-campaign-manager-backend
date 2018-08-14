@@ -1,8 +1,8 @@
 // @flow
 
-import users from './users';
-import campaigns from './campaigns';
-import invitations from './invitations';
-import auth from './auth';
-
-export {users, campaigns, invitations, auth};
+module.exports = {
+  users: require('./users'),
+  campaigns: require('./campaigns'),
+  invitations: require('./invitations'),
+  auth: require('./auth'),
+};

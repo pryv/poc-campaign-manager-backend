@@ -1,12 +1,11 @@
 // @flow
 
-import {User, Campaign, Invitation, Access} from '../../src/business';
+const {User, Campaign, Invitation, Access} = require('../../src/business');
 
-import should from 'should';
-
+const should = require('should');
 const slugify = require('slugify');
 
-export function checkInvitations(expected: Invitation, actual: Invitation, omit: mixed): void {
+function checkInvitations(expected: Invitation, actual: Invitation, omit: mixed): void {
   if (omit == null)
     omit = {};
 
@@ -29,7 +28,7 @@ export function checkInvitations(expected: Invitation, actual: Invitation, omit:
   checkUsers(expected.requestee, actual.requestee);
 }
 
-export function checkUsers(expected: User, actual: User, omit: mixed): void {
+function checkUsers(expected: User, actual: User, omit: mixed): void {
 
   if (omit == null) {
     omit = {};
@@ -49,7 +48,7 @@ export function checkUsers(expected: User, actual: User, omit: mixed): void {
     expected.localId.should.eql(actual.localId);
 }
 
-export function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Object): void {
+function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Object): void {
   if (omit == null)
     omit = {};
 
@@ -66,8 +65,15 @@ export function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Obje
 
 }
 
-export function checkAccesses(expected: Access, actual: Access): void {
+function checkAccesses(expected: Access, actual: Access): void {
   expected.id.should.eql(actual.id);
   expected.created.should.eql(actual.created);
   expected.isValidUntil.should.eql(actual.isValidUntil);
 }
+
+module.exports = {
+  checkInvitations: checkInvitations,
+  checkUsers: checkUsers,
+  checkCampaigns: checkCampaigns,
+  checkAccesses: checkAccesses,
+};

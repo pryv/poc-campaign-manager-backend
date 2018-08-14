@@ -3,7 +3,7 @@
 const sqlite3 = require('better-sqlite3');
 const config = require('../../src/config');
 
-export class DbCleaner {
+class DbCleaner {
 
   db: mixed;
   deleteDataTransaction: Transaction;
@@ -28,6 +28,6 @@ export class DbCleaner {
   }
 
 }
-
+module.exports = DbCleaner;
 
 

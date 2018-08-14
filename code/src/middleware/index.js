@@ -1,8 +1,10 @@
-import callLoger from './callLoger';
-import getUser from './getUser';
-import getUserFromBody from './getUserFromBody';
-import getUserFromQuery from './getUserFromQuery';
-import getUserFromPath from './getUserFromPath';
-import checkAuth from './checkAuth';
+// @flow
 
-export {callLoger, getUser, getUserFromBody, getUserFromQuery, getUserFromPath, checkAuth};
+module.exports = {
+  callLoger: require('./callLoger'),
+  getUser: require('./getUser'),
+  getUserFromBody: require('./getUserFromBody'),
+  getUserFromQuery: require('./getUserFromQuery'),
+  getUserFromPath: require('./getUserFromPath'),
+  checkAuth: require('./checkAuth'),
+};

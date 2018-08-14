@@ -2,11 +2,10 @@
 
 const sqlite3 = require('better-sqlite3');
 
-import {Campaigns} from './campaigns';
-import {Users} from './users';
-import {Invitations} from './invitations';
-import {Accesses} from './accesses';
-
+const Accesses = require('./accesses');
+const Campaigns = require('./campaigns');
+const Users = require('./users')
+const Invitations = require('./invitations');
 const config = require('../config');
 
 class Database {

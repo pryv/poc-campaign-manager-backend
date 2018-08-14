@@ -2,9 +2,9 @@
 
 /* global describe, it*/
 
-import should from 'should';
-import slugify from 'slugify';
-import {Campaign} from '../../src/business';
+const should = require('should');
+const slugify = require('slugify');
+const {Campaign} = require('../../src/business');
 
 describe('Campaign', () => {
 

@@ -1,13 +1,14 @@
 // @flow
 
-import express from 'express';
+const express = require('express');
 const bodyParser = require('body-parser');
 
 import type { Database } from './database';
+
 const getInstance = require('./database').getInstance;
 const config = require('./config');
-import {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth} from './middleware';
-import {campaigns, invitations, users, auth} from './routes';
+const {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth} = require('./middleware');
+const {campaigns, invitations, users, auth} = require('./routes');
 
 const app: express$Application = express();
 module.exports = app;

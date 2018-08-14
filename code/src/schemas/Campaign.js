@@ -1,6 +1,6 @@
 // @flow
 
-export default {
+module.exports = {
   title: 'campaign',
   type: 'object',
   properties: {

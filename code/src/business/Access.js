@@ -1,10 +1,11 @@
 // @flow
 
 import type {Database} from '../database';
-import typeof {User} from '../business';
-import cuid from 'cuid';
+import type {User} from '../business';
 
-export class Access {
+const cuid = require('cuid');
+
+class Access {
 
   id: string;
   created: number;
@@ -40,6 +41,7 @@ export class Access {
     });
   }
 }
+module.exports = Access;
 
 function now(): number {
   return Date.now() / 1000;

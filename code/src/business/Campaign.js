@@ -1,9 +1,10 @@
 // @flow
 
 import type {Database} from '../database';
-import typeof {User} from '../business';
-import cuid from 'cuid';
-import slugify from 'slugify';
+import type { User } from '.';
+
+const cuid = require('cuid');
+const slugify = require('slugify');
 
 type Permission = {
   streamId: string,
@@ -17,7 +18,7 @@ type Permission = {
 
 type Level = 'read' | 'contribute' | 'manage';
 
-export class Campaign {
+class Campaign {
 
   id: string;
   title: string;
@@ -56,6 +57,7 @@ export class Campaign {
     });
   }
 }
+module.exports = Campaign;
 
 function derivateFromTitle(title: string): string {
   return 'cm-' + slugify(title);

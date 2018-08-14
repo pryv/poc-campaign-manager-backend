@@ -1,14 +1,15 @@
 // @flow
 
 import type { Database } from '../database';
-import {Access} from '.';
-import cuid from 'cuid';
-import _ from 'lodash';
+
+import type { Access } from '.';
+const cuid = require('cuid');
+const _ = require('lodash');
 
 /**
  * Represents a user in the app, can be linked with a Pryv user
  */
-export class User {
+class User {
 
   id: string;
 
@@ -186,6 +187,7 @@ export class User {
     });
   }
 }
+module.exports = User;
 
 function now() {
   return Date.now() / 1000;
