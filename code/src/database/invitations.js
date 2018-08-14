@@ -86,7 +86,7 @@ class Invitations {
       ' i.requestee_id=@user_id ' +
       '' +
       'ORDER BY ' +
-      ' i.created DESC ' +
+      ' i.modified DESC ' +
       '' +
       'LIMIT 1000'
     );

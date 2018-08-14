@@ -216,19 +216,42 @@ router.post('/:invitationId/refuse', (req: express$Request, res: express$Respons
 
 router.get('/', (req: express$Request, res: express$Response) => {
 
-  const user = res.locals.user;
+  const user: User = res.locals.user;
 
-  const invitations = database.invitations.get({
+  const invitations: Array<Invitation> = database.invitations.get({
     user: user
   });
   return res.status(200)
     .json({
-      invitations: invitations
+      invitations: bundleHistory(invitations)
     });
 
 });
 
 module.exports = router;
+
+function bundleHistory(invitations: Array<Invitation>): Array<Invitation> {
+  const invitationsMap: Map<string, Invitation> = {};
+  const invitationsWithHistory: Array<Invitation> = [];
+
+  invitations.forEach((i) => {
+    if (i.headId == null) {
+      invitationsMap[i.id] = i;
+    }
+  });
+  invitations.forEach((i) => {
+    if (i.headId != null) {
+      if (invitationsMap[i.headId].history == null) {
+        invitationsMap[i.headId].history = [];
+      }
+      invitationsMap[i.headId].history.push(i);
+    }
+  });
+  Object.values(invitationsMap).forEach((i) => {
+    invitationsWithHistory.push(i);
+  });
+  return invitationsWithHistory;
+}
 
 function isTokenValid(params: {
   requestee: string,

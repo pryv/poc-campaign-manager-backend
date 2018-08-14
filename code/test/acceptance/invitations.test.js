@@ -137,7 +137,7 @@ describe('invitations', () => {
 
   describe('when fetching invitations', () => {
 
-    it('should return the user\'s invitations', () => {
+    it('should return the user\'s invitations including history', async () => {
 
       let user1, user2: User;
       let campaign1, campaign2: Campaign;
@@ -163,6 +163,31 @@ describe('invitations', () => {
         requestee: user1,
         campaign: campaign2
       });
+      invitation1.update({
+        db: db,
+        update: {
+          status: 'accepted'
+        }
+      });
+      invitation1.update({
+          db: db,
+          update: {
+            status: 'cancelled'
+          }
+      });
+      invitation2.update({
+        db: db,
+        update: {
+          status: 'refused'
+        }
+      });
+      invitation3.update({
+        db: db,
+        update: {
+          status: 'seen'
+        }
+      });
+
 
       return request(app)
         .get(makeUrl())
@@ -187,6 +212,22 @@ describe('invitations', () => {
           checkInvitations(found1, invitation1);
           checkInvitations(found2, invitation2);
           checkInvitations(found3, invitation3);
+
+          found1.should.have.property('history');
+          found2.should.have.property('history');
+          found3.should.have.property('history');
+
+          found1.history.length.should.eql(2);
+          found2.history.length.should.eql(1);
+          found3.history.length.should.eql(1);
+
+          //TODO: they get updated so quick that they come in any order.
+          //found1.history[0].status.should.eql('created');
+          //found1.history[1].status.should.eql('cancelled');
+
+          found2.history[0].status.should.eql('created');
+
+          found3.history[0].status.should.eql('created');
         });
     });
 
