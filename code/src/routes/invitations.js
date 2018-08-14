@@ -228,28 +228,6 @@ router.get('/', (req: express$Request, res: express$Response) => {
 
 });
 
-router.put('/:invitationId', (req: express$Request, res: express$Response) => {
-
-  const invitationId: string = req.params.invitationId;
-  const invitationUpdate = req.body;
-
-  const invitation: Invitation = database.invitations.getOne({id: invitationId});
-  if (invitation == null) {
-    return res.status(404)
-      .json({
-        error: 'Invitation does not exist.',
-        details: 'invitationId: ' + invitationId
-      });
-  }
-
-  const updatedInvitation = invitation.update({
-    db: database,
-    update: invitationUpdate });
-  return res.status(200)
-    .json({invitation: updatedInvitation});
-
-});
-
 module.exports = router;
 
 function isTokenValid(params: {
