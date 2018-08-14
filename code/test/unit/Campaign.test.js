@@ -20,7 +20,7 @@ describe('Campaign', () => {
       const appId = campaign.pryvAppId;
       appId.substring(0,3).should.eql('cm-');
       appId.length.should.eql(3 + campaign.title.length);
-      (appId.substring(3,3 + campaign.title.length)).should.eql(slugify(campaign.title));
+      (appId.substring(3,3 + campaign.title.length)).should.eql(slugify((campaign.title).toLowerCase()));
     });
 
   });

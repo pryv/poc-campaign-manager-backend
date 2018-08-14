@@ -60,5 +60,5 @@ class Campaign {
 module.exports = Campaign;
 
 function derivateFromTitle(title: string): string {
-  return 'cm-' + slugify(title);
+  return 'cm-' + slugify(title.toLowerCase());
 }
