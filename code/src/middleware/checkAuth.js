@@ -15,7 +15,7 @@ import {User} from '../business';
 module.exports = (params: {
   db: Database,
 }) => {
-  return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
+  return (req: express$Request, res: express$Response, next: express$NextFunction): mixed => {
     if(req.params.username === 'all')
       return next();
 

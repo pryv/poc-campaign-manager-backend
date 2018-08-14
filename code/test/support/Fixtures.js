@@ -15,7 +15,7 @@ export class Fixtures {
     this.db = new Database({path: config.get('database:path')});
   }
 
-  getUser(params: {
+  getUser(params?: {
     full: boolean,
     localOnly: boolean,
     pryvOnly: boolean,
@@ -56,11 +56,11 @@ export class Fixtures {
     return user;
   }
 
-  addUser(params: {
-    full: boolean,
-    localOnly: boolean,
-    pryvOnly: boolean,
-    linked: boolean,
+  addUser(params?: {
+    full?: boolean,
+    localOnly?: boolean,
+    pryvOnly?: boolean,
+    linked?: boolean,
   }): User {
     const user: User = this.getUser(params);
 
@@ -79,9 +79,9 @@ export class Fixtures {
   }
 
   getInvitation(params?: {
-    campaign: Campaign,
-    requester: User,
-    requestee: User,
+    campaign?: Campaign,
+    requester?: User,
+    requestee?: User,
   }): Invitation {
 
     if (params == null) {
@@ -112,9 +112,9 @@ export class Fixtures {
   }
 
   addInvitation(params?: {
-    campaign: Campaign,
-    requester: User,
-    requestee: User,
+    campaign?: Campaign,
+    requester?: User,
+    requestee?: User,
   }): Invitation {
 
     const invitation = this.getInvitation(params);

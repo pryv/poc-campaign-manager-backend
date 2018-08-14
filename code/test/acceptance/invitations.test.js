@@ -330,20 +330,87 @@ describe('invitations', () => {
 
   describe('when refusing invitations', () => {
 
-    it('should return a 200 if the invitation was created', () => {
+    function makeUrl(invitationId) { return '/invitations/' + invitationId + '/refuse'; }
 
+    const user: User = fixtures.addUser();
+
+    it('should return a 200 if the invitation was created', () => {
+      const requestee: User = fixtures.addUser({ pryvOnly: true });
+      const invitation = fixtures.addInvitation({
+        status: 'created',
+        requestee: requestee,
+      });
+
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('invitation');
+          const refusedInvitation: Invitation = res.body.invitation;
+          invitation.status = 'refused';
+          checkInvitations(invitation, refusedInvitation, { modified: true });
+        });
     });
 
     it('should return a 200 if the invitation was accepted', () => {
+      const requestee: User = fixtures.addUser({ pryvOnly: true });
+      const invitation = fixtures.addInvitation({
+        status: 'accepted',
+        requestee: requestee,
+      });
 
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .send({})
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('invitation');
+          const refusedInvitation: Invitation = res.body.invitation;
+          invitation.status = 'refused';
+          checkInvitations(invitation, refusedInvitation, { modified: true });
+        });
     });
 
     it('should return a 400 if the invitation has already been refused', () => {
+      const requestee: User = fixtures.addUser({ pryvOnly: true });
+      const invitation = fixtures.addInvitation({
+        status: 'refused',
+        requestee: requestee,
+      });
 
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .send({})
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 400 if the campaign is cancelled', () => {
+      const requestee: User = fixtures.addUser({ pryvOnly: true });
+      const invitation = fixtures.addInvitation({
+        status: 'cancelled',
+        requestee: requestee,
+      });
+
+      return request(app)
+        .post(makeUrl(invitation.id))
+        .send({})
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
     });
 
     it('should return a 404 if the invitation does not exist', () => {
-
+      return request(app)
+        .post(makeUrl('nonexistentId'))
+        .send({})
+        .then(res => {
+          res.status.should.eql(404);
+          res.body.should.have.property('error');
+        });
     });
   });
 

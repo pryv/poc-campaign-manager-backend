@@ -33,6 +33,8 @@ app.options('*', (req: express$Request, res: express$Response) => {
   res.status(200).end();
 });
 
+
+
 /**
  * Campaigns
  */
@@ -42,12 +44,16 @@ app.post('/campaigns', getUserFromBody({db: database}));
 app.get('/campaigns', checkAuth({db: database}));
 app.post('/campaigns', checkAuth({db: database}));
 
+app.use('/campaigns', campaigns);
+
 /**
  * Invitations
  */
 app.get('/invitations', getUserFromQuery({db: database}));
 
 app.get('/invitations', checkAuth({db: database}));
+
+app.use('/invitations', invitations);
 
 /**
  * Users
@@ -59,6 +65,8 @@ app.get('/users/:username', checkAuth({db: database}));
 app.put('/users/:username', checkAuth({db: database}));
 
 app.use('/users', users);
-app.use('/invitations', invitations);
-app.use('/campaigns', campaigns);
+
+/**
+ * Auth
+ */
 app.use('/auth', auth);

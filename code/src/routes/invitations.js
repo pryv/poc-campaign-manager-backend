@@ -172,6 +172,49 @@ router.post('/:invitationId/accept', async (req: express$Request, res: express$R
 
 });
 
+router.post('/:invitationId/refuse', (req: express$Request, res: express$Response) => {
+
+  const invitationId: string = req.params.invitationId;
+
+  const invitation: Invitation = database.invitations.getOne({ id: invitationId });
+
+  if (invitation == null) {
+    return res.status(404)
+      .json({
+        error: 'Invitation does not exist.',
+        details: 'invitationId: ' + invitationId,
+      });
+  }
+
+  if (invitation.status == 'refused') {
+    return res.status(400)
+      .json({
+        error: 'Invitation has already been refused',
+        details: 'invitationId: ' + invitationId,
+      });
+  }
+
+  if (invitation.status == 'cancelled') {
+    return res.status(400)
+      .json({
+        error: 'Campaign is cancelled.',
+        details: 'invitationId: ' + invitationId,
+      })
+  }
+
+  const refusedInvitation: Invitation = invitation.update({
+    db: database,
+    update: {
+      status: 'refused',
+    },
+  });
+
+  return res.status(200)
+    .json({
+      invitation: refusedInvitation
+    });
+});
+
 router.get('/', (req: express$Request, res: express$Response) => {
 
   const user = res.locals.user;
