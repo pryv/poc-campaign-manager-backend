@@ -30,7 +30,8 @@ module.exports = (params: {
     if (! isAccessValid) {
       return res.status(401)
         .json({
-          error: 'invalid token "' + token + '"',
+          error: 'invalid token',
+          details: 'token: "' + token + '"',
         });
     }
 
