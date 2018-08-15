@@ -81,11 +81,11 @@ router.post('/:campaignId/cancel', (req: express$Request, res: express$Response)
       });
   }
 
-  const cancelledCampaign: Campaign = database.campaigns.cancel({ campaign: campaign });
+  campaign.cancel({ db: database });
 
   return res.status(200)
     .json({
-      campaign: cancelledCampaign,
+      campaign: campaign,
     });
 });
 
