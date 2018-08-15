@@ -234,15 +234,19 @@ describe('campaigns', () => {
 
   describe('when cancelling a campaign', () => {
 
+    const user: User = fixtures.addUser();
+    const access: Access = fixtures.addAccess({ user: user });
+
     function makeUrl(campaignId: string) {
       return '/campaigns/' + campaignId + '/cancel';
     }
 
     it('should return a 200, update the campaign status to cancelled if the campaign exists', () => {
-      const campaign: Campaign = fixtures.addCampaign();
+      const campaign: Campaign = fixtures.addCampaign({ user: user });
 
       return request(app)
         .post(makeUrl(campaign.id))
+        .set('authorization', access.id)
         .then(res => {
           res.status.should.eql(200);
           res.body.should.have.property('campaign');
@@ -254,21 +258,34 @@ describe('campaigns', () => {
     });
 
     it('should return a 400 if the campaign is already cancelled', () => {
-      const campaign: Campaign = fixtures.addCampaign();
+      const campaign: Campaign = fixtures.addCampaign({ user: user });
       campaign.cancel({ db: db });
 
       return request(app)
         .post(makeUrl(campaign.id))
+        .set('authorization', access.id)
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
         });
     });
 
-    it('should return a 404 if the campaign does not exist', () => {
+    it('should return a 403 if the local access token is invalid', () => {
+      const campaign: Campaign = fixtures.addCampaign({ user: user });
 
       return request(app)
+        .post(makeUrl(campaign.id))
+        .set('authorization', 'bad-token')
+        .then(res => {
+          res.status.should.eql(403);
+          res.body.should.have.property('error');
+        });
+    });
+
+    it('should return a 404 if the campaign does not exist', () => {
+      return request(app)
         .post(makeUrl('nonexistentId'))
+        .set('authorization', access.id)
         .then(res => {
           res.status.should.eql(404);
           res.body.should.have.property('error');

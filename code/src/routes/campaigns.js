@@ -47,6 +47,7 @@ router.post('/', (req: express$Request, res: express$Response) => {
 router.post('/:campaignId/cancel', (req: express$Request, res: express$Response) => {
 
   const campaignId: string = req.params.campaignId;
+  const access: string = req.headers.authorization;
 
   const campaign: Campaign = database.campaigns.getOne({ campaignId: campaignId });
 
@@ -55,6 +56,20 @@ router.post('/:campaignId/cancel', (req: express$Request, res: express$Response)
       .json({
         error: 'campaign does not exist',
         details: 'campaignId: ' + campaignId,
+      });
+  }
+
+  const user: User = database.users.getOne({ username: campaign.requester });
+  const isAccessValid: boolean = user.isAccessValid({
+    db: database,
+    accessId: access
+  });
+
+  if (! isAccessValid) {
+    return res.status(403)
+      .json({
+        error: 'invalid token',
+        details: 'token: "' + access + '"',
       });
   }
 
