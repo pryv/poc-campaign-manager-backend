@@ -1,8 +1,16 @@
+# release
 lib/
+
+# node
 node_modules/
 
+# webstorm
 .idea/
 
+# vs code
+.vscode/
+
+# flow
 flow-coverage/
 
 # default db file
