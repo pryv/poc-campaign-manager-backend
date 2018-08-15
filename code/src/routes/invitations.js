@@ -124,7 +124,7 @@ router.post('/:invitationId/accept', async (req: express$Request, res: express$R
       .json({
         error: 'Campaign is cancelled.',
         details: 'invitationId: ' + invitationId,
-      })
+      });
   }
 
   const requestee: User = invitation.requestee;
@@ -198,7 +198,7 @@ router.post('/:invitationId/refuse', (req: express$Request, res: express$Respons
       .json({
         error: 'Campaign is cancelled.',
         details: 'invitationId: ' + invitationId,
-      })
+      });
   }
 
   const refusedInvitation: Invitation = invitation.update({

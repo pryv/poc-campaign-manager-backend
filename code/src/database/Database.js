@@ -4,7 +4,7 @@ const sqlite3 = require('better-sqlite3');
 
 const Accesses = require('./accesses');
 const Campaigns = require('./campaigns');
-const Users = require('./users')
+const Users = require('./users');
 const Invitations = require('./invitations');
 const config = require('../config');
 

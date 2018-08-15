@@ -1,6 +1,6 @@
 // @flow
 
-/* global describe, it, beforeEach, after*/
+/* global describe, it, beforeEach*/
 
 const should = require('should');
 import type { Database } from '../../src/database';
@@ -10,7 +10,6 @@ const {checkInvitations, checkCampaigns, checkUsers, checkAccesses} = require('.
 const DbCleaner = require('../support/DbCleaner');
 const _ = require('lodash');
 
-const config = require('../../src/config');
 const getInstance = require('../../src/database').getInstance;
 
 describe('Database', () => {

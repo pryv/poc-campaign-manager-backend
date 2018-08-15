@@ -10,7 +10,6 @@ const {checkUsers, checkAccesses} = require('../support/validation');
 
 import type { Database } from '../../src/database';
 
-const config = require('../../src/config');
 const getInstance = require('../../src/database').getInstance;
 
 describe('User', () => {

@@ -5,8 +5,7 @@ const _ = require('lodash');
 
 import type { Database } from '../database';
 const {User} = require('../business');
-const config = require('../config');
-const getInstance = require('../database').getInstance
+const getInstance = require('../database').getInstance;
 const schema = require('../schemas');
 
 const database: Database = getInstance();

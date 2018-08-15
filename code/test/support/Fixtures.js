@@ -11,7 +11,6 @@ const charlatan = require('charlatan');
 const cuid = require('cuid');
 
 const getInstance = require('../../src/database').getInstance;
-const config = require('../../src/config');
 
 class Fixtures {
 

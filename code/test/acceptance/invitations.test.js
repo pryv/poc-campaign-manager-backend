@@ -1,14 +1,12 @@
 // @flow
 
-/* global describe, it, after, beforeEach */
+/* global describe, it, beforeEach */
 
 const request: any = require('supertest');
-const should: any = require('should');
 const _ = require('lodash');
 
 import type { Database } from '../../src/database';
 const app: express$Application = require('../../src/app');
-const config = require('../../src/config');
 const getInstance = require('../../src/database').getInstance;
 
 const Fixtures = require('../support/Fixtures');
@@ -170,10 +168,10 @@ describe('invitations', () => {
         }
       });
       invitation1.update({
-          db: db,
-          update: {
-            status: 'cancelled'
-          }
+        db: db,
+        update: {
+          status: 'cancelled'
+        }
       });
       invitation2.update({
         db: db,
@@ -365,8 +363,6 @@ describe('invitations', () => {
   describe('when refusing invitations', () => {
 
     function makeUrl(invitationId) { return '/invitations/' + invitationId + '/refuse'; }
-
-    const user: User = fixtures.addUser();
 
     it('should return a 200 if the invitation was created', () => {
       const requestee: User = fixtures.addUser({ pryvOnly: true });

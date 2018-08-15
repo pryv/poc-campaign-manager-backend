@@ -6,7 +6,6 @@ const bodyParser = require('body-parser');
 import type { Database } from './database';
 
 const getInstance = require('./database').getInstance;
-const config = require('./config');
 const {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth} = require('./middleware');
 const {campaigns, invitations, users, auth} = require('./routes');
 

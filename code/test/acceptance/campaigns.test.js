@@ -1,12 +1,11 @@
 // @flow
 
-/* global describe, it, after, beforeEach */
+/* global describe, it, beforeEach */
 
 const request: any = require('supertest');
 const _: any = require('lodash');
 
 const app: express$Application = require('../../src/app');
-const config = require('../../src/config');
 const getInstance = require('../../src/database').getInstance;
 
 const Fixtures = require('../support/Fixtures');
@@ -251,7 +250,7 @@ describe('campaigns', () => {
           campaign.status = 'cancelled';
           campaign.modified = resultCampaign.modified;
           checkCampaigns(campaign, resultCampaign);
-        })
+        });
     });
 
     it('should return a 400 if the campaign is already cancelled', () => {

@@ -3,7 +3,6 @@
 const {User, Campaign, Invitation, Access} = require('../../src/business');
 
 const should = require('should');
-const slugify = require('slugify');
 
 function checkInvitations(expected: Invitation, actual: Invitation, omit: mixed): void {
   if (omit == null)

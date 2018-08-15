@@ -24,3 +24,5 @@ Run Flow coverage: `yarn flow-coverage`
 Add Flow-typed libs (to run after adding new dependencies): `yarn flow:deps`
 
 Run tests: `yarn test`
+
+Run linter: `yarn lint`

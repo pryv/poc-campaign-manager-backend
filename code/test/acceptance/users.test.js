@@ -1,6 +1,6 @@
 // @flow
 
-/* global describe, it, beforeEach, after */
+/* global describe, it, beforeEach */
 
 const request: any = require('supertest');
 const should: any = require('should');
@@ -8,7 +8,6 @@ const should: any = require('should');
 const _ = require('lodash');
 
 const app: express$Application = require('../../src/app');
-const config = require('../../src/config');
 const getInstance = require('../../src/database').getInstance;
 
 const Fixtures = require('../support/Fixtures');
