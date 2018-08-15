@@ -149,16 +149,18 @@ class Fixtures {
     return campaign;
   }
 
-  addCampaign(params?: {user: User}): Campaign {
+  addCampaign(params?: {user?: User}): Campaign {
     if (! params) {
       params = {};
     }
 
     const campaign = this.getCampaign(params);
+    const user: User = params.user || this.addUser();
+    campaign.requester = user.username;
 
     this.db.campaigns.save({
       campaign: campaign,
-      user: params.user || this.addUser()
+      user: user,
     });
 
     return campaign;

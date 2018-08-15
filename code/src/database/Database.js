@@ -47,14 +47,16 @@ class Database {
       'user_id string UNIQUE' +
       ')').run();
     this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS campaigns (' +
-      'campaign_id string PRIMARY_KEY,' +
-      'title text NOT NULL,' +
-      'pryv_app_id text,' +
-      'description text NOT NULL,' +
-      'permissions text NOT NULL,' +
-      'created integer NOT NULL,' +
-      'user_id string NOT NULL' +
+      'CREATE TABLE IF NOT EXISTS campaigns ( ' +
+      'campaign_id string PRIMARY_KEY, ' +
+      'title text NOT NULL, ' +
+      'pryv_app_id text, ' +
+      'description text NOT NULL, ' +
+      'permissions text NOT NULL, ' +
+      'created integer NOT NULL, ' +
+      'modified integer NOT NULL, ' +
+      'status string NOT NULL, ' +
+      'user_id string NOT NULL ' +
       ')').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS invitations (' +

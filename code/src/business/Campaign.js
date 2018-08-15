@@ -18,6 +18,8 @@ type Permission = {
 
 type Level = 'read' | 'contribute' | 'manage';
 
+type CampaignStatus = 'created' | 'cancelled';
+
 class Campaign {
 
   id: string;
@@ -26,8 +28,9 @@ class Campaign {
   description: string;
   permissions: Array<Permission>;
   created: number;
-  cancelled: ?number;
-  requester: string;
+  requester: string; // local_username
+  modified: number;
+  status: CampaignStatus;
 
   constructor(params: {
     id?: string,
@@ -37,6 +40,9 @@ class Campaign {
     permissions: Array<Permission>,
     created?: number,
     requester?: string,
+    modified?: number,
+    status?: CampaignStatus,
+
   }) {
     this.id = params.id || cuid();
     this.title = params.title;
@@ -45,6 +51,8 @@ class Campaign {
     this.permissions = params.permissions;
     this.created = params.created || Date.now() / 1000;
     this.requester = params.requester || null;
+    this.modified = params.modified || this.created;
+    this.status = params.status || 'created';
   }
 
   save(params: {
@@ -54,6 +62,17 @@ class Campaign {
     params.db.campaigns.save({
       campaign: this,
       user: params.user
+    });
+  }
+
+  cancel(params: {
+    db: Database,
+  }): Campaign {
+    this.status = 'cancelled';
+    this.modified = Date.now() / 1000;
+
+    return params.db.campaigns.cancel({
+      campaign: this,
     });
   }
 }

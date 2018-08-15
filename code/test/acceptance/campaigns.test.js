@@ -143,7 +143,7 @@ describe('campaigns', () => {
           res.body.should.have.property('campaigns').which.is.a.Array();
           const firstCampaign = res.body.campaigns[0];
 
-          campaign.should.be.eql(new Campaign(firstCampaign));
+          checkCampaigns(campaign, new Campaign(firstCampaign));
         });
 
     });
@@ -235,16 +235,45 @@ describe('campaigns', () => {
 
   describe('when cancelling a campaign', () => {
 
-    it('should return a 200, mark all related invitations as \'cancelled\' if the campaign exists and is valid', () => {
+    function makeUrl(campaignId: string) {
+      return '/campaigns/' + campaignId + '/cancel';
+    }
 
+    it('should return a 200, update the campaign status to cancelled if the campaign exists', () => {
+      const campaign: Campaign = fixtures.addCampaign();
+
+      return request(app)
+        .post(makeUrl(campaign.id))
+        .then(res => {
+          res.status.should.eql(200);
+          res.body.should.have.property('campaign');
+          const resultCampaign: Campaign = new Campaign(res.body.campaign);
+          campaign.status = 'cancelled';
+          campaign.modified = resultCampaign.modified;
+          checkCampaigns(campaign, resultCampaign);
+        })
     });
 
     it('should return a 400 if the campaign is already cancelled', () => {
+      const campaign: Campaign = fixtures.addCampaign();
+      campaign.cancel({ db: db });
 
+      return request(app)
+        .post(makeUrl(campaign.id))
+        .then(res => {
+          res.status.should.eql(400);
+          res.body.should.have.property('error');
+        });
     });
 
     it('should return a 404 if the campaign does not exist', () => {
 
+      return request(app)
+        .post(makeUrl('nonexistentId'))
+        .then(res => {
+          res.status.should.eql(404);
+          res.body.should.have.property('error');
+        });
     });
 
   });

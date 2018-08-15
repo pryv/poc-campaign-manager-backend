@@ -159,6 +159,15 @@ describe('Database', () => {
       const retrievedCampaign: Campaign = db.campaigns.getOneByPryvAppId({pryvAppId: campaign.pryvAppId});
       checkCampaigns(campaign, retrievedCampaign);
     });
+
+    it('should cancel update the campaign status to "cancelled"', () => {
+      const campaign: Campaign = fixtures.addCampaign();
+
+      const cancelledCampaign: Campaign = db.campaigns.cancel({ campaign: campaign });
+      campaign.status = 'cancelled';
+      campaign.modified = cancelledCampaign.modified;
+      checkCampaigns(campaign, cancelledCampaign);
+    });
   });
 
   describe('Accesses', () => {

@@ -45,6 +45,36 @@ router.post('/', (req: express$Request, res: express$Response) => {
     });
 });
 
+router.post('/:campaignId/cancel', (req: express$Request, res: express$Response) => {
+
+  const campaignId: string = req.params.campaignId;
+
+  const campaign: Campaign = database.campaigns.getOne({ campaignId: campaignId });
+
+  if (campaign == null) {
+    return res.status(404)
+      .json({
+        error: 'campaign does not exist',
+        details: 'campaignId: ' + campaignId,
+      });
+  }
+
+  if (campaign.status === 'cancelled') {
+    return res.status(400)
+      .json({
+        error: 'campaign is already cancelled',
+        details: 'campaignId: ' + campaignId,
+      });
+  }
+
+  const cancelledCampaign: Campaign = database.campaigns.cancel({ campaign: campaign });
+
+  return res.status(200)
+    .json({
+      campaign: cancelledCampaign,
+    });
+});
+
 router.get('/', (req: express$Request, res: express$Response) => {
 
   const user: User = res.locals.user;

@@ -58,7 +58,7 @@ function checkCampaigns(expected: Campaign, actual: Campaign, omit?: Object): vo
     expected.id.should.eql(actual.id);
 
   expected.title.should.eql(actual.title);
-  (expected.pryvAppId.substring(3, slugify(actual.title).length + 3)).should.eql(slugify(actual.title));
+  expected.pryvAppId.should.eql(actual.pryvAppId);
   expected.description.should.eql(actual.description);
   expected.permissions.should.eql(actual.permissions);
   expected.created.should.approximately(actual.created, 1.0);

@@ -1,8 +1,8 @@
 // @flow
 
 import type sqlite3 from 'better-sqlite3';
-import type {Statement} from 'better-sqlite3';
-const {Campaign, User} = require('../business');
+import type { Statement } from 'better-sqlite3';
+const { Campaign, User } = require('../business');
 
 class Campaigns {
 
@@ -14,6 +14,8 @@ class Campaigns {
   getOneStatement: Statement;
   getOneByPryvAppIdStatement: Statement;
 
+  cancelStatement: Statement;
+
   constructor(params: {db: sqlite3}) {
     this.db = params.db;
 
@@ -22,23 +24,27 @@ class Campaigns {
 
   initBindings(): void {
     this.saveStatement = this.db.prepare(
-      'INSERT INTO campaigns (' +
-      'campaign_id,' +
-      'title,' +
-      'pryv_app_id,' +
-      'description,' +
-      'permissions,' +
-      'created,' +
-      'user_id' +
+      'INSERT INTO campaigns ( ' +
+      'campaign_id, ' +
+      'title, ' +
+      'pryv_app_id, ' +
+      'description, ' +
+      'permissions, ' +
+      'created, ' +
+      'modified, ' +
+      'status, ' +
+      'user_id ' +
       ') ' +
-      'VALUES (' +
-      '@campaign_id,' +
-      '@title,' +
-      '@pryv_app_id,' +
-      '@description,' +
-      '@permissions,' +
-      '@created,' +
-      '@user_id' +
+      'VALUES ( ' +
+      '@campaign_id, ' +
+      '@title, ' +
+      '@pryv_app_id, ' +
+      '@description, ' +
+      '@permissions, ' +
+      '@created, ' +
+      '@modified, ' +
+      '@status, ' +
+      '@user_id ' +
       ');'
     );
 
@@ -77,6 +83,16 @@ class Campaigns {
       'WHERE ' +
       ' pryv_app_id = @pryvAppId;'
     );
+
+    this.cancelStatement = this.db.prepare(
+      'UPDATE campaigns ' +
+      ' ' +
+      'SET ' +
+      ' status = @status, ' +
+      ' modified = @modified ' +
+      ' ' +
+      'WHERE campaign_id = @campaign_id;'
+    );
   }
 
   save(params: {campaign: Campaign, user: User}): void {
@@ -87,7 +103,9 @@ class Campaigns {
       description: params.campaign.description,
       permissions: JSON.stringify(params.campaign.permissions),
       created: params.campaign.created,
-      user_id: params.user.id
+      modified: params.campaign.modified,
+      status: params.campaign.status,
+      user_id: params.user.id,
     });
   }
 
@@ -114,6 +132,17 @@ class Campaigns {
       }));
   }
 
+  cancel(params: {
+    campaign: Campaign,
+  }): Campaign {
+    this.cancelStatement.run({
+      campaign_id: params.campaign.id,
+      modified: params.campaign.modified,
+      status: 'cancelled',
+    });
+    return params.campaign;
+  }
+
 }
 module.exports = Campaigns;
 
@@ -129,6 +158,8 @@ function convertFromDB(result: mixed): User {
     description: result.description,
     permissions: JSON.parse(result.permissions),
     created: result.created,
+    modified: result.modified,
+    status: result.status,
     requester: result.requester,
   });
 }
