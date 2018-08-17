@@ -160,7 +160,8 @@ router.post('/:invitationId/accept', async (req: express$Request, res: express$R
   const acceptedInvitation: Invitation = invitation.update({
     db: database,
     update: {
-      status: 'accepted'
+      status: 'accepted',
+      accessToken: accessToken,
     }
   });
 
