@@ -41,7 +41,16 @@ On your deploy, check the version using:
 sqlite3 campaign-management.db
 SQLite version 3.16.0 2016-11-04 19:09:39
 Enter ".help" for usage hints.
-sqlite> .read scripts/database/v1.sql
+sqlite> SELECT * from versions;
+```
+
+After having produced a new versioning script such as `scripts/database/vXX.sql`, apply it using:
+
+```sqlite
+sqlite3 campaign-management.db
+SQLite version 3.16.0 2016-11-04 19:09:39
+Enter ".help" for usage hints.
+sqlite> .read scripts/database/vXX.sql;
 ```
 
 There should not be any messages if the script was executed with no errors.
