@@ -229,6 +229,36 @@ describe('invitations', () => {
         });
     });
 
+    it('should return an empty array if the invitation does not have any history', () => {
+      let user1, user2: User;
+      let campaign1: Campaign;
+      let invitation1: Invitation;
+
+      user1 = fixtures.addUser();
+      const access: Access = fixtures.addAccess({ user: user1 });
+      user2 = fixtures.addUser();
+      campaign1 = fixtures.addCampaign({ user: user1 });
+      invitation1 = fixtures.addInvitation({
+        requester: user1,
+        requestee: user2,
+        campaign: campaign1
+      });
+
+      return request(app)
+        .get(makeUrl())
+        .query({ username: user1.username })
+        .set('authorization', access.id)
+        .expect(200)
+        .then(res => {
+          res.body.should.have.property('invitations');
+          const invitations = res.body.invitations;
+          invitations.length.should.eql(1);
+          const retrievedInvitation: Invitation = invitations[0];
+          retrievedInvitation.should.have.property('history').which.is.an.Array();
+          retrievedInvitation.history.length.should.eql(0);
+        });
+    });
+
     it('should return an error if the user does not exist', () => {
 
       return request(app)

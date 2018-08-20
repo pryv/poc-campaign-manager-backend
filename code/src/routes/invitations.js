@@ -236,15 +236,13 @@ function bundleHistory(invitations: Array<Invitation>): Array<Invitation> {
   const invitationsWithHistory: Array<Invitation> = [];
 
   invitations.forEach((i) => {
+    i.history = [];
     if (i.headId == null) {
       invitationsMap[i.id] = i;
     }
   });
   invitations.forEach((i) => {
     if (i.headId != null) {
-      if (invitationsMap[i.headId].history == null) {
-        invitationsMap[i.headId].history = [];
-      }
       invitationsMap[i.headId].history.push(i);
     }
   });
