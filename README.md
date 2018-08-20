@@ -9,7 +9,9 @@ ExpressJS app for campaign management.
 
 Download dependencies: `yarn install`
 
-Launch transpiler: `yarn watch`
+Transpile: `yarn release`
+
+Launch transpilation watcher: `yarn watch`
 
 ### Run
 

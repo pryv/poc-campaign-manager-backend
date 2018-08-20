@@ -14,7 +14,7 @@
     "test": "NODE_ENV=dev ./node_modules/.bin/mocha dist/test/**/*.test.js",
     "testOne": "NODE_ENV=dev ./node_modules/.bin/mocha",
     "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'code/src/**/*.js' -t html",
-    "release": "node_modules/.bin/babel code --out-dir lib --copy-files",
+    "release": "node_modules/.bin/babel code --out-dir dist --copy-files",
     "lint": "node_modules/eslint/bin/eslint.js code/**"
   },
   "devDependencies": {
