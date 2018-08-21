@@ -121,6 +121,22 @@ describe('users', () => {
         });
     });
 
+    it('should return a 400, if the username contains illegal characters', () => {
+      
+      const user = {
+        username: 'Ix#',
+        password: 'notrelevant'
+      };
+
+      return request(app)
+        .post(makeUrl())
+        .send(user)
+        .then(res => {
+          res.status.should.eql(400);
+          should.exist(res.error);
+        });
+    });
+
   });
 
   describe('when creating a Pryv user', () => {

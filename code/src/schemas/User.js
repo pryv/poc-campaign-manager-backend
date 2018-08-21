@@ -9,8 +9,7 @@ module.exports = {
     },
     username: {
       type: 'string',
-      minLength: 3,
-      maxLength: 64
+      pattern: '^[a-z0-9]{3,25}$',
     },
     pryvUsername: {
       type: 'string',
