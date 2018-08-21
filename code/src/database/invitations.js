@@ -10,7 +10,8 @@ class Invitations {
 
   db: sqlite3;
   saveStatement: Statement;
-  getStatement: Statement;
+  getAllStatement: Statement;
+  getRequestedStatement: Statement;
   getOneStatement: Statement;
   updateOneTransaction: Transaction;
 
@@ -43,8 +44,7 @@ class Invitations {
       '@requestee_id' +
       ');');
 
-
-    this.getStatement = this.db.prepare(
+    this.getAllStatement = this.db.prepare(
       'SELECT ' +
       '' +
       'i.*, ' +
@@ -84,6 +84,52 @@ class Invitations {
       'WHERE ' +
       ' i.requester_id=@user_id OR ' +
       ' i.requestee_id=@user_id ' +
+      '' +
+      'ORDER BY ' +
+      ' i.modified DESC ' +
+      '' +
+      'LIMIT 1000'
+    );
+
+    this.getRequestedStatement = this.db.prepare(
+      'SELECT ' +
+      '' +
+      'i.*, ' +
+      '' +
+      'rer.user_id as requester_id, ' +
+      'rerl.username as requester_username, ' +
+      'rerl.local_user_id as requester_local_id, ' +
+      'rerp.pryv_username as requester_pryv_username, ' +
+      'rerp.pryv_user_id as requester_pryv_id, ' +
+      '' +
+      'ree.user_id as requestee_id, ' +
+      'reel.username as requestee_username, ' +
+      'reel.local_user_id as requestee_local_id, ' +
+      'reep.pryv_username as requestee_pryv_username, ' +
+      'reep.pryv_user_id as requestee_pryv_id, ' +
+      '' +
+      'c.campaign_id as campaign_id, ' +
+      'c.title as campaign_title, ' +
+      'c.pryv_app_id as campaign_pryv_app_id, ' +
+      'c.description as campaign_description, ' +
+      'c.created as campaign_created,' +
+      'c.permissions as campaign_permissions ' +
+      '' +
+      ' FROM invitations i ' +
+      '' +
+      ' INNER JOIN users rer ON rer.user_id=i.requester_id ' +
+      ' INNER JOIN users ree ON ree.user_id=i.requestee_id ' +
+      '' +
+      ' LEFT OUTER JOIN pryv_users rerp ON rerp.user_id=rer.user_id ' +
+      ' LEFT OUTER JOIN pryv_users reep ON reep.user_id=ree.user_id ' +
+      '' +
+      ' LEFT OUTER JOIN local_users rerl ON rerl.user_id=rer.user_id ' +
+      ' LEFT OUTER JOIN local_users reel ON reel.user_id=ree.user_id ' +
+      '' +
+      ' INNER JOIN campaigns c ON c.campaign_id=i.campaign_id ' +
+      '' +
+      'WHERE ' +
+      ' i.requester_id=@user_id ' +
       '' +
       'ORDER BY ' +
       ' i.modified DESC ' +
@@ -185,7 +231,13 @@ class Invitations {
   }
 
   get(params: {user: User}): Array<Invitation> {
-    return this.getStatement.all({
+    return this.getAllStatement.all({
+      user_id: params.user.id
+    }).map(convertFromDB);
+  }
+
+  getRequested(params: { user: User }): Array<Invitation> {
+    return this.getRequestedStatement.all({
       user_id: params.user.id
     }).map(convertFromDB);
   }

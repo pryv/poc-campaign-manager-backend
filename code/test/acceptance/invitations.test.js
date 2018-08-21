@@ -138,7 +138,7 @@ describe('invitations', () => {
     it('should return the user\'s invitations including history', async () => {
 
       let user1, user2: User;
-      let campaign1, campaign2: Campaign;
+      let campaign1, campaign2, campaign3: Campaign;
       let invitation1, invitation2, invitation3: Invitation;
 
       user1 = fixtures.addUser();
@@ -150,15 +150,16 @@ describe('invitations', () => {
         requestee: user2,
         campaign: campaign1
       });
+      campaign2 = fixtures.addCampaign({ user: user1 });
       invitation2 = fixtures.addInvitation({
         campaign: campaign1,
         requester: user1,
         requestee: user2
       });
-      campaign2 = fixtures.addCampaign({user: user2});
+      campaign3 = fixtures.addCampaign({user: user1});
       invitation3 = fixtures.addInvitation({
-        requester: user2,
-        requestee: user1,
+        requester: user1,
+        requestee: user2,
         campaign: campaign2
       });
       invitation1.update({
@@ -256,6 +257,33 @@ describe('invitations', () => {
           const retrievedInvitation: Invitation = invitations[0];
           retrievedInvitation.should.have.property('history').which.is.an.Array();
           retrievedInvitation.history.length.should.eql(0);
+        });
+    });
+
+    it('should only return invitations where the caller is the requester', () => {
+      const user1: User = fixtures.addUser();
+      const user2: User = fixtures.addUser();
+      const invitation1: Invitation = fixtures.addInvitation({
+        requester: user1,
+        requestee: user2,
+      });
+      const invitation2: Invitation = fixtures.addInvitation({
+        requester: user2,
+        requestee: user1,
+      });
+      const access: Access = fixtures.addAccess({ user: user1 });
+
+      return request(app)
+        .get(makeUrl())
+        .query({ username: user1.username })
+        .set('authorization', access.id)
+        .expect(200)
+        .then(res => {
+          res.body.should.have.property('invitations');
+          const invitations = res.body.invitations;
+          invitations.length.should.eql(1);
+          const retrievedInvitation: Invitation = invitations[0];
+          checkInvitations(invitation1, retrievedInvitation);
         });
     });
 

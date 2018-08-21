@@ -219,7 +219,7 @@ router.get('/', (req: express$Request, res: express$Response) => {
 
   const user: User = res.locals.user;
 
-  const invitations: Array<Invitation> = database.invitations.get({
+  const invitations: Array<Invitation> = database.invitations.getRequested({
     user: user
   });
   return res.status(200)
