@@ -79,7 +79,7 @@ describe('invitations', () => {
         });
     });
 
-    it('should return an error with status 400 if the invitation already exists', () => {
+    it('should return an error with status 400 if the invitation already exists, with its id', () => {
       const requestee = fixtures.addUser({pryvOnly: true});
       const campaign = fixtures.addCampaign();
       const invitation = fixtures.addInvitation({
@@ -89,10 +89,15 @@ describe('invitations', () => {
 
       return request(app)
         .post(makeUrl())
-        .send(invitation)
+        .send(_.pick(invitation, [
+          'campaign',
+          'requestee'
+        ])
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
+          res.body.should.have.property('invitationId');
+          res.body.invitationId.should.eql(invitation.id);
         });
     });
 

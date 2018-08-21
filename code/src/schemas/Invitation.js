@@ -7,6 +7,9 @@ module.exports = {
     id: {
       type: 'string'
     },
+    headId: {
+      type: 'string'
+    },
     requestee: {
       type: 'object',
       propserties: {

@@ -51,11 +51,12 @@ router.post('/', async (req: express$Request, res: express$Response) => {
       });
   }
 
-  if (invitationExists({
+  const existingInvitation: ?Invitation = getInvitation({
     requestee: requestee,
     campaign: campaign
-  })) {
-    let target: string = null;
+  });
+  if (existingInvitation != null) {
+    let target: ?string = null;
     if (requestee.pryvUsername != null) {
       target = requestee.pryvUsername;
     } else {
@@ -64,7 +65,8 @@ router.post('/', async (req: express$Request, res: express$Response) => {
     return res.status(400)
       .json({
         error: 'Invitation to ' + target
-        + ' for campaign ' + campaign.title + ' already exists'
+        + ' for campaign ' + campaign.title + ' already exists',
+        invitationId: existingInvitation.id,
       });
   }
 
@@ -263,16 +265,16 @@ function userDoesNotExist(error: mixed): boolean {
   return error.message.indexOf('ENOTFOUND') > -1;
 }
 
-function invitationExists(params: {
+function getInvitation(params: {
     requestee: User,
     campaign: Campaign
-}): boolean {
+}): ?Invitation {
   const invitations: Array<Invitation> = database.invitations.get({user: params.requestee});
-  let exists: boolean = false;
+  let invitation: ?Invitation = null;
   invitations.forEach((i) => {
     if (i.campaign.id === params.campaign.id) {
-      exists = true;
+      invitation = i;
     }
   });
-  return exists;
+  return invitation;
 }
