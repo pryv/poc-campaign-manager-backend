@@ -270,11 +270,9 @@ function getInvitation(params: {
     campaign: Campaign
 }): ?Invitation {
   const invitations: Array<Invitation> = database.invitations.get({user: params.requestee});
-  let invitation: ?Invitation = null;
-  invitations.forEach((i) => {
-    if (i.campaign.id === params.campaign.id) {
-      invitation = i;
-    }
-  });
-  return invitation;
+  
+  let matchingInvitations: ?Array<Invitation> = invitations
+    .filter(i => i.campaign.id === params.campaign.id)
+    .filter(i => i.headId == null);
+  return matchingInvitations[0] || null;
 }
