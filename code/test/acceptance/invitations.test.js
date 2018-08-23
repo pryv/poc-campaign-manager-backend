@@ -92,7 +92,7 @@ describe('invitations', () => {
         .send(_.pick(invitation, [
           'campaign',
           'requestee'
-        ])
+        ]))
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');

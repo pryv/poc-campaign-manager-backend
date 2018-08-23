@@ -9,22 +9,25 @@ const Access = require('../../src/business').Access;
 
 const charlatan = require('charlatan');
 const cuid = require('cuid');
+const bcrypt = require('bcrypt');
 
 const getInstance = require('../../src/database').getInstance;
 
 class Fixtures {
 
   db: Database;
+  salt: string;
 
   constructor() {
     this.db = getInstance();
+    this.salt = bcrypt.genSaltSync(1);
   }
 
   getUser(params?: {
-    full: boolean,
-    localOnly: boolean,
-    pryvOnly: boolean,
-    linked: boolean,
+    full?: boolean,
+    localOnly?: boolean,
+    pryvOnly?: boolean,
+    linked?: boolean,
   }): User {
     if (params == null) {
       params = { linked: true };
@@ -67,8 +70,11 @@ class Fixtures {
     pryvOnly?: boolean,
     linked?: boolean,
   }): User {
-    const user: User = this.getUser(params);
 
+    const user: User = this.getUser(params);
+    if (user.password != null) {
+      user.passwordHash = bcrypt.hashSync(user.password, this.salt);
+    }
     this.db.users.save(user);
 
     return user;

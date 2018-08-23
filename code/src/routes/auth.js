@@ -2,6 +2,7 @@
 
 const Ajv = require('ajv');
 const _ = require('lodash');
+const bcrypt = require('bcrypt');
 
 import type { Database } from '../database';
 
@@ -16,7 +17,7 @@ const signInSchema = ajv.compile(schema.SignIn);
 
 const router = require('express').Router();
 
-router.post('/', (req: express$Request, res: express$Response) => {
+router.post('/', async (req: express$Request, res: express$Response) => {
 
   const signInObject: any = req.body;
 
@@ -38,8 +39,8 @@ router.post('/', (req: express$Request, res: express$Response) => {
         error: 'wrong username or password',
       });
   }
-
-  const isValidPassword: boolean = user.isValidPassword({
+  
+  const isValidPassword: boolean = await user.isValidPassword({
     db: database,
     password: signInObject.password
   });

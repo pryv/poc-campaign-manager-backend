@@ -224,7 +224,7 @@ class Users {
       this.saveWithBothTransaction.run({
         user_id: user.id,
         username: user.username,
-        password: user.password,
+        password: user.passwordHash,
         pryv_user_id: user.pryvId,
         pryv_username: user.pryvUsername,
         local_user_id: user.localId,
@@ -234,7 +234,7 @@ class Users {
       this.saveWithPryvTransaction.run({
         user_id: user.id,
         username: user.username,
-        password: user.password,
+        password: user.passwordHash,
         pryv_user_id: user.pryvId,
         pryv_username: user.pryvUsername,
         pryv_token: user.pryvToken,
@@ -244,7 +244,7 @@ class Users {
         user_id: user.id,
         local_user_id: user.localId,
         username: user.username,
-        password: user.password,
+        password: user.passwordHash,
       }
       );
     }

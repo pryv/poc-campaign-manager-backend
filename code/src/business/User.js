@@ -5,6 +5,7 @@ import type { Database } from '../database';
 import type { Access } from '.';
 const cuid = require('cuid');
 const _ = require('lodash');
+const bcrypt = require('bcrypt');
 
 /**
  * Represents a user in the app, can be linked with a Pryv user
@@ -16,6 +17,7 @@ class User {
   localId: ?string;
   username: ?string;
   password: ?string;
+  passwordHash: ?string;
 
   pryvId: ?string;
   pryvUsername: ?string;
@@ -103,10 +105,12 @@ class User {
   isValidPassword(params: {
     db: Database,
     password: string,
-  }): boolean {
-    return params.db.users.getPassword({
+  }): Promise<boolean> {
+    const passwordHash: string = params.db.users.getPassword({
       user: this
-    }) === params.password;
+    });
+
+    return bcrypt.compare(params.password, passwordHash);
   }
 
   exists(db: Database): boolean {
