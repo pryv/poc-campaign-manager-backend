@@ -115,14 +115,13 @@ describe('users', () => {
         .post(makeUrl())
         .send(_.pick(user, ['username', 'password']))
         .then(res => {
-          dump(res.body);
           res.status.should.be.eql(201);
           const createdUser = res.body.user;
           checkUsers(user, createdUser, 
             { password: true, id: true, localId: true });
           const passwordHash: string = db.users.getPassword({ user: user });
           bcrypt.compareSync(user.password, passwordHash).should.be.eql(true);
-      });
+        });
     });
 
     it('should return a 400, if the username is already taken', () => {

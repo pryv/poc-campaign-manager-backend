@@ -143,7 +143,7 @@ describe('invitations', () => {
     it('should return the user\'s invitations including history', async () => {
 
       let user1, user2: User;
-      let campaign1, campaign2, campaign3: Campaign;
+      let campaign1, campaign2: Campaign;
       let invitation1, invitation2, invitation3: Invitation;
 
       user1 = fixtures.addUser();
@@ -161,7 +161,6 @@ describe('invitations', () => {
         requester: user1,
         requestee: user2
       });
-      campaign3 = fixtures.addCampaign({user: user1});
       invitation3 = fixtures.addInvitation({
         requester: user1,
         requestee: user2,
@@ -238,13 +237,12 @@ describe('invitations', () => {
     it('should return an empty array if the invitation does not have any history', () => {
       let user1, user2: User;
       let campaign1: Campaign;
-      let invitation1: Invitation;
 
       user1 = fixtures.addUser();
       const access: Access = fixtures.addAccess({ user: user1 });
       user2 = fixtures.addUser();
       campaign1 = fixtures.addCampaign({ user: user1 });
-      invitation1 = fixtures.addInvitation({
+      fixtures.addInvitation({
         requester: user1,
         requestee: user2,
         campaign: campaign1
@@ -271,10 +269,6 @@ describe('invitations', () => {
       const invitation1: Invitation = fixtures.addInvitation({
         requester: user1,
         requestee: user2,
-      });
-      const invitation2: Invitation = fixtures.addInvitation({
-        requester: user2,
-        requestee: user1,
       });
       const access: Access = fixtures.addAccess({ user: user1 });
 
