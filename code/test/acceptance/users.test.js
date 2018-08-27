@@ -6,6 +6,7 @@ const request: any = require('supertest');
 const should: any = require('should');
 
 const _ = require('lodash');
+const bcrypt = require('bcrypt');
 
 const app: express$Application = require('../../src/app');
 const getInstance = require('../../src/database').getInstance;
@@ -27,7 +28,7 @@ describe('users', () => {
     return cleaner.clean();
   });
 
-  function makeUrl(params: {
+  function makeUrl(params?: {
     path?: string,
   }): string {
     if (params == null) {
@@ -93,19 +94,35 @@ describe('users', () => {
 
     it('should create a user in the local_users and users table, return a 201', () => {
 
-      const user = _.pick(
-        fixtures.getUser({localOnly: true}),
-        ['username']);
+      const user: User = fixtures.getUser({localOnly: true});
 
       return request(app)
         .post(makeUrl())
-        .send(user)
+        .send(_.pick(user, ['username', 'password']))
         .then(res => {
           res.status.should.be.eql(201);
           const createdUser = db.users.getOne({username: user.username});
           should.exist(createdUser);
-          createdUser.username.should.eql(user.username);
+          checkUsers(user, createdUser, 
+            { password: true, id: true, localId: true });
         });
+    });
+
+    it('should create a local user and store its password hashed, return a 201', () => {
+      const user = fixtures.getUser({ localOnly: true });
+
+      return request(app)
+        .post(makeUrl())
+        .send(_.pick(user, ['username', 'password']))
+        .then(res => {
+          dump(res.body);
+          res.status.should.be.eql(201);
+          const createdUser = res.body.user;
+          checkUsers(user, createdUser, 
+            { password: true, id: true, localId: true });
+          const passwordHash: string = db.users.getPassword({ user: user });
+          bcrypt.compareSync(user.password, passwordHash).should.be.eql(true);
+      });
     });
 
     it('should return a 400, if the username is already taken', () => {

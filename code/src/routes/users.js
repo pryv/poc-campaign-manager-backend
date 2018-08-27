@@ -2,6 +2,7 @@
 
 const Ajv = require('ajv');
 const _ = require('lodash');
+const bcrypt = require('bcrypt');
 
 import type { Database } from '../database';
 const {User} = require('../business');
@@ -15,7 +16,7 @@ const userSchema = ajv.compile(schema.User);
 
 const router = require('express').Router();
 
-router.post('/', (req: express$Request, res: express$Response) => {
+router.post('/', async (req: express$Request, res: express$Response) => {
 
   const userObject: any = req.body;
 
@@ -39,6 +40,10 @@ router.post('/', (req: express$Request, res: express$Response) => {
       });
   }
 
+  if (user.password != null) {
+    user.passwordHash = await bcrypt.hash(user.password, 10);
+  }
+  
   user.save(database);
 
   return res.status(201)

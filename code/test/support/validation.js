@@ -43,7 +43,7 @@ function checkUsers(expected: User, actual: User, omit: mixed): void {
     expected.pryvId.should.eql(actual.pryvId);
   if (expected.pryvUsername)
     expected.pryvUsername.should.eql(actual.pryvUsername);
-  if (expected.localId)
+  if (expected.localId && (omit.localId != true))
     expected.localId.should.eql(actual.localId);
 }
 
