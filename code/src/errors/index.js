@@ -48,3 +48,13 @@ errors.unknownResource = function (params: {
     details: params.details,
   });
 };
+
+errors.invalidOperation = function (params: {
+  details: string,
+}): AppError {
+  return new AppError({
+    id: errorNames.invalidOperation,
+    httpCode: 400,
+    details: params.details,
+  });
+};

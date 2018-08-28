@@ -12,6 +12,7 @@ const Fixtures = require('../support/Fixtures');
 const DbCleaner  = require('../support/DbCleaner');
 import type { Database } from '../../src/database';
 const {User, Campaign, Access} = require('../../src/business');
+const { errorNames } = require('../../src/errors');
 
 const {checkCampaigns} = require('../support/validation');
 
@@ -267,6 +268,8 @@ describe('campaigns', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -279,6 +282,8 @@ describe('campaigns', () => {
         .then(res => {
           res.status.should.eql(403);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.forbidden);
         });
     });
 
@@ -289,6 +294,8 @@ describe('campaigns', () => {
         .then(res => {
           res.status.should.eql(404);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
 

@@ -6,7 +6,7 @@ const _ = require('lodash');
 import type { Database } from '../database';
 const {User, Campaign} = require('../business');
 const getInstance = require('../database').getInstance;
-
+const errors = require('../errors');
 const schema = require('../schemas');
 
 const database: Database = getInstance();
@@ -44,49 +44,47 @@ router.post('/', (req: express$Request, res: express$Response) => {
     });
 });
 
-router.post('/:campaignId/cancel', (req: express$Request, res: express$Response) => {
+router.post('/:campaignId/cancel', (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
-  const campaignId: string = req.params.campaignId;
-  const access: string = req.headers.authorization;
+  try {
+    const campaignId: string = req.params.campaignId;
+    const access: string = req.headers.authorization;
 
-  const campaign: Campaign = database.campaigns.getOne({ campaignId: campaignId });
+    const campaign: Campaign = database.campaigns.getOne({ campaignId: campaignId });
 
-  if (campaign == null) {
-    return res.status(404)
-      .json({
-        error: 'campaign does not exist',
+    if (campaign == null) {
+      return next(errors.unknownResource({
         details: 'campaignId: ' + campaignId,
-      });
-  }
+      }));
+    }
 
-  const user: User = database.users.getOne({ username: campaign.requester });
-  const isAccessValid: boolean = user.isAccessValid({
-    db: database,
-    accessId: access
-  });
-
-  if (! isAccessValid) {
-    return res.status(403)
-      .json({
-        error: 'invalid token',
-        details: 'token: "' + access + '"',
-      });
-  }
-
-  if (campaign.status === 'cancelled') {
-    return res.status(400)
-      .json({
-        error: 'campaign is already cancelled',
-        details: 'campaignId: ' + campaignId,
-      });
-  }
-
-  campaign.cancel({ db: database });
-
-  return res.status(200)
-    .json({
-      campaign: campaign,
+    const user: User = database.users.getOne({ username: campaign.requester });
+    const isAccessValid: boolean = user.isAccessValid({
+      db: database,
+      accessId: access
     });
+
+    if (! isAccessValid) {
+      return next(errors.forbidden({
+        details: 'token: "' + access + '"',
+      }));
+    }
+
+    if (campaign.status === 'cancelled') {
+      return next(errors.invalidOperation({
+        details: 'campaign is already cancelled. campaignId: ' + campaignId,
+      }));
+    }
+
+    campaign.cancel({ db: database });
+
+    return res.status(200)
+      .json({
+        campaign: campaign,
+      });
+  } catch (e) {
+    next(e);
+  }
 });
 
 router.get('/', (req: express$Request, res: express$Response) => {
