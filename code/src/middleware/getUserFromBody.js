@@ -2,6 +2,7 @@
 
 import type { Database } from '../database';
 const {User} = require('../business');
+const errors = require('../errors');
 
 /**
  * If user exists, register the User to res.locals.user,
@@ -15,10 +16,12 @@ const {User} = require('../business');
 module.exports = (params: {
   db: Database,
 }) => {
-  return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
+  return (req: express$Request, res: express$Response, next: express$NextFunction) => {
     const body: mixed = req.body;
     if (body.user == null || body.user.username == null) {
-      return missingUsername(res);
+      return next(errors.invalidRequestStructure({
+        details: 'Missing username',
+      }));
     }
 
     const username: string = body.user.username;
@@ -27,24 +30,12 @@ module.exports = (params: {
     });
 
     if (user == null) {
-      return userNotExists(username, res);
+      return next(errors.unknownResource({
+        details: 'User "' + username + '" does not exist.',
+      }));
     }
 
     res.locals.user = user;
     next();
   };
 };
-
-function missingUsername(res: express$Response): express$Response {
-  return res.status(400)
-    .json({
-      error: 'Missing username'
-    });
-}
-
-function userNotExists(username: string, res: express$Response): express$Response {
-  return res.status(400)
-    .json({
-      error: 'User "' + username + '" does not exist.'
-    });
-}

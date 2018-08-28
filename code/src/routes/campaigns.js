@@ -16,32 +16,34 @@ const campaignSchema = ajv.compile(schema.Campaign);
 
 const router = require('express').Router();
 
-router.post('/', (req: express$Request, res: express$Response) => {
+router.post('/', (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
-  const user: User = res.locals.user;
+  try {
+    const user: User = res.locals.user;
 
-  const campaignObject: any = req.body.campaign;
-  campaignSchema(campaignObject);
-  const checkResult: any = _.cloneDeep(campaignSchema);
+    const campaignObject: any = req.body.campaign;
+    campaignSchema(campaignObject);
+    const checkResult: any = _.cloneDeep(campaignSchema);
 
-  if (checkResult.errors) {
-    return res.status(400)
-      .json({
-        error: 'wrong schema',
-        details: checkResult.errors
-      });
-  }
+    if (checkResult.errors) {
+      return next(errors.invalidRequestStructure({
+        details: checkResult.errors,
+      }));
+    }
 
-  const campaign: Campaign = new Campaign(campaignObject);
-  campaign.save({
-    db: database,
-    user: user
-  });
-
-  return res.status(201)
-    .json({
-      campaign: campaign
+    const campaign: Campaign = new Campaign(campaignObject);
+    campaign.save({
+      db: database,
+      user: user
     });
+
+    return res.status(201)
+      .json({
+        campaign: campaign
+      });
+  } catch (e) {
+    return next(e);
+  }  
 });
 
 router.post('/:campaignId/cancel', (req: express$Request, res: express$Response, next: express$NextFunction) => {

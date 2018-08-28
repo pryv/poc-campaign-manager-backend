@@ -60,7 +60,7 @@ describe('campaigns', () => {
         });
     });
 
-    it('should return a 400 response with an error message when the user does not exist', () => {
+    it('should return a 404 response with an error message when the user does not exist', () => {
 
       return request(app)
         .post(makeUrl())
@@ -68,8 +68,10 @@ describe('campaigns', () => {
           user: {username: 'unexistant-user'}
         })
         .then(res => {
-          res.status.should.eql(400);
+          res.status.should.eql(404);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
 
@@ -92,6 +94,8 @@ describe('campaigns', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidRequestStructure);
         });
     });
 
@@ -121,6 +125,8 @@ describe('campaigns', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidRequestStructure);
         });
     });
 
