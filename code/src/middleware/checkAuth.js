@@ -2,6 +2,7 @@
 
 import type { Database } from '../database';
 const {User} = require('../business');
+const errors = require('../errors');
 
 /**
  * If user exists, register the User to reg.params.user,
@@ -20,6 +21,13 @@ module.exports = (params: {
       return next();
 
     const user: User = res.locals.user;
+
+    if (req.headers == null || req.headers.authorization == null) {
+      return next(errors.invalidCredentials({
+        details: 'Missing token.',
+      }));
+    }
+
     const token: string = req.headers.authorization;
 
     const isAccessValid = user.isAccessValid({
@@ -28,11 +36,9 @@ module.exports = (params: {
     });
 
     if (! isAccessValid) {
-      return res.status(401)
-        .json({
-          error: 'invalid token',
-          details: 'token: "' + token + '"',
-        });
+      return next(errors.forbidden({
+        details: 'The given access token does not grant permission for this operation.',
+      }));
     }
 
     next();

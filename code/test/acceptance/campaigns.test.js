@@ -154,14 +154,32 @@ describe('campaigns', () => {
 
     });
 
-    it('should return a 400 response with an error message when the user does not exist', () => {
+    it('should return a 404 response with an error message when the user does not exist', () => {
 
       return request(app)
         .get(makeUrl())
         .query({username: 'unexistant-user'})
         .then(res => {
-          res.status.should.eql(400);
+          res.status.should.eql(404);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
+        });
+    });
+
+    it('should return a 403 with an error when the access token is unauthorized', () => {
+
+      const user: User = fixtures.addUser();
+
+      return request(app)
+        .get(makeUrl())
+        .query({ username: user.username })
+        .set({ authorization: 'invalid-token'})
+        .then(res => {
+          res.status.should.eql(403);
+          res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.forbidden);
         });
     });
 
@@ -196,8 +214,10 @@ describe('campaigns', () => {
       return request(app)
         .get(makeUrl({campaignId: 'nonexistantId'}))
         .then(res => {
-          res.status.should.eql(400);
+          res.status.should.eql(404);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
 
@@ -230,8 +250,10 @@ describe('campaigns', () => {
         return request(app)
           .get(makeUrl({pryvAppId: 'nonexistantId'}))
           .then(res => {
-            res.status.should.eql(400);
+            res.status.should.eql(404);
             res.body.should.have.property('error');
+            const error = res.body.error;
+            error.id.should.eql(errorNames.unknownResource);
           });
       });
 
