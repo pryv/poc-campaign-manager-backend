@@ -6,4 +6,5 @@ module.exports = {
   invalidCredentials: 'Invalid credentials',
   unknownResource: 'Unknown resource',
   invalidOperation: 'Invalid operation',
+  unknownError: 'Unknown error',
 };

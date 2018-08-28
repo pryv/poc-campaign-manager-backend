@@ -359,7 +359,7 @@ describe('invitations', () => {
         });
     });
 
-    it('should return a 400 if the access token is invalid', () => {
+    it('should return a 403 if the access token is invalid', () => {
       const requestee: User = new User({
         pryvUsername: 'testuser'
       });
@@ -375,8 +375,10 @@ describe('invitations', () => {
           accessToken: 'invalidtoken',
         })
         .then(res => {
-          res.status.should.eql(400);
+          res.status.should.eql(403);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.forbidden);
         });
     });
 
@@ -391,6 +393,8 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidRequestStructure);
         });
     });
 
@@ -409,6 +413,8 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -427,6 +433,8 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -440,6 +448,8 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(404);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
   });

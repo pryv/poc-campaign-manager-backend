@@ -67,3 +67,15 @@ errors.invalidOperation = function (params: {
     extra: params.extra,
   });
 };
+
+errors.unknownError = function (params: {
+  details: string,
+  extra?: Object,
+}): AppError {
+  return new AppError({
+    id: errorNames.unknownError,
+    httpCode: 500,
+    details: params.details,
+    extra: params.extra,
+  });
+};

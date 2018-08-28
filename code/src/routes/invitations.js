@@ -88,88 +88,77 @@ router.post('/', async (req: express$Request, res: express$Response, next: expre
 
 });
 
-router.post('/:invitationId/accept', async (req: express$Request, res: express$Response) => {
-
-  const invitationId: string = req.params.invitationId;
-  const accessToken: string = req.body.accessToken;
-
-  if (accessToken == null) {
-    return res.status(400)
-      .json({
-        error: 'wrong schema',
-        details: 'accessToken is missing'
-      });
-  }
-
-  const invitation: Invitation = database.invitations.getOne({ id: invitationId});
-
-  if (invitation == null) {
-    return res.status(404)
-      .json({
-        error: 'Invitation does not exist.',
-        details: 'invitationId: ' + invitationId,
-      });
-  }
-
-  if (invitation.status == 'accepted') {
-    return res.status(400)
-      .json({
-        error: 'Invitation has already been accepted',
-        details: 'invitationId: ' + invitationId,
-      });
-  }
-
-  if (invitation.status == 'cancelled') {
-    return res.status(400)
-      .json({
-        error: 'Campaign is cancelled.',
-        details: 'invitationId: ' + invitationId,
-      });
-  }
-
-  const requestee: User = invitation.requestee;
+router.post('/:invitationId/accept', async (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
   try {
-    await isTokenValid({
-      requestee: requestee.pryvUsername,
-      accessToken: accessToken,
+    const invitationId: string = req.params.invitationId;
+    const accessToken: string = req.body.accessToken;
+
+    if (accessToken == null) {
+      return next(errors.invalidRequestStructure({
+        details: 'accessToken is missing.',
+      }));
+    }
+
+    const invitation: Invitation = database.invitations.getOne({ id: invitationId});
+
+    if (invitation == null) {
+      return next(errors.unknownResource({
+        details: 'invitationId: ' + invitationId,
+      }));
+    }
+
+    if (invitation.status == 'accepted') {
+      return next(errors.invalidOperation({
+        details: 'Invitation has already been accepted. invitationId: ' + invitationId,
+      }));
+    }
+
+    if (invitation.status == 'cancelled') {
+      return next(errors.invalidOperation({
+        details: 'Campaign is cancelled. invitationId: ' + invitationId,
+      }));
+    }
+
+    const requestee: User = invitation.requestee;
+
+    try {
+      await isTokenValid({
+        requestee: requestee.pryvUsername,
+        accessToken: accessToken,
+      });
+    } catch (e) {
+      if (e.status && e.status === 401) {
+        return next(errors.forbidden({
+          details: 'Invalid access token. Access token "' + accessToken + '" for user '
+            + requestee.pryvUsername + ' is invalid.',
+        }));
+      } else if (userDoesNotExist(e)) {
+        return next(errors.invalidOperation({
+          details: 'Pryv user "' + requestee.pryvUsername + '" does not exist.'
+        }));
+      } else {
+        return next(errors.invalidOperation({
+          details: 'Error while verifying access token validity. ' + e.message,
+        }));
+      }
+    }
+
+    const acceptedInvitation: Invitation = invitation.update({
+      db: database,
+      update: {
+        status: 'accepted',
+        accessToken: accessToken,
+      }
     });
+
+    return res.status(200)
+      .json({
+        invitation: acceptedInvitation
+      });
   } catch (e) {
-    if (e.status && e.status === 401) {
-      return res.status(400)
-        .json({
-          error: 'Invalid access token.',
-          details: 'Access token "' + accessToken + '" for user '
-          + requestee.pryvUsername + ' is invalid'
-        });
-    } else if (userDoesNotExist(e)) {
-      return res.status(400)
-        .json({
-          error: 'User does not exist',
-          details: 'User ' + requestee.pryvUsername + ' does not exist.'
-        });
-    } else {
-      return res.status(500)
-        .json({
-          error: 'Error while verifying access token validity',
-          details: e.message,
-        });
-    }
+    return next(e);
   }
-
-  const acceptedInvitation: Invitation = invitation.update({
-    db: database,
-    update: {
-      status: 'accepted',
-      accessToken: accessToken,
-    }
-  });
-
-  return res.status(200)
-    .json({
-      invitation: acceptedInvitation
-    });
-
 });
 
 router.post('/:invitationId/refuse', (req: express$Request, res: express$Response) => {
