@@ -10,6 +10,7 @@ const {Campaign, Invitation, User} = require('../business');
 const config = require('../config');
 const getInstance = require('../database').getInstance;
 const schema = require('../schemas');
+const errors = require('../errors');
 
 const database: Database = getInstance();
 
@@ -18,37 +19,33 @@ const invitationSchema = ajv.compile(schema.Invitation);
 
 const router = require('express').Router();
 
-router.post('/', async (req: express$Request, res: express$Response) => {
+router.post('/', async (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
   const invitationObject = req.body;
   invitationSchema(invitationObject);
   const checkResult = _.cloneDeep(invitationSchema);
 
   if (checkResult.errors) {
-    return res.status(400)
-      .json({
-        error: 'wrong schema',
-        details: checkResult.errors
-      });
+    return next(errors.invalidRequestStructure({
+      details: checkResult.errors,
+    }));
   }
 
   const campaign: Campaign = database.campaigns.getOne({
     campaignId: invitationObject.campaign.id,
   });
-  if (!campaign) {
-    return res.status(400)
-      .json({
-        error: 'Campaign does not exist.'
-      });
+  if (campaign == null) {
+    return next(errors.invalidOperation({
+      details: 'Campaign does not exist.',
+    }));
   }
 
   let requestee: User = database.users.getOne(invitationObject.requestee);
 
   if (requestee == null) {
-    return res.status(400)
-      .json({
-        error: 'Requestee does not exist in app.'
-      });
+    return next(errors.invalidOperation({
+      details: 'Campaign does not exist in Campaign manager.',
+    }));
   }
 
   const existingInvitation: ?Invitation = getInvitation({
@@ -56,18 +53,19 @@ router.post('/', async (req: express$Request, res: express$Response) => {
     campaign: campaign
   });
   if (existingInvitation != null) {
-    let target: ?string = null;
+    let target: string = '';
     if (requestee.pryvUsername != null) {
       target = requestee.pryvUsername;
     } else {
       target = requestee.username;
     }
-    return res.status(400)
-      .json({
-        error: 'Invitation to ' + target
+    return next(errors.invalidOperation({
+      details: 'Invitation to ' + target
         + ' for campaign ' + campaign.title + ' already exists',
+      extra: {
         invitationId: existingInvitation.id,
-      });
+      }
+    }));
   }
 
   const requester: User = database.users.getOne({

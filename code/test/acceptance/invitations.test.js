@@ -11,8 +11,9 @@ const getInstance = require('../../src/database').getInstance;
 
 const Fixtures = require('../support/Fixtures');
 const DbCleaner = require('../support/DbCleaner');
-const {Campaign, User, Invitation, Access} = require('../../src/business');
-const {checkInvitations, checkCampaigns, checkUsers} = require('../support/validation');
+const { Campaign, User, Invitation, Access } = require('../../src/business');
+const { checkInvitations, checkCampaigns, checkUsers } = require('../support/validation');
+const { errorNames } = require('../../src/errors');
 
 describe('invitations', () => {
 
@@ -76,6 +77,8 @@ describe('invitations', () => {
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -98,6 +101,8 @@ describe('invitations', () => {
           res.body.should.have.property('error');
           res.body.should.have.property('invitationId');
           res.body.invitationId.should.eql(invitation.id);
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -116,6 +121,8 @@ describe('invitations', () => {
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -133,6 +140,8 @@ describe('invitations', () => {
         .expect(400)
         .then(res => {
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidRequestStructure);
         });
     });
 
