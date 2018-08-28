@@ -308,6 +308,22 @@ describe('invitations', () => {
         });
     });
 
+    it('should return a 403 with an error if the access token is unauthorized', () => {
+
+      const user: User = fixtures.addUser();
+
+      return request(app)
+        .get(makeUrl())
+        .query({ username: user.username })
+        .set({ authorization: 'invalid-token' })
+        .then(res => {
+          res.status.should.eql(403);
+          res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.forbidden);
+        });
+    });
+
   });
 
   describe('when accepting invitations', () => {
