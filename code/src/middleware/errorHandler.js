@@ -1,20 +1,24 @@
 // @flow
 
-const logger: any = require('../logger');
+const _ = require('lodash');
 
+const logger: any = require('../logger');
 const { AppError } = require('../errors');
 
 module.exports = (error: AppError, req: express$Request, res: express$Response, next: express$NextFunction) => {
   if (error instanceof AppError) {
-    const msg: string = error.id + ' error (' + error.httpCode + '): ' + error.details;
-    logger.error(msg);
+    logger.error(error.id + ' error (' + error.httpCode + '): ' + error.details);
+    let errorBody = {
+      error: {
+        id: error.id,
+        details: error.details
+      }
+    };
+    if (error.extra != null) {
+      errorBody = _.defaults(errorBody, error.extra);
+    }
     res.status(error.httpCode)
-      .json({
-        error: {
-          id: error.id,
-          details: error.details
-        }
-      });
+      .json(errorBody);
   } else {
     logger.error('Unexpected error (' + error.httpCode + ')');
     res.status(500)
