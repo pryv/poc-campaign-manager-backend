@@ -15,6 +15,7 @@ const Fixtures = require('../support/Fixtures');
 const DbCleaner = require('../support/DbCleaner');
 import type { Database } from '../../src/database';
 const {User, Campaign, Invitation, Access} = require('../../src/business');
+const { errorNames } = require('../../src/errors');
 
 const {checkUsers, checkInvitations} = require('../support/validation');
 
@@ -268,6 +269,8 @@ describe('users', () => {
         .then(res => {
           res.status.should.eql(401);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidCredentials);
         });
     });
 
@@ -284,6 +287,8 @@ describe('users', () => {
         .then(res => {
           res.status.should.eql(401);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidCredentials);
         });
     });
 
@@ -297,6 +302,8 @@ describe('users', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidRequestStructure);
         });
     });
   });
