@@ -11,7 +11,7 @@ errors.errorNames = errorNames;
 
 errors.invalidRequestStructure = function (params: {
   details: string,
-  extra: Object,
+  extra?: Object,
 }): AppError {
   return new AppError({
     id: errorNames.invalidRequestStructure,
@@ -22,7 +22,7 @@ errors.invalidRequestStructure = function (params: {
 
 errors.forbidden = function (params: {
   details: string,
-  extra: Object,
+  extra?: Object,
 }): AppError {
   return new AppError({
     id: errorNames.forbidden,
@@ -34,7 +34,7 @@ errors.forbidden = function (params: {
 
 errors.invalidCredentials = function (params: {
   details: string,
-  extra: Object,
+  extra?: Object,
 }): AppError {
   return new AppError({
     id: errorNames.invalidCredentials,
@@ -46,7 +46,7 @@ errors.invalidCredentials = function (params: {
 
 errors.unknownResource = function (params: {
   details: string,
-  extra: Object,
+  extra?: Object,
 }): AppError {
   return new AppError({
     id: errorNames.unknownResource,
@@ -58,7 +58,7 @@ errors.unknownResource = function (params: {
 
 errors.invalidOperation = function (params: {
   details: string,
-  extra: Object,
+  extra?: Object,
 }): AppError {
   return new AppError({
     id: errorNames.invalidOperation,
