@@ -36,3 +36,13 @@ errors.invalidCredentials = function (params: {
     details: params.details,
   });
 };
+
+errors.unknownResource = function (params: {
+  details: string,
+}): AppError {
+  return new AppError({
+    id: 'unknown-resource',
+    httpCode: 404,
+    details: params.details,
+  });
+}
