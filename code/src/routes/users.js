@@ -5,9 +5,10 @@ const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
 import type { Database } from '../database';
-const {User} = require('../business');
+const { User } = require('../business');
 const getInstance = require('../database').getInstance;
 const schema = require('../schemas');
+const errors = require('../errors');
 
 const database: Database = getInstance();
 
@@ -52,14 +53,18 @@ router.post('/', async (req: express$Request, res: express$Response) => {
     });
 });
 
-router.get('/:username', (req: express$Request, res: express$Response) => {
-  const user: User = res.locals.user;
+router.get('/:username', (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
-  res.status(200)
-    .json({
-      user: user.forApi({db: database})
-    });
+  try {
+    const user: User = res.locals.user;
 
+    res.status(200)
+      .json({
+        user: user.forApi({db: database})
+      });
+  } catch (e) {
+    return next(e);
+  }
 });
 
 router.put('/:username', (req: express$Request, res: express$Response) => {

@@ -1,7 +1,8 @@
 // @flow
 
 import type { Database } from '../database';
-const {User} = require('../business');
+const { User } = require('../business');
+const errors = require('../errors');
 
 /**
  * If user exists, register the User to reg.params.user,
@@ -15,23 +16,18 @@ const {User} = require('../business');
 module.exports = (params: {
   db: Database,
   }) => {
-  return (req: express$Request, res: express$Response, next: express$NextFunction): void => {
+  return (req: express$Request, res: express$Response, next: express$NextFunction) => {
     if(req.params.username === 'all')
       return next();
     const user: User = params.db.users.getOne({
       username: req.params.username
     });
     if (! user) {
-      return userNotExists(res);
+      return next(errors.unknownResource({
+        details: 'User does not exist.'
+      }));
     }
     res.locals.user = user;
     next();
   };
 };
-
-function userNotExists(res: express$Response): express$Response {
-  return res.status(400)
-    .json({
-      error: 'User does not exist.'
-    });
-}

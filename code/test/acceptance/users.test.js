@@ -80,12 +80,14 @@ describe('users', () => {
 
     });
 
-    it('should return a 400 if the user does not exist', () => {
+    it('should return a 404 if the user does not exist', () => {
       return request(app)
         .get(makeUrl({path: 'unexistentuser'}))
         .then(res => {
-          res.status.should.eql(400);
-          res.body.should.have.property('error').which.is.a.String();
+          res.status.should.eql(404);
+          res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
 
