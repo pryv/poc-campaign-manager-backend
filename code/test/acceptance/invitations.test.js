@@ -508,6 +508,8 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -524,6 +526,8 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidOperation);
         });
     });
 
@@ -534,6 +538,8 @@ describe('invitations', () => {
         .then(res => {
           res.status.should.eql(404);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
   });
