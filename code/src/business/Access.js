@@ -12,7 +12,7 @@ class Access {
   isValidUntil: number;
   isValid: boolean;
 
-  constructor(params: {
+  constructor(params?: {
     id?: string,
     created?: number,
     isValidUntil?: number,

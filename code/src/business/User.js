@@ -137,7 +137,6 @@ class User {
 
   forApi(params: {
       db: Database,
-      token: string
   }): mixed {
     const user = _.pick(this, ['id', 'username', 'pryvUsername']);
 

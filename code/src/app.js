@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 import type { Database } from './database';
 
 const getInstance = require('./database').getInstance;
-const {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth} = require('./middleware');
+const {callLoger, getUserFromPath, getUserFromBody, getUserFromQuery, checkAuth, errorHandler } = require('./middleware');
 const {campaigns, invitations, users, auth} = require('./routes');
 
 const app: express$Application = express();
@@ -31,8 +31,6 @@ app.options('*', (req: express$Request, res: express$Response) => {
   res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.status(200).end();
 });
-
-
 
 /**
  * Campaigns
@@ -69,3 +67,5 @@ app.use('/users', users);
  * Auth
  */
 app.use('/auth', auth);
+
+app.use(errorHandler);

@@ -7,4 +7,5 @@ module.exports = {
   getUserFromQuery: require('./getUserFromQuery'),
   getUserFromPath: require('./getUserFromPath'),
   checkAuth: require('./checkAuth'),
+  errorHandler: require('./errorHandler'),
 };

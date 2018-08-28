@@ -266,7 +266,7 @@ describe('users', () => {
           password: 'does not matter',
         })
         .then(res => {
-          res.status.should.eql(400);
+          res.status.should.eql(401);
           res.body.should.have.property('error');
         });
     });
@@ -282,7 +282,7 @@ describe('users', () => {
           password: 'wrongPassword',
         })
         .then(res => {
-          res.status.should.eql(400);
+          res.status.should.eql(401);
           res.body.should.have.property('error');
         });
     });
