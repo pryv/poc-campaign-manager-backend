@@ -10,7 +10,7 @@
     "start": "node dist/src/server.js",
     "flow": "./node_modules/.bin/flow --color=always",
     "flow:deps": "./node_modules/flow-typed/dist/cli.js install",
-    "watch": "node_modules/.bin/babel --watch=./code --out-dir=dist --copy-files",
+    "watch": "node_modules/.bin/babel --watch=./code --out-dir=dist --source-maps",
     "test": "NODE_ENV=dev ./node_modules/.bin/mocha dist/test/**/*.test.js",
     "testOne": "NODE_ENV=dev ./node_modules/.bin/mocha",
     "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'code/src/**/*.js' -t html",
