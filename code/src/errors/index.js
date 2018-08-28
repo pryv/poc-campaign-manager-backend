@@ -11,7 +11,7 @@ errors.invalidRequestStructure = function (params: {
   details: string
 }): AppError {
   return new AppError({
-    id: 'invalid-request-structure',
+    id: 'Invalid request structure',
     httpCode: 400,
     details: params.details,
   });
@@ -21,7 +21,7 @@ errors.forbidden = function (params: {
   details: string
 }): AppError {
   return new AppError({
-    id: 'forbidden',
+    id: 'Forbidden',
     httpCode: 403,
     details: params.details,
   });
@@ -31,7 +31,7 @@ errors.invalidCredentials = function (params: {
   details: string,
 }): AppError {
   return new AppError({
-    id: 'invalid-credentials',
+    id: 'Invalid credentials',
     httpCode: 401,
     details: params.details,
   });
@@ -41,7 +41,7 @@ errors.unknownResource = function (params: {
   details: string,
 }): AppError {
   return new AppError({
-    id: 'unknown-resource',
+    id: 'Unknown resource',
     httpCode: 404,
     details: params.details,
   });
