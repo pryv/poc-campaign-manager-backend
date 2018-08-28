@@ -300,9 +300,11 @@ describe('invitations', () => {
       return request(app)
         .get(makeUrl())
         .query({username: 'unexistantUser'})
-        .expect(400)
+        .expect(404)
         .then(res => {
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
 
