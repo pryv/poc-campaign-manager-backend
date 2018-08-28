@@ -202,18 +202,21 @@ router.post('/:invitationId/refuse', (req: express$Request, res: express$Respons
   }
 });
 
-router.get('/', (req: express$Request, res: express$Response) => {
+router.get('/', (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
-  const user: User = res.locals.user;
+  try {
+    const user: User = res.locals.user;
 
-  const invitations: Array<Invitation> = database.invitations.getRequested({
-    user: user
-  });
-  return res.status(200)
-    .json({
-      invitations: bundleHistory(invitations)
+    const invitations: Array<Invitation> = database.invitations.getRequested({
+      user: user
     });
-
+    return res.status(200)
+      .json({
+        invitations: bundleHistory(invitations)
+      });
+  } catch (e) {
+    return next(e);
+  }
 });
 
 module.exports = router;
