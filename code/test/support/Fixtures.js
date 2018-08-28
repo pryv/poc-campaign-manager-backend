@@ -37,15 +37,15 @@ class Fixtures {
 
     if (params.pryvOnly) {
       user = new User({
-        pryvUsername: charlatan.Name.firstName().toLowerCase(),
+        pryvUsername: charlatan.Name.firstName().toLowerCase() + randomNumber(),
       });
     } else if (params.localOnly) {
       user = new User({
-        username: charlatan.Name.firstName().toLowerCase(),
+        username: charlatan.Name.firstName().toLowerCase() + randomNumber(),
         password: charlatan.Internet.password(),
       });
     } else if (params.linked) {
-      const username = charlatan.Name.firstName().toLowerCase();
+      const username = charlatan.Name.firstName().toLowerCase() + randomNumber();
       user = new User({
         username: username,
         password: charlatan.Internet.password(),
@@ -54,8 +54,8 @@ class Fixtures {
       });
     } else {
       user = new User({
-        username: charlatan.Name.firstName().toLowerCase(),
-        pryvUsername: charlatan.Name.firstName().toLowerCase(),
+        username: charlatan.Name.firstName().toLowerCase() + randomNumber(),
+        pryvUsername: charlatan.Name.firstName().toLowerCase() + randomNumber(),
         password: charlatan.Internet.password(),
         pryvToken: cuid(),
       });
@@ -176,3 +176,7 @@ class Fixtures {
   }
 }
 module.exports = Fixtures;
+
+function randomNumber(): number {
+  return Math.ceil(Math.random() * 1000000);
+}
