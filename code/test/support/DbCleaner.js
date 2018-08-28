@@ -1,11 +1,13 @@
 // @flow
 
+import type { Transaction } from 'better-sqlite3';
+
 const sqlite3 = require('better-sqlite3');
 const config = require('../../src/config');
 
 class DbCleaner {
 
-  db: mixed;
+  db: any;
   deleteDataTransaction: Transaction;
 
   constructor() {
