@@ -323,23 +323,22 @@ describe('users', () => {
       const user: User = fixtures.addUser({localOnly: true});
       const access: Access = fixtures.addAccess({user: user});
 
-      const pryvUsername: string = 'my-pryv-username';
-      const pryvToken: string = 'co1n2oi3noidaw';
+      const pryvUser = {
+        pryvUsername: 'my-pryv-username',
+        pryvToken: 'co1n2oi3noidaw',
+      };
 
       return request(app)
         .put(makeUrl({ path: user.username }))
         .set('authorization', access.id)
-        .send({
-          pryvUsername: pryvUsername,
-          pryvToken: pryvToken,
-        })
+        .send(pryvUser)
         .then(res => {
           res.status.should.eql(200);
           res.body.should.have.property('user').which.is.an.Object();
           const linkedUser: User = new User(res.body.user);
 
-          user.pryvUsername = pryvUsername;
-          user.pryvToken = pryvToken;
+          user.pryvUsername = pryvUser.pryvUsername;
+          user.pryvToken = pryvUser.pryvToken;
           user.pryvId = linkedUser.pryvId;
 
           checkUsers(user, linkedUser);
@@ -406,7 +405,7 @@ describe('users', () => {
         });
     });
 
-    it('should return a 400 when the user is not existing', () => {
+    it('should return a 404 when the user is not existing', () => {
 
       return request(app)
         .put(makeUrl({ path: 'unexistentuser' }))
@@ -415,8 +414,10 @@ describe('users', () => {
           pryvToken: 'cowdnaoin',
         })
         .then(res => {
-          res.status.should.eql(400);
+          res.status.should.eql(404);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.unknownResource);
         });
     });
 
@@ -432,6 +433,8 @@ describe('users', () => {
         .then(res => {
           res.status.should.eql(400);
           res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidRequestStructure);
         });
     });
 

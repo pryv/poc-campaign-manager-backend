@@ -53,7 +53,7 @@ router.post('/', async (req: express$Request, res: express$Response, next: expre
       access: new Access()
     });
 
-    const response: mixed = {
+    const response = {
       user: user.forApi({db: database})
     };
     response.user.token = access.id;

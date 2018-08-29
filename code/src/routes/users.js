@@ -67,46 +67,47 @@ router.get('/:username', (req: express$Request, res: express$Response, next: exp
   }
 });
 
-router.put('/:username', (req: express$Request, res: express$Response) => {
+router.put('/:username', (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
-  const user: User = res.locals.user;
-  const updateObject: mixed = req.body;
+  try {
+    const user: User = res.locals.user;
+    const updateObject: mixed = req.body;
 
-  userSchema(updateObject);
-  const checkResult = _.cloneDeep(userSchema);
-  if (checkResult.errors) {
-    return res.status(400)
-      .json({
-        error: 'wrong schema',
+    userSchema(updateObject);
+    const checkResult = _.cloneDeep(userSchema);
+    if (checkResult.errors) {
+      return next(errors.invalidRequestStructure({
         details: checkResult.errors,
+      }));
+    }
+
+    const pryvUser: User = database.users.getOne({pryvUsername: updateObject.pryvUsername});
+
+    if (pryvUser != null && user.pryvId == null) {
+      user.mergePryvUser({
+        db: database,
+        pryvUser: pryvUser,
+        pryvToken: updateObject.pryvToken,
       });
+    } else if (user.pryvUsername) {
+      user.updatePryvToken({
+        db: database,
+        pryvParams: updateObject,
+      });
+    } else {
+      user.addPryvAccountToUser({
+        db: database,
+        pryvParams: updateObject,
+      });
+    }
+
+    return res.status(200)
+      .json({
+        user: user
+      });
+  } catch (e) {
+    return next(e);
   }
-
-  const pryvUser: User = database.users.getOne({pryvUsername: updateObject.pryvUsername});
-
-  if (pryvUser != null && user.pryvId == null) {
-    user.mergePryvUser({
-      db: database,
-      pryvUser: pryvUser,
-      pryvToken: updateObject.pryvToken,
-    });
-  } else if (user.pryvUsername) {
-    user.updatePryvToken({
-      db: database,
-      pryvParams: updateObject,
-    });
-  } else {
-    user.addPryvAccountToUser({
-      db: database,
-      pryvParams: updateObject,
-    });
-  }
-
-  return res.status(200)
-    .json({
-      user: user
-    });
-
 });
 
 module.exports = router;
