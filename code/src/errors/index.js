@@ -79,3 +79,15 @@ errors.unknownError = function (params: {
     extra: params.extra,
   });
 };
+
+errors.itemAlreadyExists = function (params: {
+  details: string,
+  extra?: Object,
+}): AppError {
+  return new AppError({
+    id: errorNames.itemAlreadyExists,
+    httpCode: 400,
+    details: params.details,
+    extra: params.extra,
+  });
+};

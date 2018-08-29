@@ -7,4 +7,5 @@ module.exports = {
   unknownResource: 'Unknown resource',
   invalidOperation: 'Invalid operation',
   unknownError: 'Unknown error',
+  itemAlreadyExists: 'Item already exists',
 };

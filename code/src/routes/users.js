@@ -17,40 +17,40 @@ const userSchema = ajv.compile(schema.User);
 
 const router = require('express').Router();
 
-router.post('/', async (req: express$Request, res: express$Response) => {
+router.post('/', async (req: express$Request, res: express$Response, next: express$NextFunction) => {
 
-  const userObject: any = req.body;
+  try {
+    const userObject: any = req.body;
 
-  userSchema(userObject);
-  const checkResult = _.cloneDeep(userSchema);
+    userSchema(userObject);
+    const checkResult = _.cloneDeep(userSchema);
 
-  if (checkResult.errors) {
-    return res.status(400)
+    if (checkResult.errors) {
+      return next(errors.invalidRequestStructure({
+        details: checkResult.errors,
+      }));
+    }
+
+    const user = new User(userObject);
+    if (user.exists(database)) {
+      return next(errors.itemAlreadyExists({
+        details: 'Username already taken.',
+      }));
+    }
+
+    if (user.password != null) {
+      user.passwordHash = await bcrypt.hash(user.password, 10);
+    }
+    
+    user.save(database);
+
+    return res.status(201)
       .json({
-        error: 'wrong schema',
-        details: checkResult.errors
+        user: user
       });
+  } catch (e) {
+    return next(e);
   }
-
-  const user = new User(userObject);
-  if (user.exists(database)) {
-    return res.status(400)
-      .json({
-        error: 'user already exists',
-        details: userObject
-      });
-  }
-
-  if (user.password != null) {
-    user.passwordHash = await bcrypt.hash(user.password, 10);
-  }
-  
-  user.save(database);
-
-  return res.status(201)
-    .json({
-      user: user
-    });
 });
 
 router.get('/:username', (req: express$Request, res: express$Response, next: express$NextFunction) => {

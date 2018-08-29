@@ -136,7 +136,9 @@ describe('users', () => {
         .send(_.pick(user, ['username', 'password']))
         .then(res => {
           res.status.should.eql(400);
-          should.exist(res.error);
+          res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.itemAlreadyExists);
         });
     });
 
@@ -152,7 +154,9 @@ describe('users', () => {
         .send(user)
         .then(res => {
           res.status.should.eql(400);
-          should.exist(res.error);
+          res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.invalidRequestStructure);
         });
     });
 
@@ -185,10 +189,12 @@ describe('users', () => {
 
       return request(app)
         .post(makeUrl())
-        .send({user: user.pryvUsername})
+        .send(_.pick(user, ['pryvUsername']))
         .then(res => {
           res.status.should.eql(400);
-          should.exist(res.error);
+          res.body.should.have.property('error');
+          const error = res.body.error;
+          error.id.should.eql(errorNames.itemAlreadyExists);
         });
     });
 
