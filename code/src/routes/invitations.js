@@ -30,6 +30,12 @@ router.post('/', async (req: express$Request, res: express$Response, next: expre
       details: checkResult.errors,
     }));
   }
+  
+  // REVIEW If the business objects exposed relationships, you could do a 
+  //  `invitation.campaign' here. 
+
+  // REVIEW the 'try/catch/next(e)' pattern is too ad-hoc - proven by it 
+  //  missing here. 
 
   // REVIEW Error handling could be wrapped in a monad for this purpose, 
   //  leaving just the useful code here. 
@@ -55,6 +61,7 @@ router.post('/', async (req: express$Request, res: express$Response, next: expre
     campaign: campaign
   });
   if (existingInvitation != null) {
+    // REVIEW This looks like a separate function to me. 
     let target: string = '';
     if (requestee.pryvUsername != null) {
       target = requestee.pryvUsername;
@@ -73,6 +80,9 @@ router.post('/', async (req: express$Request, res: express$Response, next: expre
   const requester: User = database.users.getOne({
     username: campaign.requester,
   });
+
+  // REVIEW race condition between check and insert; the reason why people use
+  //  database constraints...
 
   const invitation = new Invitation(_.merge(invitationObject, {
     requestee: requestee,
