@@ -31,6 +31,8 @@ router.post('/', async (req: express$Request, res: express$Response, next: expre
     }));
   }
 
+  // REVIEW Error handling could be wrapped in a monad for this purpose, 
+  //  leaving just the useful code here. 
   const campaign: Campaign = database.campaigns.getOne({
     campaignId: invitationObject.campaign.id,
   });

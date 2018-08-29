@@ -39,11 +39,15 @@ router.post('/', async (req: express$Request, res: express$Response) => {
         details: userObject
       });
   }
+  // REVIEW Between this check here and the 'insert' below there's a race 
+  // condition.
 
   if (user.password != null) {
+    // REVIEW Encrypting the password would be a business object concern?
     user.passwordHash = await bcrypt.hash(user.password, 10);
   }
-  
+
+  // REVIEW Error handling?
   user.save(database);
 
   return res.status(201)

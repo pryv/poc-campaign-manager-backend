@@ -24,6 +24,9 @@ module.exports = (params: {
     if (! user) {
       return userNotExists(res);
     }
+    // REVIEW Maybe put this into req.locals rather than res.locals? 
+    //  Also since res.locals will be used for view rendering if we ever
+    //  use that feature. 
     res.locals.user = user;
     next();
   };

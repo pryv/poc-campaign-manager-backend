@@ -60,12 +60,15 @@ router.post('/:campaignId/cancel', (req: express$Request, res: express$Response,
       }));
     }
 
+    // REVIEW is this the 'user' or the 'requester'?
     const user: User = database.users.getOne({ username: campaign.requester });
     const isAccessValid: boolean = user.isAccessValid({
       db: database,
       accessId: access
     });
 
+    // REVIEW Maybe this check could be done by a business object? As in 
+    //  requester.canAuthorise(access) ?
     if (! isAccessValid) {
       return next(errors.forbidden({
         details: 'token: "' + access + '"',
@@ -77,6 +80,8 @@ router.post('/:campaignId/cancel', (req: express$Request, res: express$Response,
         details: 'campaign is already cancelled. campaignId: ' + campaignId,
       }));
     }
+
+    // REVIEW A race condition here. This is a pattern.
 
     campaign.cancel({ db: database });
 
