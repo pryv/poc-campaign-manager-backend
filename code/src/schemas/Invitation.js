@@ -12,7 +12,7 @@ module.exports = {
     },
     requestee: {
       type: 'object',
-      propserties: {
+      properties: {
         id: {
           type: 'string'
         },
@@ -26,7 +26,7 @@ module.exports = {
     },
     requester: {
       type: 'object',
-      propserties: {
+      properties: {
         id: {
           type: 'string'
         },
@@ -40,7 +40,7 @@ module.exports = {
     },
     campaign: {
       type: 'object',
-      propserties: {
+      properties: {
         id: {
           type: 'string'
         },
