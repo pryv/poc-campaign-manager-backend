@@ -3,7 +3,7 @@ const sqlite3 = require('better-sqlite3');
 const config = require('../../dist/src/config');
 const User = require('../../dist/src/business').User;
 
-const db = new sqlite3('20180827-live.db', config.get('database:options'));
+const db = new sqlite3(config.get('database:path'), config.get('database:options'));
 
 const getVersion = db.prepare('SELECT version from versions');
 const getPasswordsStatement = db.prepare('SELECT u.local_user_id, u.password from local_users u;');
