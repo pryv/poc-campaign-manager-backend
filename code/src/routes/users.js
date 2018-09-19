@@ -83,13 +83,13 @@ router.put('/:username', (req: express$Request, res: express$Response, next: exp
 
     const pryvUser: User = database.users.getOne({pryvUsername: updateObject.pryvUsername});
 
-    if (pryvUser != null && user.pryvId == null) {
+    if (unlinkedPryvUserExists({ pryvUser: pryvUser, localUser: user})) {
       user.mergePryvUser({
         db: database,
         pryvUser: pryvUser,
         pryvToken: updateObject.pryvToken,
       });
-    } else if (user.pryvUsername) {
+    } else if (pryvUserIsAlreadyLinked({ localUser: user })) {
       user.updatePryvToken({
         db: database,
         pryvParams: updateObject,
@@ -111,3 +111,16 @@ router.put('/:username', (req: express$Request, res: express$Response, next: exp
 });
 
 module.exports = router;
+
+function unlinkedPryvUserExists(params: {
+  pryvUser: User,
+  localUser: User,
+}): boolean {
+  return params.pryvUser != null && params.localUser.pryvId == null;
+}
+
+function pryvUserIsAlreadyLinked(params: {
+  localUser: User,
+}): boolean {
+  return params.localUser.pryvUsername != null;
+}
