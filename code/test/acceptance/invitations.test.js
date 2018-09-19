@@ -357,7 +357,7 @@ describe('invitations', () => {
           });
           res.status.should.eql(200);
         });
-    });
+    }).timeout(5000);
 
     it('should return a 403 if the access token is invalid', () => {
       const requestee: User = new User({
@@ -380,7 +380,7 @@ describe('invitations', () => {
           const error = res.body.error;
           error.id.should.eql(errorNames.forbidden);
         });
-    });
+    }).timeout(5000);
 
     it('should return a 400 if there is not "accessToken" property in the payload', () => {
       const invitation: Invitation = fixtures.addInvitation();
