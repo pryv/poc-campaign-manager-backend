@@ -16,9 +16,6 @@ module.exports = {
         id: {
           type: 'string'
         },
-        username: {
-          type: 'string'
-        },
         pryvUsername: {
           type: 'string'
         }
