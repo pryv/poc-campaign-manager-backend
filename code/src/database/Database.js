@@ -30,54 +30,62 @@ class Database {
   initTables(): void {
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users (' +
-      'user_id string PRIMARY_KEY ' +
-      ')').run();
+      'user_id string PRIMARY_KEY NOT NULL UNIQUE' +
+      ');').run();
     this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS local_users (' +
-      'local_user_id string PRIMARY_KEY, ' +
-      'username string UNIQUE, ' +
-      'password string, ' +
-      'user_id string UNIQUE' +
-      ')').run();
+      'CREATE TABLE local_users (' +
+      'local_user_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
+      'username string UNIQUE NOT NULL, ' +
+      'password string NOT NULL, ' +
+      'user_id string UNIQUE NOT NULL, ' +
+      'FOREIGN KEY(user_id) REFERENCES users(user_id) ' +
+      ');').run();
     this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS pryv_users (' +
-      'pryv_user_id string PRIMARY_KEY, ' +
+      'CREATE TABLE IF NOT EXISTS pryv_users ( ' +
+      'pryv_user_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
       'pryv_username string UNIQUE, ' +
       'pryv_token string, ' +
-      'user_id string UNIQUE' +
-      ')').run();
+      'user_id string UNIQUE NOT NULL, ' +
+      'FOREIGN KEY(user_id) REFERENCES users(user_id) ' +
+      ');').run();
     this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS campaigns ( ' +
-      'campaign_id string PRIMARY_KEY, ' +
+      'CREATE TABLE campaigns ( ' +
+      'campaign_id STRING PRIMARY_KEY NOT NULL UNIQUE, ' +
       'title text NOT NULL, ' +
       'pryv_app_id text, ' +
       'description text NOT NULL, ' +
-      'permissions text NOT NULL, ' +
+      'permissions text not NULL, ' +
       'created integer NOT NULL, ' +
       'modified integer NOT NULL, ' +
       'status string NOT NULL, ' +
-      'user_id string NOT NULL ' +
-      ')').run();
+      'user_id string NOT NULL, ' +
+      'FOREIGN KEY(user_id) REFERENCES users(user_id) ' +
+      ');').run();
     this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS invitations (' +
-      'invitation_id string PRIMARY_KEY,' +
-      'access_token string,' +
-      'status string NOT NULL,' +
-      'created integer NOT NULL,' +
-      'modified integer NOT NULL,' +
-      'campaign_id string NOT NULL,' +
-      'requester_id string NOT NULL,' +
+      'CREATE TABLE invitations ( ' +
+      'invitation_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
+      'access_token string, ' +
+      'status string NOT NULL, ' +
+      'created integer NOT NULL, ' +
+      'modified integer NOT NULL, ' +
+      'campaign_id string NOT NULL, ' +
+      'requester_id string NOT NULL, ' +
       'requestee_id string NOT NULL, ' +
-      'head_id string ' +
-      ')').run();
+      'head_id string, ' +
+      'FOREIGN KEY(requester_id) REFERENCES users(user_id), ' +
+      'FOREIGN KEY(requestee_id) REFERENCES users(user_id), ' +
+      'FOREIGN KEY(campaign_id) REFERENCES campaigns(campaign_id) ' +
+      ');').run();
     this.db.prepare(
-      'CREATE TABLE IF NOT EXISTS accesses (' +
-      'access_id string PRIMARY_KEY, ' +
+      'CREATE TABLE IF NOT EXISTS accesses ( ' +
+      'access_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
       'created integer NOT NULL, ' +
       'valid boolean NOT NULL, ' +
       'valid_until integer NOT NULL, ' +
-      'user_id string NOT NULL ' +
-      ')').run();
+      'user_id string NOT NULL, ' +
+      'FOREIGN KEY(user_id) REFERENCES users(user_id) ' +
+      ');').run();
+    this.db.pragma('foreign_keys=ON', true);
   }
 
   close(): void {
