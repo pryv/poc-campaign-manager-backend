@@ -21,6 +21,8 @@ class DbCleaner {
       'DELETE FROM invitations',
       'DELETE FROM campaigns',
       'DELETE FROM pryv_users',
+      'DELETE FROM local_users',
+      'DELETE FROM accesses',
       'DELETE FROM users',
     ]);
   }
