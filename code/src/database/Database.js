@@ -30,11 +30,11 @@ class Database {
   initTables(): void {
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS users (' +
-      'user_id string PRIMARY_KEY NOT NULL UNIQUE' +
+      'user_id string PRIMARY KEY NOT NULL ' +
       ');').run();
     this.db.prepare(
       'CREATE TABLE local_users (' +
-      'local_user_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
+      'local_user_id string PRIMARY KEY NOT NULL, ' +
       'username string UNIQUE NOT NULL, ' +
       'password string NOT NULL, ' +
       'user_id string UNIQUE NOT NULL, ' +
@@ -42,7 +42,7 @@ class Database {
       ');').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS pryv_users ( ' +
-      'pryv_user_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
+      'pryv_user_id string PRIMARY KEY NOT NULL, ' +
       'pryv_username string UNIQUE, ' +
       'pryv_token string, ' +
       'user_id string UNIQUE NOT NULL, ' +
@@ -50,7 +50,7 @@ class Database {
       ');').run();
     this.db.prepare(
       'CREATE TABLE campaigns ( ' +
-      'campaign_id STRING PRIMARY_KEY NOT NULL UNIQUE, ' +
+      'campaign_id STRING PRIMARY KEY NOT NULL, ' +
       'title text NOT NULL, ' +
       'pryv_app_id text, ' +
       'description text NOT NULL, ' +
@@ -63,7 +63,7 @@ class Database {
       ');').run();
     this.db.prepare(
       'CREATE TABLE invitations ( ' +
-      'invitation_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
+      'invitation_id string PRIMARY KEY NOT NULL, ' +
       'access_token string, ' +
       'status string NOT NULL, ' +
       'created integer NOT NULL, ' +
@@ -78,12 +78,16 @@ class Database {
       ');').run();
     this.db.prepare(
       'CREATE TABLE IF NOT EXISTS accesses ( ' +
-      'access_id string PRIMARY_KEY NOT NULL UNIQUE, ' +
+      'access_id string PRIMARY KEY NOT NULL, ' +
       'created integer NOT NULL, ' +
       'valid boolean NOT NULL, ' +
       'valid_until integer NOT NULL, ' +
       'user_id string NOT NULL, ' +
       'FOREIGN KEY(user_id) REFERENCES users(user_id) ' +
+      ');').run();
+    this.db.prepare(
+      'CREATE TABLE IF NOT EXISTS versions ( ' +
+      'version integer PRIMARY KEY ' +
       ');').run();
     this.db.pragma('foreign_keys=ON', true);
   }
