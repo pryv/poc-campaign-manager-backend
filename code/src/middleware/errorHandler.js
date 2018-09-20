@@ -20,7 +20,8 @@ module.exports = (error: AppError, req: express$Request, res: express$Response, 
     res.status(error.httpCode)
       .json(errorBody);
   } else {
-    logger.error('Unexpected error (' + error.httpCode + ')');
+    logger.error('Unexpected error (' + error.message + ')');
+    logger.error(error.stack);
     res.status(500)
       .json({
         id: 'Undexpected error',
