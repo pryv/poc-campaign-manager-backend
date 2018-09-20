@@ -17,8 +17,6 @@ module.exports = (params: {
   db: Database,
 }) => {
   return (req: express$Request, res: express$Response, next: express$NextFunction): mixed => {
-    if(req.params.username === 'all')
-      return next();
 
     const user: User = res.locals.user;
 

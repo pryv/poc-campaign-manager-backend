@@ -55,16 +55,6 @@ class User {
     return db.users.save(this);
   }
 
-  update(params: {
-    db: Database,
-    update: mixed
-  }): User {
-    return params.db.users.updateOne({
-      user: this,
-      update: _.pick(params.update, ['pryvUsername', 'pryvToken'])
-    });
-  }
-
   addPryvAccountToUser(params: {
     db: Database,
     pryvParams: {

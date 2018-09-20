@@ -80,14 +80,6 @@ class Accesses {
     return params.access;
   }
 
-  get(params: {
-    user: User
-  }): Array<Access> {
-    return this.getStatement.all({
-      user_id: params.user.id,
-    }).map(convertFromDB);
-  }
-
   getOne(params: {
     user: User,
     accessId: string,

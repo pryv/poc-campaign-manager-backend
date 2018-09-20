@@ -30,7 +30,7 @@ if (process.env.NODE_ENV === 'dev') {
     },
     logs: {
       console: {
-        active: false
+        active: false,
       }
     },
     database: {
