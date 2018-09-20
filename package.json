@@ -13,6 +13,7 @@
     "watch": "node_modules/.bin/babel --watch=./code --out-dir=dist --source-maps",
     "test": "NODE_ENV=dev ./node_modules/.bin/mocha dist/test/**/*.test.js",
     "testOne": "NODE_ENV=dev ./node_modules/.bin/mocha",
+    "testWithCoverage": "NODE_ENV=dev nyc --reporter=html ./node_modules/.bin/mocha dist/test/**/*.test.js",
     "flow-coverage": "node_modules/.bin/flow-coverage-report -i 'code/src/**/*.js' -t html",
     "release": "node_modules/.bin/babel code --out-dir dist --copy-files",
     "lint": "node_modules/eslint/bin/eslint.js code/**"
@@ -31,6 +32,7 @@
     "flow-remove-types": "^1.2.3",
     "flow-typed": "^2.4.0",
     "mocha": "^5.1.1",
+    "nyc": "^13.0.1",
     "should": "^13.2.1",
     "supertest": "^3.0.0"
   },

@@ -15,3 +15,7 @@ flow-coverage/
 
 # default db file
 campaign-management.db
+
+# coverage
+coverage/
+.nyc_output/

@@ -29,6 +29,8 @@ Run tests: `yarn test`
 
 Run linter: `yarn lint`
 
+Compute test coverage: `yarn testWithCoverage` then open `coverage/index.html`
+
 ### Database migration
 
 *Prerequisites:* sqlite3 CLI
