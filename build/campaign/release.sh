@@ -16,6 +16,9 @@ cd $target_dir
 run run tar -x --owner app -f \
   /pd_build/release.tar .
 
+echo "yoho"
+node -v
+
 PYTHON=$(which python2.7) NODE_ENV=production run yarn install
 
 # Perform a release build of the source code. (-> lib)
