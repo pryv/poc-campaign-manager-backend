@@ -16,10 +16,12 @@ cd $target_dir
 run run tar -x --owner app -f \
   /pd_build/release.tar .
 
+echo "PYTHON VERSION"
+PYTHON=$(which python2.7) python --version
+
 PYTHON=$(which python2.7) run yarn install --prod --ignore-engines
 
-echo "PYTHON VERSION"
-python --version
+
 
 # Perform a release build of the source code. (-> lib)
 run npm run release
