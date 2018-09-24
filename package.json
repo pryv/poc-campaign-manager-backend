@@ -25,7 +25,7 @@
     "babel-preset-flow": "^6.23.0",
     "charlatan": "^1.1.0",
     "dumper.js": "^0.1.1",
-    "eslint": "^5.3.0",
+    "eslint": "^4.19.1",
     "eslint-plugin-flowtype": "^2.50.0",
     "flow-bin": "^0.70.0",
     "flow-coverage-report": "^0.5.0",

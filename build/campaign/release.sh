@@ -26,7 +26,8 @@ run ln -s $(which python2.7) /usr/bin/python
 
 #PYTHONPATH=$(which python2.7) PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run python --version
 
-PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run yarn install --prod --ignore-engines
+PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run yarn install
+
 
 # Perform a release build of the source code. (-> dist)
 run yarn release

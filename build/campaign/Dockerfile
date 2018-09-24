@@ -5,7 +5,7 @@ ADD . /pd_build
 RUN /pd_build/install.sh
 
 # Ports:
-#   9000        campaign api campaign
+#   9000        campaign api
 #
 EXPOSE 9000
 
