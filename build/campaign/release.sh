@@ -17,10 +17,16 @@ pushd $target_dir
 run run tar -x --owner app -f \
   /pd_build/release.tar .
 
-run echo "PYTHON VERSION"
-PYTHON=$(which python2.7) run python --version
 
-PYTHON=$(which python2.7) run yarn install --prod --ignore-engines
+#PATH=$PATH:$(which python2.7)
+
+#PYTHON=$(which python2.7) run yarn global add node-gyp
+
+run ln -s $(which python2.7) /usr/bin/python
+
+#PYTHONPATH=$(which python2.7) PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run python --version
+
+PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run yarn install --prod --ignore-engines
 
 # Perform a release build of the source code. (-> dist)
 run yarn release
