@@ -34,7 +34,7 @@ if (config.get('logs:file:active')) {
   transports.push(
     new winston.transports.File({
       level: config.get('logs:level') || 'info',
-      filename: config.get('logs:file:path') || 'hook.log',
+      filename: config.get('logs:file:path') || 'campaign-management.log',
       maxsize: 10000000000, // 10 GB
       maxFiles: 1, // for rotation
       timestamp: fileTimestamp,

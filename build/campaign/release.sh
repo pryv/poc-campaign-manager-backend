@@ -31,7 +31,7 @@ run mkdir -p $conf_dir && \
 
 # Create the log dir
 run mkdir -p $log_dir && \
-  run touch $log_dir/campaign.log && run chown -R app:app $log_dir
+  run chown -R app:app $log_dir
 
 # Create the data space
 run mkdir -p $data_dir && 
