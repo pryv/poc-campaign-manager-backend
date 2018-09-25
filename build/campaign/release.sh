@@ -17,17 +17,10 @@ pushd $target_dir
 run run tar -x --owner app -f \
   /pd_build/release.tar .
 
-
-#PATH=$PATH:$(which python2.7)
-
-#PYTHON=$(which python2.7) run yarn global add node-gyp
-
+# Needed by better-sqlite3 which requires `python` and not `python2.7`
 run ln -s $(which python2.7) /usr/bin/python
 
-#PYTHONPATH=$(which python2.7) PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run python --version
-
 PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run yarn install
-
 
 # Perform a release build of the source code. (-> dist)
 run yarn release
