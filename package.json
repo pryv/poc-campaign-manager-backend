@@ -19,9 +19,7 @@
     "lint": "node_modules/eslint/bin/eslint.js code/**"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.6",
-    "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "charlatan": "^1.1.0",
     "dumper.js": "^0.1.1",
@@ -39,6 +37,7 @@
   "dependencies": {
     "ajv": "^6.4.0",
     "asyncawait": "^1.0.6",
+    "babel-cli": "^6.26.0",
     "bcrypt": "^3.0.0",
     "better-sqlite3": "^4.1.0",
     "bluebird": "^3.5.1",
