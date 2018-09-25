@@ -33,7 +33,7 @@ class Database {
       'user_id string PRIMARY KEY NOT NULL ' +
       ');').run();
     this.db.prepare(
-      'CREATE TABLE local_users (' +
+      'CREATE TABLE IF NOT EXISTS local_users (' +
       'local_user_id string PRIMARY KEY NOT NULL, ' +
       'username string UNIQUE NOT NULL, ' +
       'password string NOT NULL, ' +
@@ -49,7 +49,7 @@ class Database {
       'FOREIGN KEY(user_id) REFERENCES users(user_id) ' +
       ');').run();
     this.db.prepare(
-      'CREATE TABLE campaigns ( ' +
+      'CREATE TABLE IF NOT EXISTS campaigns ( ' +
       'campaign_id STRING PRIMARY KEY NOT NULL, ' +
       'title text NOT NULL, ' +
       'pryv_app_id text, ' +
@@ -62,7 +62,7 @@ class Database {
       'FOREIGN KEY(user_id) REFERENCES users(user_id) ' +
       ');').run();
     this.db.prepare(
-      'CREATE TABLE invitations ( ' +
+      'CREATE TABLE IF NOT EXISTS invitations ( ' +
       'invitation_id string PRIMARY KEY NOT NULL, ' +
       'access_token string, ' +
       'status string NOT NULL, ' +
