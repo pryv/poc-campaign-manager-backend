@@ -20,7 +20,7 @@ run run tar -x --owner app -f \
 # Needed by better-sqlite3 which requires `python` and not `python2.7`
 run ln -s $(which python2.7) /usr/bin/python
 
-PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run yarn install
+PYTHON=$(which python2.7) PATH=$PATH:$(which python2.7) run yarn install --prod
 
 # Perform a release build of the source code. (-> dist)
 run yarn release
