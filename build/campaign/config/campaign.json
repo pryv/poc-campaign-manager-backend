@@ -9,7 +9,7 @@
     }
   },
   "database": {
-    "path": "./campaign-management.db",
+    "path": "/app/data/campaign-management.db",
     "options": {}
   },
   "pryv": {
