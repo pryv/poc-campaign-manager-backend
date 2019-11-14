@@ -21,6 +21,7 @@ function release {
   #if [ -e ../release_build ]; then
     # Publication to registry:
     sudo docker tag $local_name $remote_name
+    sudo docker login -u jenkins -p mJ6qLqQZDPvHT2ydHBmaxeR7WEU6B2ggwTZPmCr8tCQo9 $host
     sudo docker push $remote_name
   #fi
 }
