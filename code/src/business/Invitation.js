@@ -23,11 +23,11 @@ class Invitation {
   campaign: Campaign;
   requester: User;
   requestee: User;
-  accessToken: string;
+  accessToken: ?string;
   status: InvitationStatus;
   created: number;
   modified: number;
-  headId: string; // for versioned invitations
+  headId: ?string; // for versioned invitations
 
   constructor(params: {
     id?: string,

@@ -28,7 +28,7 @@ class Campaign {
   description: string;
   permissions: Array<Permission>;
   created: number;
-  requester: string; // local_username
+  requester: ?string; // local_username
   modified: number;
   status: CampaignStatus;
 

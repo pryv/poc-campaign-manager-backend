@@ -1,6 +1,18 @@
 BEGIN TRANSACTION;
 
-PRAGMA foreign_keys = ON;
+PRAGMA foreign_keys = 1;
+
+ALTER TABLE users RENAME TO TempOldTable;
+CREATE TABLE IF NOT EXISTS users (
+  user_id string PRIMARY_KEY NOT NULL UNIQUE
+);
+
+INSERT INTO users (
+  user_id
+) SELECT 
+  user_id
+ FROM TempOldTable;
+DROP TABLE TempOldTable;
 
 ALTER TABLE campaigns RENAME TO TempOldTable;
 
@@ -77,18 +89,6 @@ INSERT INTO invitations (
   requester_id,
   requestee_id,
   head_id
- FROM TempOldTable;
-DROP TABLE TempOldTable;
-
-ALTER TABLE users RENAME TO TempOldTable;
-CREATE TABLE IF NOT EXISTS users (
-  user_id string PRIMARY_KEY NOT NULL UNIQUE
-);
-
-INSERT INTO users (
-  user_id
-) SELECT 
-  user_id
  FROM TempOldTable;
 DROP TABLE TempOldTable;
 
