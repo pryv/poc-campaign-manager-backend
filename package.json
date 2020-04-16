@@ -4,7 +4,7 @@
   "description": "Node-Express-SQLite app for campaign management",
   "main": "index.js",
   "author": "Ilia Kebets <ilia@pryv.com>",
-  "license": "none",
+  "license": "BSD-3-Clause",
   "private": true,
   "scripts": {
     "start": "node dist/src/server.js",
