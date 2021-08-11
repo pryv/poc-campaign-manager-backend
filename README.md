@@ -1,7 +1,7 @@
 
 # app-node-campaign-management
 
-ExpressJS app for campaign management.
+ExpressJS app for campaign management. Paired with its [frontend VueJS app](https://github.com/pryv/app-web-campaign-manager)
 
 *Prerequisites*: Node v8+, Yarn v1+
 
