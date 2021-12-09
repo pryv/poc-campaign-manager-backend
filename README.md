@@ -1,7 +1,7 @@
 
-# app-node-campaign-management
+# Campaign manager (backend)
 
-ExpressJS app for campaign management. Paired with its [frontend VueJS app](https://github.com/pryv/app-web-campaign-manager)
+Express.js app for campaign management; paired with its [frontend Vue.js app](https://github.com/pryv/poc-campaign-manager-frontend)
 
 *Prerequisites*: Node v8+, Yarn v1+
 
