@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright (C) Pryv https://pryv.com
+ * This file is part of Pryv.io and released under BSD-Clause-3 License
+ * Refer to LICENSE file
+ */
 // flow-typed signature: 55e5826bb086d281219c0212ff935260
 // flow-typed version: <<STUB>>/flow-remove-types_v^1.2.3/flow_v0.70.0
 

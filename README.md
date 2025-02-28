@@ -62,3 +62,8 @@ There should not be any messages if the script was executed with no errors.
 - Use `BEGIN TRANSACTION;` and `END TRANSACTION;` so you can roll back if an issue arises. Closing the connection executes a rollback.
 - Update the database version when applying changes.
 - see [scripts/database/v1.sql](scripts/database/v1.sql) for reference.
+
+
+## License
+
+[BSD-3-Clause](LICENSE)

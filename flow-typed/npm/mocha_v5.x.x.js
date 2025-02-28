@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright (C) Pryv https://pryv.com
+ * This file is part of Pryv.io and released under BSD-Clause-3 License
+ * Refer to LICENSE file
+ */
 // flow-typed signature: f58bffa67453f8927660cb5f142b2c7f
 // flow-typed version: 03669c2773/mocha_v5.x.x/flow_>=v0.28.x
 

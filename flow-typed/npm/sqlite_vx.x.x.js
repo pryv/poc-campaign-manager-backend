@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright (C) Pryv https://pryv.com
+ * This file is part of Pryv.io and released under BSD-Clause-3 License
+ * Refer to LICENSE file
+ */
 // flow-typed signature: 80e7b3fc8c0f31be76a2ea8c57e29f8f
 // flow-typed version: <<STUB>>/sqlite_v^2.9.1/flow_v0.70.0
 

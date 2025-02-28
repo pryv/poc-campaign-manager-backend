@@ -1,3 +1,9 @@
+/**
+ * @license
+ * Copyright (C) Pryv https://pryv.com
+ * This file is part of Pryv.io and released under BSD-Clause-3 License
+ * Refer to LICENSE file
+ */
 // flow-typed signature: 94c841170517bdb21448548a0159b123
 // flow-typed version: <<STUB>>/charlatan_v^1.1.0/flow_v0.70.0
 
